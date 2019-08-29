@@ -123,9 +123,11 @@ function play_farmer_strat($server)
                 buy_farmer_goals($c, $spend);
             }
         }
-        buy_cheap_military($c,1500000000,200);
-        buy_cheap_military($c);
     }
+
+    buy_cheap_military($c,3000000000,250);
+    buy_cheap_military($c,1500000000,200);
+    buy_cheap_military($c);
 
     $c->countryStats(FARMER, farmerGoals($c));
     return $c;
