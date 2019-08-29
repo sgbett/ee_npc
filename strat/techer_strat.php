@@ -197,7 +197,7 @@ function sell_max_tech(&$c)
                 $price[$key] = PublicMarket::price($key);
             } else {
                 Debug::msg("sell_max_tech:A:$key");
-                $max = $c->goodsStuck($key) ? 0.98 : $rmax; //undercut if we have goods stuck
+                $max = (turns_of_money($c) < 10) && $c->goodsStuck($key) ? 0.98 : $rmax; //undercut if we have goods stuck and low on cash
                 Debug::msg("sell_max_tech:B:$key");
 
                 $price[$key] = min(

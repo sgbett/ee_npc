@@ -246,13 +246,12 @@ function sellextrafood(&$c)
     $rmin    = 0.95; //percent
     $rstep   = 0.01;
     $rstddev = 0.10;
-    $max     = $c->goodsStuck('m_bu') ? 0.99 : $rmax;
-    $price   = round(
-        max(
-            $pm_info->sell_price->m_bu + 1,
-            PublicMarket::price('m_bu') * Math::purebell($rmin, $max, $rstddev, $rstep)
-        )
-    );
+    $max     = (turns_of_money($c) < 10) && $c->goodsStuck('m_bu') ? 0.99 : $rmax;
+    $price   = round(PublicMarket::price('m_bu') * Math::purebell($rmin, $max, $rstddev, $rstep));
+
+    if ($price == 0) {
+      $price = Math::purebell(30, 288, 100, 1);
+    }
 
     if ($price <= max(35, $pm_info->sell_price->m_bu / $c->tax()))
     {
