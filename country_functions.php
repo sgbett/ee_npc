@@ -234,6 +234,28 @@ function sell_all_food(&$c, $fraction = 1)
     return PrivateMarket::sell($c, $sell_units);
 }//end sell_all_food()
 
+function selloil(&$c) {
+  $c = get_advisor();     //UPDATE EVERYTHING
+
+  $quantity = ['m_oil' => $c->oil]; //sell it all! :)
+
+  $rmax    = 1.10; //percent
+  $rmin    = 0.90; //percent
+  $rstep   = 0.01;
+  $rstddev = 0.10;
+  $max     = (turns_of_money($c) < 10) && $c->goodsStuck('m_oil') ? 0.99 : $rmax;
+  $price   = round(PublicMarket::price('m_oil') * Math::purebell($rmin, $rmax, $rstddev, $rstep));
+
+  if ($price == 0) {
+    $price = Math::purebell(100, 1000, 500, 1);
+  }
+
+  $price   = ['m_oil' => $price];
+
+  return PublicMarket::sell($c, $quantity, $price);
+
+}
+
 function sellextrafood(&$c)
 {
     $c = get_advisor();     //UPDATE EVERYTHING
