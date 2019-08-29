@@ -755,9 +755,10 @@ function tech(&$c, $turns = 1)
     $left -= $war = min($left, floor($c->tpt * $turns * ($war / $tot)));
     $left -= $ms = min($left, floor($c->tpt * $turns * ($ms / $tot)));
     $left -= $weap = min($left, floor($c->tpt * $turns * ($weap / $tot)));
-    $left -= $indy = min($left, floor($c->tpt * $turns * ($indy / $tot)));
     $left -= $spy = min($left, floor($c->tpt * $turns * ($spy / $tot)));
-    $left -= $sdi = max($left, min($left, floor($c->tpt * $turns * ($sdi / $tot))));
+    $left -= $sdi = max($left, floor($c->tpt * $turns * ($sdi / $tot)));
+    $left -= $indy = min($left, min($left, floor($c->tpt * $turns * ($indy / $tot))));
+
     if ($left != 0) {
         die("What the hell?");
     }
