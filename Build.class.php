@@ -128,7 +128,7 @@ class Build
     {
       $rig = floor(($c->bpt) * 0.1);
       $lab = floor(($c->bpt) * 0.7);
-      $ind = $c->bpt - ($rig + lab);
+      $ind = $c->bpt - ($rig + $lab);
 
       return self::buildings(['rig' => $rig, 'lab' => $lab, 'indy' => $ind]);
     }//end farmer()
