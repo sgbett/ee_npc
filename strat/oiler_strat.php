@@ -142,7 +142,7 @@ function play_oiler_turn(&$c)
         )
     ) { //Don't sell less than 30 turns of food unless you're on your last turn (and desperate?)
         return sellextrafood($c);
-    } elseif ($c->protection == 0 && $c->oil > 30 * $c->oilnet ) {
+    } elseif ($c->protection == 0 && $c->oil > 30 * $c->land ) {
         return selloil($c);
     } elseif ($c->shouldBuildCS()) {
         return Build::cs();
@@ -162,17 +162,30 @@ function buy_oiler_goals(&$c, $spend = null)
     Country::countryGoals($c, $goals, $spend);
 }//end buy_oiler_goals()
 
-
 function oilerGoals(&$c)
 {
     return [
         //what, goal, priority
-        ['t_agri',227,1000],
-        ['t_bus',174,500],
-        ['t_res',174,500],
-        ['t_mil',95,200],
-        ['nlg',$c->nlgTarget(),200],
-        ['dpa',$c->defPerAcreTarget(1.0),1000],
-        ['food', 1000000000, 5],
+
+        //tech levels
+        ['t_mil'  ,94  ,50],
+        ['t_med'  ,90  ,10],
+        ['t_bus'  ,140 ,50],
+        ['t_res'  ,140 ,50],
+        ['t_agri' ,210 ,100],
+        ['t_war'  ,1   ,10],
+        ['t_ms'   ,120 ,20],
+        ['t_weap' ,125 ,30],
+        ['t_indy' ,120 ,20],
+        ['t_spy'  ,125 ,20],
+        ['t_sdi'  ,60  ,20],
+
+        //military
+        ['nlg'    ,$c->nlgTarget(),100],
+        ['dpa'    ,$c->defPerAcreTarget(1.0),100],
+
+        //stocking no goal just a priority
+        ['food'   , 0, 1],
+        ['oil'    , 0, 1],
     ];
-}//end oilerGoals()
+}//end defaultGoals()
