@@ -117,7 +117,7 @@ function play_techer_turn(&$c)
     } elseif ($c->shouldBuildCS(0.8)) { //target 80% of turns on cs rather than default 50
       return Build::cs();
     } elseif ($c->shouldBuildFullBPT()) {
-      return $c->protection ? Build::farmer($c) : Build::techer($c);
+      return $c->protection == 1 ? Build::farmer($c) : Build::techer($c);
     } elseif ($c->shouldExplore())  {
       return explore($c);
     } elseif (onmarket_value($c) == 0 && $c->built() < 75) {
