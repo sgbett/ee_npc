@@ -244,7 +244,7 @@ class PublicMarket
         out($str);
         //sleep(1);
         return $result;
-    }//end sell()    
+    }//end sell()
 
     public static function buy_tech(&$c, $tech, $spend = 0, $maxprice = 9999)
     {
@@ -253,33 +253,18 @@ class PublicMarket
         $tech = substr($tech, 2);
         $diff = $c->money - $spend;
         //out('Here;P:'.PublicMarket::price($tech).';Q:'.PublicMarket::available($tech).';S:'.$spend.';M:'.$maxprice.';');
-        if (self::price($tech) != null && self::available($tech) > 0) {
-            while (self::price($tech) != null
-                && self::available($tech) > 0
-                && self::price($tech) <= $maxprice
-                && $spend > 0
-            ) {
-                $price = self::price($tech);
-                $tobuy = min(floor($spend / ($price * $c->tax())), self::available($tech));
-                if ($tobuy == 0) {
-                    return;
-                }
+        while ($spend > 0) {
+            self::update();
+            if (self::price($tech) != null) { $price = self::price($tech); } else { return; }
+            if ($price <= $maxprice) { $tobuy = min(floor($spend / ($price * $c->tax())), self::available($tech));} else { return; }
+            if ($tobuy == 0) { return; }
 
-                //out($tech . $tobuy . "@$" . $price);
-                $result = PublicMarket::buy($c, [$tech => $tobuy], [$tech => $price]);     //Buy troops!
-                if ($result === false) {
-                    if ($update == false) {
-                        $update = true;
-                        self::update(); //force update once more, and let it loop again
-                    } else {
-                        return;
-                    }
-                }
+            $result = PublicMarket::buy($c, [$tech => $tobuy], [$tech => $price]);
 
-                $spend = $c->money - $diff;
+            if ($result === false) { return; }
 
-                //out_data($result);
-            }
+            $spend = $c->money - $diff;
+
         }
     }//end buy_tech()
 }//end class
