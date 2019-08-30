@@ -120,7 +120,8 @@ function play_casher_turn(&$c)
 
 function buy_casher_goals(&$c, $spend = null)
 {
-    Country::countryGoals($c, casherGoals($c), $spend);
+    $goals = casherGoals($c);
+    Country::countryGoals($c, $goals, $spend);
 }//end buy_casher_goals()
 
 
@@ -128,11 +129,26 @@ function casherGoals(&$c)
 {
     return [
         //what, goal, priority
-        ['t_bus',178,10],
-        ['t_res',178,10],
-        ['t_mil',94,2],
-        ['nlg',$c->nlgTarget(),5],
-        ['dpa',$c->defPerAcreTarget(1.0),5],
-        ['food', 1000000000, 1],
+
+        //tech levels
+        ['t_mil'  ,94  ,50],
+        ['t_med'  ,90  ,10],
+        ['t_bus'  ,175 ,50],
+        ['t_res'  ,175 ,50],
+        ['t_agri' ,100 ,0],
+        ['t_war'  ,1   ,10],
+        ['t_ms'   ,120 ,20],
+        ['t_weap' ,125 ,30],
+        ['t_indy' ,120 ,20],
+        ['t_spy'  ,125 ,20],
+        ['t_sdi'  ,60  ,20],
+
+        //military
+        ['nlg'    ,$c->nlgTarget(),100],
+        ['dpa'    ,$c->defPerAcreTarget(1.0),100],
+
+        //stocking no goal just a priority
+        ['food'   , 0, 1],
+        ['oil'    , 0, 1],
     ];
-}//end casherGoals()
+}//end defaultGoals()

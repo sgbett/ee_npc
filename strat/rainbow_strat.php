@@ -120,7 +120,7 @@ function play_rainbow_strat($server)
         //$main->turns = 0;             //use this to do one turn at a time
     }
 
-    $c->countryStats(RAINBOW, rainbowGoals($c));
+    $c->countryStats(RAINBOW, defaultGoals($c));
     return $c;
 }//end play_rainbow_strat()
 
@@ -235,20 +235,36 @@ function tech_rainbow(&$c, $turns=1)
 
 function buy_rainbow_goals(&$c, $spend = null)
 {
-    Country::countryGoals($c, rainbowGoals($c), $spend);
+  $goals = defaultGoals($c);
+
+  Country::countryGoals($c, $goals, $spend);
 }//end buy_rainbow_goals()
 
 
-function rainbowGoals(&$c)
+function defaultGoals(&$c)
 {
     return [
         //what, goal, priority
-        ['t_agri',225,5],
-        ['t_indy',160,5],
-        ['t_bus',178,7],
-        ['t_res',178,7],
-        ['t_mil',94,5],
-        ['nlg',$c->nlgTarget(),5],
-        ['dpa',$c->defPerAcreTarget(),10],
+
+        //tech levels
+        ['t_mil'  ,94  ,100],
+        ['t_med'  ,90  ,100],
+        ['t_bus'  ,150 ,100],
+        ['t_res'  ,150 ,100],
+        ['t_agri' ,200 ,100],
+        ['t_war'  ,5   ,100],
+        ['t_ms'   ,120 ,100],
+        ['t_weap' ,125 ,100],
+        ['t_indy' ,145 ,100],
+        ['t_spy'  ,125 ,100],
+        ['t_sdi'  ,60  ,100],
+
+        //military
+        ['nlg'    ,$c->nlgTarget(),100],
+        ['dpa'    ,$c->defPerAcreTarget(1.0),100],
+
+        //stocking no goal just a priority
+        ['food'   , 0, 1],
+        ['oil'    , 0, 1],
     ];
-}//end rainbowGoals()
+}//end deefaultGoals()

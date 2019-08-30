@@ -227,12 +227,30 @@ function buy_techer_goals(&$c, $spend = null)
     Country::countryGoals($c, $goals, $spend);
 }//end buy_techer_goals()
 
-
 function techerGoals(&$c)
 {
     return [
         //what, goal, priority
-        ['dpa', $c->defPerAcreTarget(1.0), 1],
-        ['nlg', $c->nlgTarget(),1 ],
+
+        //tech levels
+        ['t_mil'  ,94  ,1],
+        ['t_med'  ,87  ,1],
+        ['t_bus'  ,160 ,1],
+        ['t_res'  ,160 ,1],
+        ['t_agri' ,100 ,1],
+        ['t_war'  ,3   ,1],
+        ['t_ms'   ,130 ,1],
+        ['t_weap' ,125 ,1],
+        ['t_indy' ,100 ,1],
+        ['t_spy'  ,125 ,1],
+        ['t_sdi'  ,60  ,1],
+
+        //military
+        ['nlg'    ,$c->nlgTarget(),100],
+        ['dpa'    ,$c->defPerAcreTarget(1.0),100],
+
+        //stocking no goal just a priority
+        ['food'   , 0, 1],
+        ['oil'    , 0, 1],
     ];
-}//end techerGoals()
+}//end defaultGoals()

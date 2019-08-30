@@ -176,12 +176,26 @@ function farmerGoals(&$c)
 {
     return [
         //what, goal, priority
-        ['t_agri',227,10],
-        ['t_bus',174,2],
-        ['t_res',174,2],
-        ['t_mil',95,2],
-        ['nlg',$c->nlgTarget(),5],
-        ['dpa',$c->defPerAcreTarget(1.0),5],
-        ['food', 1000000000, 5],
+
+        //tech levels
+        ['t_mil'  ,94  ,50],
+        ['t_med'  ,90  ,10],
+        ['t_bus'  ,150 ,50],
+        ['t_res'  ,150 ,50],
+        ['t_agri' ,225 ,100],
+        ['t_war'  ,1   ,10],
+        ['t_ms'   ,120 ,20],
+        ['t_weap' ,125 ,30],
+        ['t_indy' ,120 ,20],
+        ['t_spy'  ,125 ,20],
+        ['t_sdi'  ,60  ,20],
+
+        //military
+        ['nlg'    ,$c->nlgTarget(),100],
+        ['dpa'    ,$c->defPerAcreTarget(1.0),100],
+
+        //stocking no goal just a priority
+        ['food'   , 0, 1],
+        ['oil'    , 0, 1],
     ];
-}//end farmerGoals()
+}//end defaultGoals()

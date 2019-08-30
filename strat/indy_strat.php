@@ -143,14 +143,26 @@ function buy_indy_goals(&$c, $spend = null)
     Country::countryGoals($c, $goals, $spend);
 }//end buy_indy_goals()
 
-
 function indyGoals(&$c)
 {
     return [
         //what, goal, priority
-        ['t_indy',158,10],
-        ['t_bus',160,4],
-        ['t_res',160,4],
-        ['t_mil',94,3],
+
+        //tech levels
+        ['t_mil'  ,94  ,50],
+        ['t_med'  ,90  ,10],
+        ['t_bus'  ,150 ,50],
+        ['t_res'  ,150 ,50],
+        ['t_agri' ,100 ,0],
+        ['t_war'  ,1   ,10],
+        ['t_ms'   ,120 ,20],
+        ['t_weap' ,125 ,30],
+        ['t_indy' ,155 ,100],
+        ['t_spy'  ,125 ,20],
+        ['t_sdi'  ,60  ,20],
+
+        //stocking no goal just a priority
+        ['food'   , 0, 1],
+        ['oil'    , 0, 1],
     ];
 }//end indyGoals()

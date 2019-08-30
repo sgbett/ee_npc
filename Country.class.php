@@ -40,6 +40,7 @@ class Country
         $cpref->land     = $this->land;
     }//end __construct()
 
+    
     public function updateMain()
     {
         $main           = get_main();                 //Grab a fresh copy of the main stats
@@ -284,7 +285,7 @@ class Country
         if ($this->protection == 1) { return 0; }
         //out("Turns Played: {$this->turns_played}");
         $dpat = floor(75 + pow($this->turns_played, $powfactor) / 10) * $mult;
-        out("DPAT: $dpat");
+        // out("DPAT: $dpat");
         return $dpat;
     }//end defPerAcreTarget()
 
@@ -330,6 +331,26 @@ class Country
         return floor($this->networth / ($this->land * $govt));
     }//end nlg()
 
+    /**
+     * the multiple for max tech based on govt
+     * @return int the multipler
+     */
+    public function tech_multiplier()
+    {
+        switch ($this->govt) {
+            case 'H':
+                $multiplier = 0.65;
+                break;
+            case 'D':
+                $multiplier = 1.1;
+                break;
+            default:
+                $multiplier = 1.0;
+        }
+
+        return $multiplier;
+    }//end tech_multiplier()
+
 
     /**
      * The float taxrate
@@ -347,7 +368,6 @@ class Country
     }//end fullBuildCost()
 
 
-
     /**
      * Find Highest Goal
      * @param  array $goals an array of goals to persue
@@ -360,36 +380,54 @@ class Country
         global $market;
         $psum  = 0;
         $score = [];
+
+
         foreach ($goals as $goal) {
-            if ($goal[0] == 't_agri') {
-                $price           = PublicMarket::price('agri');
-                $price           = $price > 500 ? $price : 10000;
-                $score['t_agri'] = ($goal[1] - $this->pt_agri) / ($goal[1] - 100) * $goal[2] * (2500 / $price);
-            } elseif ($goal[0] == 't_indy') {
-                $price           = PublicMarket::price('indy');
-                $price           = $price > 500 ? $price : 10000;
-                $score['t_indy'] = ($goal[1] - $this->pt_indy) / ($goal[1] - 100) * $goal[2] * (2500 / $price);
-            } elseif ($goal[0] == 't_bus') {
-                $price          = PublicMarket::price('bus');
-                $price          = $price > 500 ? $price : 10000;
-                $score['t_bus'] = ($goal[1] - $this->pt_bus) / ($goal[1] - 100) * $goal[2] * (2500 / $price);
-            } elseif ($goal[0] == 't_res') {
-                $price          = PublicMarket::price('res');
-                $price          = $price > 500 ? $price : 10000;
-                $score['t_res'] = ($goal[1] - $this->pt_res) / ($goal[1] - 100) * $goal[2] * (2500 / $price);
-            } elseif ($goal[0] == 't_mil') {
-                $price          = PublicMarket::price('mil');
-                $price          = $price > 500 ? $price : 10000;
-                $score['t_mil'] = ($this->pt_mil - $goal[1]) / (100 - $goal[1]) * $goal[2] * (2500 / $price);
+
+            if (substr($goal[0],0,2) == 't_') {
+
+              if ($goal[1] < 100) {
+                $target = 100 - $this->tech_multiplier() * (100 - $goal[1]);
+              } else {
+                $target = 100 + $this->tech_multiplier() * ($goal[1] -100);
+              }
+
+              $price           = PublicMarket::price(substr($goal[0],2));
+              $price           = $price > 500 ? $price : 10000;
+              $point_att       = "p$goal[0]";
+
+              if ($target == 0) {
+                out_score($point_att,'','','','','nil');
+              } else {
+                $s = ($goal[1] - $this->$point_att) / $target * $goal[2] * (2500 / $price);
+                if ($s < 0) { $s = -$s; } // handle the <100% techs ie mil, war, sdi
+                out_score($point_att,$goal[2],$price,$this->$point_att,$target,$s);
+              }
             } elseif ($goal[0] == 'nlg') {
                 $target       = $this->nlgt ?? $this->nlgTarget();
-                $score['nlg'] = ($target - $this->nlg()) / $target * $goal[2];
+                $actual       = $this->nlg();
+                $s            = ($target - $actual) / $target * $goal[2];
+                out_score('nlg',$goal[2],'n/a',$actual,$target,$s);
             } elseif ($goal[0] == 'dpa') {
                 $target       = $this->dpat ?? $this->defPerAcreTarget();
                 $actual       = $this->defPerAcre();
-                $score['dpa'] = ($target - $actual) / $target * $goal[2];
+                $s            = ($target - $actual) / $target * $goal[2];
+                out_score('dpa',$goal[2],'n/a',$actual,$target,$s);
+            } elseif ($goal[0] == 'food') {
+
+              $price  = PublicMarket::price('m_bu');
+              $s      = $goal[2] * (35 / $price);
+
+              out_score('food',$goal[2],$price,'','',$s);
+
+            } elseif ($goal[0] == 'oil') {
+              $price  = PublicMarket::price('m_oil');
+              $s      = $goal[2] * (200 / $price);
+
+              out_score('oil',$goal[2],$price,'','',$s);
             }
 
+            $score[$goal[0]] = round($s);
             $psum += $goal[2];
         }
 
@@ -455,25 +493,10 @@ class Country
         //out("Highest Goal: ".$what.' Buy $'.$spend_partial);
         $diff      = 0;
         $techprice = 8000 * $tol;
-        if ($what == 't_agri') {
+
+        if (substr($what,0,2) == 't_') {
             $o = $c->money;
-            PublicMarket::buy_tech($c, 't_agri', $spend_partial, $techprice);
-            $diff = $c->money - $o;
-        } elseif ($what == 't_indy') {
-            $o = $c->money;
-            PublicMarket::buy_tech($c, 't_indy', $spend_partial, $techprice);
-            $diff = $c->money - $o;
-        } elseif ($what == 't_bus') {
-            $o = $c->money;
-            PublicMarket::buy_tech($c, 't_bus', $spend_partial, $techprice);
-            $diff = $c->money - $o;
-        } elseif ($what == 't_res') {
-            $o = $c->money;
-            PublicMarket::buy_tech($c, 't_res', $spend_partial, $techprice);
-            $diff = $c->money - $o;
-        } elseif ($what == 't_mil') {
-            $o = $c->money;
-            PublicMarket::buy_tech($c, 't_mil', $spend_partial, $techprice);
+            PublicMarket::buy_tech($c, $what, $spend_partial, $techprice);
             $diff = $c->money - $o;
         } elseif ($what == 'nlg') {
             $o = $c->money;
@@ -483,13 +506,23 @@ class Country
             $o = $c->money;
             defend_self($c, floor($c->money - $spend_partial)); //second param is *RESERVE* cash
             $diff = $c->money - $o;
-        }/* elseif ($what == 'food') {
+        } elseif ($what == 'food') {
             $o = $c->money;
+            $market_price = PublicMarket::price('m_bu');
+            $quantity = floor($spend_partial  / $market_price);
+
             PublicMarket::buy($c, ['m_bu' => $quantity], ['m_bu' => $market_price]);
 
-            PublicMarket::buy($c, 't_bus', $spend_partial, $techprice);
             $diff = $c->money - $o;
-        }*/
+        } elseif ($what == 'oil') {
+            $o = $c->money;
+            $market_price = PublicMarket::price('m_oil');
+            $quantity = floor($spend_partial  / $market_price);
+
+            PublicMarket::buy($c, ['m_oil' => $quantity], ['m_oil' => $market_price]);
+
+            $diff = $c->money - $o;
+        }
 
         if ($diff == 0) {
             $skip++;
