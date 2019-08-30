@@ -42,7 +42,7 @@ function play_indy_strat(&$c)
     }
 
     if (!isset($cpref->target_land) || $cpref->target_land == null) {
-      $cpref->target_land = Math::purebell(10000, 30000, 5000);
+      $cpref->target_land = Math::purebell(10000, 26000, 5000);
       save_cpref($cnum,$cpref);
       out('Setting target acreage for #'.$cnum.' to '.$cpref->target_land);
     }
@@ -99,7 +99,7 @@ function play_indy_turn(&$c)
       sell_all_military($c,1);
     } elseif (onmarket_value($c) == 0 && $c->built() < 75) {
       sell_all_military($c,0.25);
-    } 
+    }
 
     if ($c->protection == 0 && total_cansell_military($c) > 7500 && sellmilitarytime($c)
         || $c->turns == 1 && total_cansell_military($c) > 7500

@@ -21,7 +21,7 @@ function play_techer_strat(&$c)
     }
 
     if (!isset($cpref->target_land) || $cpref->target_land == null) {
-      $cpref->target_land = Math::purebell(5000, 13000, 4000);
+      $cpref->target_land = Math::purebell(5000, 15000, 2500);
       save_cpref($cnum,$cpref);
       out('Setting target acreage for #'.$cnum.' to '.$cpref->target_land);
     }
