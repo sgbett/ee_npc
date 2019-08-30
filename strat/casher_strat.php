@@ -108,8 +108,10 @@ function play_casher_turn(&$c)
       return Build::casher($c);
     } elseif ($c->shouldExplore())  {
       return explore($c);
-    } elseif (turns_of_money($c) && turns_of_food($c)) {
+    } elseif ($c->shouldCash()) {
       return cash($c);
+    } elseif ($c->canExplore()) {
+      return explore($c);
     }
 }//end play_casher_turn()
 

@@ -40,7 +40,7 @@ class Country
         $cpref->land     = $this->land;
     }//end __construct()
 
-    
+
     public function updateMain()
     {
         $main           = get_main();                 //Grab a fresh copy of the main stats
@@ -702,31 +702,89 @@ class Country
     }//end shouldBuildFullBPT()
 
     /**
+     * Can we explore?
+     *
+     * @return bool Yep or Nope
+     */
+    public function canExplore()
+    {
+      if ($this->built() < 50) {
+        return false;
+      }
+
+      if ($this->land > $this->target_land()) {
+        return false;
+      }
+
+      if (turns_of_money($this) < 5) {
+        return false;
+      }
+
+      if (turns_of_money($this) < 5) {
+        return false;
+      }
+
+      return true;
+    } //end shouldExplore()
+
+    /**
      * Should we explore?
      *
      * @return bool Yep or Nope
      */
     public function shouldExplore()
     {
-      if ($this->built() < 50) {
-        //can't explore
+      if ($this->canExplore() == false) {
         return false;
       }
-
       if ($this->turns < 2) {
         //save turn for selling
         return false;
       }
 
-      if ($this->turns_played < 240) {
-        //if its early game we explore anyway
+      if ($this->empty < 2 * $this->bpt ) {
+        return true;
+      }
+      return false;
+    }//end shouldExplore()
+
+    /**
+     * Can we explore?
+     *
+     * @return bool Yep or Nope
+     */
+    public function canCash()
+    {
+
+      if (turns_of_money($this) > 5) {
         return true;
       }
 
-      if ($this->empty < 2 * $this->bpt ) {
-        //otherwise only if less than target acreage
-        return $this->land < $this->target_land();
+      if (turns_of_money($this) > 5) {
+        return true;
       }
+
+      return false;
+    } //end shouldExplore()
+
+    /**
+     * Should we cash?
+     *
+     * @return bool Yep or Nope
+     */
+    public function shouldCash()
+    {
+      if ($this->canCash() == false) {
+        return false;
+      }
+
+      global $server;
+      $turns_remaining = round(($server->reset_end - time()) / $server->turn_rate);
+
+      if ($this->turns > min(100, $turns_remaining - 50)) {
+        return true;
+      }
+
       return false;
     }//end shouldExplore()
 
@@ -795,4 +853,7 @@ class Country
             );
         }
     }//end listRetalsDue()
+
+
+
 }//end class

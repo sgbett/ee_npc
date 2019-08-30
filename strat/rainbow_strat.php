@@ -159,8 +159,10 @@ function play_rainbow_turn(&$c)
       return explore($c);
     } elseif ($c->tpt > $c->land * 0.10 && rand(0, 10) > 5) {
       return tech($c, max(1, min(turns_of_money($c), turns_of_food($c), 13, $c->turns + 2) - 3));
-    } elseif (turns_of_money($c) && turns_of_food($c)) {
+    } elseif ($c->shouldCash()) {
       return cash($c);
+    } elseif ($c->canExplore()) {
+      return explore($c);
     }
 
 }//end play_rainbow_turn()

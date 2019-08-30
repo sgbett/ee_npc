@@ -107,11 +107,12 @@ function play_indy_turn(&$c)
       return Build::indy($c);
     } elseif ($c->shouldExplore()) {
       return explore($c);
-    } elseif (onmarket_value($c) == 0 && $c->built() < 75) {
-        return sell_all_military($c,0.25) ?? cash($c);
-    } elseif (turns_of_money($c) && turns_of_food($c)) {
+    } elseif ($c->shouldCash()) {
       return cash($c);
+    } elseif ($c->canExplore()) {
+      return explore($c);
     }
+
 }//end play_indy_turn()
 
 function sellmilitarytime(&$c)
