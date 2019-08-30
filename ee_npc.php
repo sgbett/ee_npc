@@ -128,7 +128,7 @@ while (1) {
     }
 
     $countries = $server->cnum_list->alive;
-
+    shuffle($countries);
     if ($played) {
         Bots::server_start_end_notification($server);
         Bots::playstats($countries);
