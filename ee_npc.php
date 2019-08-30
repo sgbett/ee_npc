@@ -235,8 +235,10 @@ while (1) {
 
                 $cpref->lastplay = time();
 
-                $min             = 1;
-                $max             = 120 - $cpref->turnsStored; //sooner if stored turns
+                get_main();
+
+                $min             = 0;
+                $max             = 241 - ($cpref->lastTurns + $cpref->turnsStored); //sooner if stored turns
 
                 $mintime         = $server->turn_rate * $min;
                 $maxtime         = $server->turn_rate * $max;
