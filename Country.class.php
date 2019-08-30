@@ -509,7 +509,7 @@ class Country
         } elseif ($what == 'food') {
             $o = $c->money;
             $market_price = PublicMarket::price('m_bu');
-            $quantity = floor($spend_partial  / $market_price);
+            $quantity = floor(($spend_partial  / $market_price * $c->tax()));
 
             PublicMarket::buy($c, ['m_bu' => $quantity], ['m_bu' => $market_price]);
 
@@ -517,7 +517,7 @@ class Country
         } elseif ($what == 'oil') {
             $o = $c->money;
             $market_price = PublicMarket::price('m_oil');
-            $quantity = floor($spend_partial  / $market_price);
+            $quantity = floor(($spend_partial  / $market_price * $c->tax()));
 
             PublicMarket::buy($c, ['m_oil' => $quantity], ['m_oil' => $market_price]);
 
