@@ -551,7 +551,6 @@ class Country
         $netw = str_pad(engnot($this->networth), 8, ' ', STR_PAD_LEFT);
         $govt = str_pad($this->govt, 8, ' ', STR_PAD_LEFT);
         $t_pl = str_pad($this->turns_played, 8, ' ', STR_PAD_LEFT);
-        $goal = str_pad($this->highestGoal($goals), 8, ' ', STR_PAD_LEFT);
         $pmil = str_pad($this->pt_mil.'%', 8, ' ', STR_PAD_LEFT);
         $pbus = str_pad($this->pt_bus.'%', 8, ' ', STR_PAD_LEFT);
         $pres = str_pad($this->pt_res.'%', 8, ' ', STR_PAD_LEFT);
@@ -565,6 +564,7 @@ class Country
         $url  = str_pad(siteURL($this->cnum), 8, ' ', STR_PAD_LEFT);
         $blt  = str_pad($this->built().'%', 8, ' ', STR_PAD_LEFT);
         $bpt  = str_pad($this->bpt, 8, ' ', STR_PAD_LEFT);
+        $bptt = str_pad($this->target_bpt(), 8, ' ', STR_PAD_LEFT);
         $tpt  = str_pad($this->tpt, 8, ' ', STR_PAD_LEFT);
         $cash = str_pad(engnot($this->money), 8, ' ', STR_PAD_LEFT);
 
@@ -577,13 +577,14 @@ class Country
         $blt  = Colors::getColoredString($blt,  ($this->built() < 95) ? "red" : "green");
         $nlg  = Colors::getColoredString($nlg,  ($this->nlg() < ($this->nlgt ?? $this->nlgTarget())) ? "red" : "green");
         $dpa  = Colors::getColoredString($dpa,  ($this->defPerAcre() < ($this->dpat ?? $this->defPerAcreTarget())) ? "red" : "green");
+        $bpt  = Colors::getColoredString($bpt,  ($this->bpt < ($this->target_bpt())) ? "red" : "green");
 
-        $str .= $s.'Networth:     '.$netw. '         NLG:        '.$nlg .'         Mil: '.$pmil.$e;
+        $str .= $s.'Turns Played: '.$t_pl. '         NLG:        '.$nlg .'         Mil: '.$pmil.$e;
         $str .= $s.'Land:         '.$land. '         NLG Target: '.$nlgt.'         Bus: '.$pbus.$e;
         $str .= $s.'Land Target:  '.$t_l.  '         DPA:        '.$dpa .'         Res: '.$pres.$e;
-        $str .= $s.'Turns Played: '.$t_pl. '         DPA Target: '.$dpat.'         Agr: '.$pagr.$e;
-        $str .= $s.'Built:        '.$blt.  '         Goal:       '.$goal.'         Ind: '.$pind.$e;
-        $str .= $s.'Cash:         '.$cash. '         BPT:        '.$bpt .'         TPT: '.$tpt .$e;
+        $str .= $s.'Built:        '.$blt.  '         DPA Target: '.$dpat.'         Agr: '.$pagr.$e;
+        $str .= $s.'Networth:     '.$netw. '         BPT:        '.$bpt .'         Ind: '.$pind.$e;
+        $str .= $s.'Cash:         '.$cash. '         BPT Target: '.$bptt.'         TPT: '.$tpt .$e;
         $str .= "\n|".str_pad(' '.$url.' ', 77, '-', STR_PAD_BOTH).'|';
 
         out($str);
