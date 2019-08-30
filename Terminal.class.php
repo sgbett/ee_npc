@@ -59,7 +59,7 @@ function out_score($what, $priority = '', $price = '', $current = '', $target = 
     .str_pad("priority [$priority]",15," ")
     .str_pad("price [$price]",15," ")
     .str_pad("$current->$target",15," ")
-    .str_pad("scores ".round($score),15," ")
+    .str_pad("scores ".round($score*10),15," ")
   );
 }
 

@@ -427,7 +427,7 @@ class Country
               out_score('oil',$goal[2],$price,'','',$s);
             }
 
-            $score[$goal[0]] = round($s);
+            $score[$goal[0]] = round($s * 10);
             $psum += $goal[2];
         }
 
