@@ -232,10 +232,18 @@ while (1) {
                 // }
 
                 $cpref->lastplay = time();
-                $nexttime        = round(Math::purebell(200, 1200, 250));
+
+                $min             = 1;
+                $max             = 120 - $cpref->turnsStored; //sooner if stored turns
+
+                $mintime         = $server->turn_rate * $min;
+                $maxtime         = $server->turn_rate * $max;
+
+                $nexttime        = round(Math::purebell($mintime, $maxtime, ($maxtime - $mintime)/2));
+
                 $maxin           = Bots::furthest_play($cpref);
-                $nexttime        = round(min($maxin, $nexttime));
-                $cpref->nextplay = $cpref->lastplay + $nexttime;
+
+                $cpref->nextplay = $cpref->lastplay + round(min($maxin, $nexttime));
                 $nextturns       = floor($nexttime / $server->turn_rate);
                 out("This country next plays in: $nexttime ($nextturns Turns)    ");
                 $played = true;
