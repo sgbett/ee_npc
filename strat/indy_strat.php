@@ -95,7 +95,11 @@ function play_indy_turn(&$c)
     usleep($turnsleep);
     //out($main->turns . ' turns left');
 
-    if ($c->protection == 1) { sell_all_military($c,1); }
+    if ($c->protection == 1) {
+      sell_all_military($c,1);
+    } elseif (onmarket_value($c) == 0 && $c->built() < 75) {
+      sell_all_military($c,0.25);
+    } 
 
     if ($c->protection == 0 && total_cansell_military($c) > 7500 && sellmilitarytime($c)
         || $c->turns == 1 && total_cansell_military($c) > 7500
