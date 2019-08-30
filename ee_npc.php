@@ -138,6 +138,8 @@ while (1) {
     $played = false;
     //out("Country Count: ".count($countries));
     foreach ($countries as $cnum) {
+        $playnow = false; // set to true to force all to play once
+        // if ($cnum != '88') {continue;} else {$playnow = true;} //or uncomment to immediately and only play specific country
         Debug::off(); //reset for new country
         $save = false;
 
@@ -185,7 +187,7 @@ while (1) {
             $cpref->gdi = (bool)(rand(0, 2) == 2);
         }
 
-        if ($cpref->nextplay < time()) {
+        if ($playnow || $cpref->nextplay < time()) {
             if ($cpref->allyup) {
                 Allies::fill('def');
             }
@@ -309,6 +311,7 @@ while (1) {
 
     sleep($sleep); //sleep for $sleep seconds
     Bots::outNext($countries, true);
+    if ($playnow) { done(); }
 }
 
 done(); //done() is defined below
