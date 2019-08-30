@@ -111,8 +111,8 @@ function casherGoals(&$c)
         //tech levels
         ['t_mil'  ,94  ,50],
         ['t_med'  ,90  ,10],
-        ['t_bus'  ,175 ,50],
-        ['t_res'  ,175 ,50],
+        ['t_bus'  ,175 ,100],
+        ['t_res'  ,175 ,100],
         ['t_agri' ,100 ,0],
         ['t_war'  ,1   ,10],
         ['t_ms'   ,120 ,20],
