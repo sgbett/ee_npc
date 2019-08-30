@@ -54,13 +54,13 @@ function out_data()
 }//end out_data()
 
 function out_score($what, $priority = '', $price = '', $current = '', $target = '', $score = '' ) {
-  out(
-    str_pad("$what:",10," ")
-    .str_pad("priority [$priority]",15," ")
-    .str_pad("price [$price]",15," ")
-    .str_pad("$current->$target",15," ")
-    .str_pad("scores ".round($score*10),15," ")
-  );
+  // out(
+  //   str_pad("$what:",10," ")
+  //   .str_pad("priority [$priority]",15," ")
+  //   .str_pad("price [$price]",15," ")
+  //   .str_pad("$current->$target",15," ")
+  //   .str_pad("scores ".round($score*10),15," ")
+  // );
 }
 
 class Terminal
