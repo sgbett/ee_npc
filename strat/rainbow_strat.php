@@ -2,14 +2,12 @@
 
 namespace EENPC;
 
-function play_rainbow_strat($server)
+function play_rainbow_strat(&$c)
 {
     global $cnum;
     global $cpref;
+
     out("Playing ".RAINBOW." turns for #$cnum ".siteURL($cnum));
-    //$main = get_main();     //get the basic stats
-    //out_data($main);          //output the main data
-    $c = get_advisor();     //c as in country! (get the advisor)
     out($c->turns.' turns left');
     out('Explore Rate: '.$c->explore_rate.'; Min Rate: '.$c->explore_min);
     //out_data($c) && exit;             //ouput the advisor data
@@ -89,7 +87,7 @@ function play_rainbow_strat($server)
 
         $c = get_advisor();
         $c->updateMain(); //we probably don't need to do this *EVERY* turn
-        
+
         $hold = $hold || money_management($c);
         $hold = $hold || food_management($c);
 
@@ -120,7 +118,6 @@ function play_rainbow_strat($server)
         //$main->turns = 0;             //use this to do one turn at a time
     }
 
-    $c->countryStats(RAINBOW, defaultGoals($c));
     return $c;
 }//end play_rainbow_strat()
 

@@ -4,18 +4,14 @@ namespace EENPC;
 
 $military_list = ['m_tr','m_j','m_tu','m_ta'];
 
-function play_indy_strat($server)
+function play_indy_strat(&$c)
 {
     global $cnum;
     global $cpref;
     out("Playing ".INDY." Turns for #$cnum ".siteURL($cnum));
-    //$main = get_main();     //get the basic stats
-    //out_data($main);          //output the main data
-    $c = get_advisor();     //c as in country! (get the advisor)
     $c->setIndyFromMarket(true); //CHECK DPA
-    //$c = get_advisor();     //c as in country! (get the advisor)
     out("Indy: {$c->pt_indy}%; Bus: {$c->pt_bus}%; Res: {$c->pt_res}%");
-    //out_data($c) && exit;             //ouput the advisor data
+
     if ($c->govt == 'M') {
         $rand = rand(0, 100);
         switch ($rand) {
@@ -26,7 +22,7 @@ function play_indy_strat($server)
                 Government::change($c, 'D');
                 break;
             case $rand < 15:
-                Government::change($c, 'D');
+                Government::change($c, 'T');
                 break;
             default:
                 Government::change($c, 'C');
@@ -71,7 +67,7 @@ function play_indy_strat($server)
 
         $c = get_advisor();
         $c->updateMain(); //we probably don't need to do this *EVERY* turn
-        
+
         $hold = $hold || money_management($c);
         $hold = $hold || food_management($c);
 
@@ -87,8 +83,6 @@ function play_indy_strat($server)
         }
 
     }
-
-    $c->countryStats(INDY, indyGoals($c));
 
     return $c;
 }//end play_indy_strat()

@@ -4,14 +4,11 @@ namespace EENPC;
 
 $techlist = ['t_mil','t_med','t_bus','t_res','t_agri','t_war','t_ms','t_weap','t_indy','t_spy','t_sdi'];
 
-function play_techer_strat($server)
+function play_techer_strat(&$c)
 {
     global $cnum;
     global $cpref;
     out("Playing ".TECHER." Turns for #$cnum ".siteURL($cnum));
-    //$main = get_main();     //get the basic stats
-    //out_data($main);          //output the main data
-    $c = get_advisor();     //c as in country! (get the advisor)
     $c->setIndy('pro_spy');
 
 
@@ -74,7 +71,7 @@ function play_techer_strat($server)
         }
 
         $c = get_advisor();
-        $c->updateMain(); 
+        $c->updateMain();
 
         $hold = $hold || money_management($c);
         $hold = $hold || food_management($c);
@@ -89,8 +86,6 @@ function play_techer_strat($server)
     }
     buy_cheap_military($c,1500000000,200);
     buy_cheap_military($c);
-
-    $c->countryStats(TECHER, techerGoals($c));
 
     return $c;
 }//end play_techer_strat()

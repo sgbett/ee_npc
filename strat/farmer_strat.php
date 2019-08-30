@@ -17,21 +17,12 @@
 
 namespace EENPC;
 
-/**
- * Play the farmer strat
- *
- * @param  ?? $server Contains the server information
- *
- * @return null
- */
-function play_farmer_strat($server)
+function play_farmer_strat(&$c)
 {
     global $cnum;
     global $cpref;
+
     out("Playing ".FARMER." turns for #$cnum ".siteURL($cnum));
-    //$main = get_main();     //get the basic stats
-    //out_data($main);          //output the main data
-    $c = get_advisor();     //c as in country! (get the advisor)
     $c->setIndy('pro_spy');
     //$c = get_advisor();     //c as in country! (get the advisor)
 
@@ -129,7 +120,6 @@ function play_farmer_strat($server)
     buy_cheap_military($c,1500000000,200);
     buy_cheap_military($c);
 
-    $c->countryStats(FARMER, farmerGoals($c));
     return $c;
 }//end play_farmer_strat()
 

@@ -17,24 +17,12 @@
 
 namespace EENPC;
 
-/**
- * Play the oiler strat
- *
- * @param  ?? $server Contains the server information
- *
- * @return null
- */
-function play_oiler_strat($server)
+function play_oiler_strat(&$c)
 {
     global $cnum;
     global $cpref;
     out("Playing ".OILER." turns for #$cnum ".siteURL($cnum));
-    //$main = get_main();     //get the basic stats
-    //out_data($main);          //output the main data
-    $c = get_advisor();     //c as in country! (get the advisor)
     $c->setIndy('pro_spy');
-    //$c = get_advisor();     //c as in country! (get the advisor)
-
 
     if ($c->m_spy > 10000) {
         Allies::fill('spy');
@@ -118,7 +106,6 @@ function play_oiler_strat($server)
         }
     }
 
-    $c->countryStats(OILER, oilerGoals($c));
     return $c;
 }//end play_oiler_strat()
 

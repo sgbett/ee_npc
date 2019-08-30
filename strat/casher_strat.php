@@ -2,15 +2,11 @@
 
 namespace EENPC;
 
-function play_casher_strat($server)
+function play_casher_strat(&$c)
 {
     global $cnum;
     global $cpref;
     out("Playing ".CASHER." Turns for #$cnum ".siteURL($cnum));
-    //$main = get_main();     //get the basic stats
-    //out_data($main);          //output the main data
-    $c = get_advisor();     //c as in country! (get the advisor)
-    //out_data($c) && exit;             //ouput the advisor data
 
     $c->setIndy('pro_spy');
 
@@ -92,7 +88,6 @@ function play_casher_strat($server)
         buy_cheap_military($c);
     }
 
-    $c->countryStats(CASHER, casherGoals($c));
     return $c;
 }//end play_casher_strat()
 

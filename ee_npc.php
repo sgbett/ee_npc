@@ -194,25 +194,33 @@ while (1) {
             // Country::listRetalsDue();
             //sleep(1);
 
+            $c = get_advisor();
+
             try {
                 switch ($cpref->strat) {
                     case 'F':
-                        $c = play_farmer_strat($server, $cnum);
+                        $c->countryStats(FARMER, farmerGoals($c));
+                        $c = play_farmer_strat($c);
                         break;
                     case 'T':
-                        $c = play_techer_strat($server, $cnum);
+                        $c->countryStats(TECHER, techerGoals($c));
+                        $c = play_techer_strat($c);
                         break;
                     case 'C':
-                        $c = play_casher_strat($server, $cnum);
+                        $c->countryStats(CASHER, casherGoals($c));
+                        $c = play_casher_strat($c);
                         break;
                     case 'I':
-                        $c = play_indy_strat($server, $cnum);
+                        $c->countryStats(INDY, indyGoals($c));
+                        $c = play_indy_strat($c);
                         break;
                     case 'O':
-                        $c = play_oiler_strat($server, $cnum);
+                        $c->countryStats(OILER, oilerGoals($c));
+                        $c = play_oiler_strat($c);
                         break;
                     default:
-                        $c = play_rainbow_strat($server, $cnum);
+                        $c->countryStats(RAINBOW, defaultGoals($c));
+                        $c = play_rainbow_strat($c);
                 }
 
                 if ($cpref->gdi && !$c->gdi) {
@@ -684,7 +692,7 @@ function event_text($event)
 
 function cash(&$c, $turns = 1)
 {
-    return ee('cash', ['turns' => $turns]);             //cash a certain number of turns
+    return ee('cash', ['turns' => $turns]);
 }//end cash()
 
 
@@ -707,7 +715,7 @@ function explore(&$c, $turns = 0)
       return;
     }
 
-    $result = ee('explore', ['turns' => $turns]);      //cash a certain number of turns
+    $result = ee('explore', ['turns' => $turns]);
     if ($result === null) {
         out('Explore Fail? Update Advisor');
         $c = get_advisor();
