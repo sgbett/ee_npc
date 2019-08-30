@@ -100,7 +100,11 @@ function play_oiler_turn(&$c)
 
     if ($c->protection == 1) {
       sell_all_military($c,1);
-      if (turns_of_food($c) > 10) { sell_all_food($c); }
+      if (turns_of_food($c) > 10) { sell_food_to_private($c); }
+    } elseif (onmarket_value($c) == 0 && $c->built() < 75 && $c->income < 0) {
+      sell_food_to_private($c,0.25);
+    } elseif (turns_of_money($c) < 5 and $c->foodnet > 0) {
+      sell_food_to_private($c);
     }
 
     if ($c->protection == 0 && $c->food > 7000

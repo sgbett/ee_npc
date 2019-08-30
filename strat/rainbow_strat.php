@@ -109,7 +109,7 @@ function play_rainbow_turn(&$c)
 
     if ($c->protection == 1) {
       sell_all_military($c,1);
-      if (turns_of_food($c) > 10) { sell_all_food($c); }
+      if (turns_of_food($c) > 10) { sell_food_to_private($c); }
     }
 
     if ($c->protection == 0 && total_cansell_tech($c) > 20 * $c->tpt && selltechtime($c)

@@ -89,7 +89,7 @@ function play_indy_turn(&$c)
 
     if ($c->protection == 1) {
       sell_all_military($c,1);
-    } elseif (onmarket_value($c) == 0 && $c->built() < 75) {
+    } elseif (onmarket_value($c) == 0 && $c->built() < 75 && $c->income < 0) {
       sell_all_military($c,0.25);
     }
 

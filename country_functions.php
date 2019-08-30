@@ -220,7 +220,7 @@ function sell_cheap_units(&$c, $unit = 'm_tr', $fraction = 1)
 }//end sell_cheap_units()
 
 
-function sell_all_food(&$c, $fraction = 1)
+function sell_food_to_private(&$c, $fraction = 1)
 {
     $c->updateMain();
     $fraction   = max(0, min(1, $fraction));
@@ -232,7 +232,7 @@ function sell_all_food(&$c, $fraction = 1)
         return;
     }
     return PrivateMarket::sell($c, $sell_units);
-}//end sell_all_food()
+}//end sell_food_to_private()
 
 function selloil(&$c) {
   $c = get_advisor();     //UPDATE EVERYTHING
