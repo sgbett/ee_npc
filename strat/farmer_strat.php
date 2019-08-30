@@ -90,30 +90,9 @@ function play_farmer_strat(&$c)
         $hold = $hold || money_management($c);
         $hold = $hold || food_management($c);
 
+        $c->buy_goals(defaultGoals($c));
+
         if ($hold) { break; }
-
-        //market actions
-        if ($c->income < 0 && $c->money < -5 * $c->income) { //sell 1/4 of all military on PM
-            out("Almost out of money! Sell 10 turns of income in food!");   //Text for screen
-
-            //sell 1/4 of our military
-            $pm_info = PrivateMarket::getRecent();
-            PrivateMarket::sell($c, ['m_bu' => min($c->food, floor(-10 * $c->income / $pm_info->sell_price->m_bu))]);
-        }
-
-        // 40 turns of food
-        if (turns_of_food($c) > 50
-            && turns_of_money($c) > 50
-            && $c->money > 3500 * 500
-            && ($c->built() > 80 || $c->money > $c->fullBuildCost())
-        ) {
-            $spend = $c->money - $c->fullBuildCost(); //keep enough money to build out everything
-
-            if ($spend > abs($c->income) * 5) {
-                //try to batch a little bit...
-                buy_farmer_goals($c, $spend);
-            }
-        }
     }
 
     buy_cheap_military($c,3000000000,250);
@@ -155,14 +134,6 @@ function play_farmer_turn(&$c)
       return explore($c);
     }
 }//end play_farmer_turn()
-
-function buy_farmer_goals(&$c, $spend = null)
-{
-    $goals = farmerGoals($c);
-
-    Country::countryGoals($c, $goals, $spend);
-}//end buy_farmer_goals()
-
 
 function farmerGoals(&$c)
 {

@@ -71,17 +71,9 @@ function play_indy_strat(&$c)
         $hold = $hold || money_management($c);
         $hold = $hold || food_management($c);
 
+        $c->buy_goals(indyGoals($c));
+
         if ($hold) { break; }
-
-        //market actions
-        if (turns_of_food($c) > 70 && turns_of_money($c) > 70 && $c->money > 3500 * 500 && ($c->built() > 80
-            || $c->money > $c->fullBuildCost() - $c->runCash())
-        ) {
-            // 40 turns of food
-            //keep enough money to build out everything
-            buy_indy_goals($c, $c->money - $c->fullBuildCost() - $c->runCash());
-        }
-
     }
 
     return $c;
@@ -133,14 +125,6 @@ function sellmilitarytime(&$c)
 
     return false;
 }//end sellmilitarytime()
-
-
-function buy_indy_goals(&$c, $spend = null)
-{
-    $goals = indyGoals($c);
-
-    Country::countryGoals($c, $goals, $spend);
-}//end buy_indy_goals()
 
 function indyGoals(&$c)
 {

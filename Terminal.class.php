@@ -54,15 +54,14 @@ function out_data()
 }//end out_data()
 
 function out_score($what, $priority = '', $price = '', $current = '', $target = '', $score = '' ) {
-  // out(
-  //   str_pad("$what:",10," ")
-  //   .str_pad("priority [$priority]",15," ")
-  //   .str_pad("price [$price]",15," ")
-  //   .str_pad("$current->$target",15," ")
-  //   .str_pad("scores ".round($score*10),15," ")
-  // );
+  out(
+    str_pad("$what:",10," ")
+    .'  priority['.number_format($priority, 2).']'
+    .'  price['.str_pad('$'.$price,5," ",STR_PAD_LEFT).']'
+    .str_pad("  $current->$target",15," ",STR_PAD_LEFT)
+    .'  scores '.str_pad(round($score*1000),5," ",STR_PAD_LEFT)
+  );
 }
-
 class Terminal
 {
     private static $columns  = [];

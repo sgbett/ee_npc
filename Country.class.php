@@ -367,174 +367,167 @@ class Country
         return $this->empty * $this->build_cost;
     }//end fullBuildCost()
 
+    public function reserved_cash()
+    {
+      if ($this->land > $this->target_land()) {
+        return 0;
+      }
+
+      //min 5 turn buffer so we dont stop exploring/building
+      $turns = max(5,round($this->empty / $this->bpt));
+      $bpt_cost = $this->bpt * $this->build_cost;
+      $turn_cost = max(0,-$this->income);
+
+      return $turns * ($bpt_cost + $turn_cost);
+
+    }//end fullBuildCost()
 
     /**
      * Find Highest Goal
      * @param  array $goals an array of goals to persue
-     * @param  int   $skip  whtether or not to skip??
      *
      * @return string highest goal!
      */
-    public function highestGoal($goals = [], $skip = 0)
+    public function highest_goal($goals = [])
     {
         global $market;
         $psum  = 0;
         $score = [];
 
+        PublicMarket::update();
 
         foreach ($goals as $goal) {
 
+          $point_att = "p$goal[0]";
+          $priority = ($goal[2]/100);
+
+            if (($goal[0] == 't_sdi') || ($goal[0] == 't_war')) {
+              $target = $this->tech_multiplier() * ($goal[1]);
+              $remain = $goal[1] - $this->$point_att;
+            } elseif (($goal[0] == 't_mil') || ($goal[0] == 't_med')) {
+              $remain = $this->$point_att - $goal[1];
+              $target = 100 - $this->tech_multiplier() * (100 - $goal[1]);
+            } elseif (substr($goal[0],0,2) == 't_') {
+              $remain = $goal[1] - $this->$point_att;
+              $target = 100 + $this->tech_multiplier() * ($goal[1] - 100);
+            }
+
             if (substr($goal[0],0,2) == 't_') {
 
-              if ($goal[1] < 100) {
-                $target = 100 - $this->tech_multiplier() * (100 - $goal[1]);
-              } else {
-                $target = 100 + $this->tech_multiplier() * ($goal[1] -100);
-              }
-
               $price           = PublicMarket::price(substr($goal[0],2));
-              $price           = $price > 500 ? $price : 10000;
-              $point_att       = "p$goal[0]";
 
               if ($target == 0) {
                 out_score($point_att,'','','','','nil');
               } else {
-                $s = ($goal[1] - $this->$point_att) / $target * $goal[2] * (2500 / $price);
-                if ($s < 0) { $s = -$s; } // handle the <100% techs ie mil, war, sdi
-                out_score($point_att,$goal[2],$price,$this->$point_att,$target,$s);
+                $s = $price >0 ? ($remain / $target) * $priority * (exp((10000-$price)/2500)/15) : 0;
+                out_score($point_att,$priority,$price,$this->$point_att,$target,$s);
               }
             } elseif ($goal[0] == 'nlg') {
                 $target       = $this->nlgt ?? $this->nlgTarget();
                 $actual       = $this->nlg();
-                $s            = ($target - $actual) / $target * $goal[2];
-                out_score('nlg',$goal[2],'n/a',$actual,$target,$s);
+                $s            = ((($target - $actual)) / $target) * $priority;
+                out_score('nlg',$priority,'n/a',$actual,$target,$s);
             } elseif ($goal[0] == 'dpa') {
                 $target       = $this->dpat ?? $this->defPerAcreTarget();
                 $actual       = $this->defPerAcre();
-                $s            = ($target - $actual) / $target * $goal[2];
-                out_score('dpa',$goal[2],'n/a',$actual,$target,$s);
+                $s            = ((($target - $actual)) / $target) * $priority;
+                out_score('dpa',$priority,'n/a',$actual,$target,$s);
             } elseif ($goal[0] == 'food') {
 
               $price  = PublicMarket::price('m_bu');
-              $s      = $goal[2] * (35 / $price);
+              $s      = $price > 0 ? $priority * (45 / $price) :  0;
 
-              out_score('food',$goal[2],$price,'','',$s);
+              out_score('food',$priority,$price,'','',$s);
 
             } elseif ($goal[0] == 'oil') {
               $price  = PublicMarket::price('m_oil');
-              $s      = $goal[2] * (200 / $price);
+              $s      = $price > 0 ? $priority * (200 / $price) :  0;
 
-              out_score('oil',$goal[2],$price,'','',$s);
+              out_score('oil',$priority,$price,'','',$s);
             }
 
-            $score[$goal[0]] = round($s * 10);
-            $psum += $goal[2];
+            if ($s > 0) {
+              $score[$goal[0]] = round($s * 1000);
+            }
+            $psum += $priority;
         }
-
-        //out_data($score);
 
         arsort($score);
 
-        //out_data($score);
-        for ($i = 0; $i < $skip; $i++) {
-            array_shift($score);
-        }
-
         return key($score);
-    }//end highestGoal()
+    }//end highest_goal()
 
+    public function available_funds() {
+      // out("money: $this->money");
+      // out("reserved: ".$this->reserved_cash());
+      return max(0,$this->money - $this->reserved_cash());
+    }
+    public function buy_goals($goals) {
+      if ($this->built() < 90) { return; }
+      if (turns_of_food($this) < 5) { return; }
+      if ($this->available_funds() < $this->land*1000) { return; }
+
+      $spend = max($this->land*1000,$this->available_funds()/10);
+      $spend = min($spend,$this->money);
+
+      $str_spend = str_pad(''.engnot($spend), 8, ' ', STR_PAD_LEFT);
+      $str_avail = str_pad(''.engnot($this->available_funds()), 8, ' ', STR_PAD_LEFT);
+
+      out("available: ".$str_avail."    spending: $".$str_spend." at a time");
+
+      while ($this->buy_highest_goal($goals, $spend)) {
+        PublicMarket::update();
+      }
+
+    }
 
     /**
-     * Convoluted ladder logic to buy whichever goal is least fulfilled
-     * @param  object  $c             the country object
+     * Try and spend up to $spend on the highest goal
      * @param  array   $goals         an array of goals to persue
      * @param  int     $spend         money to spend
-     * @param  int     $spend_partial intermediate money, for recursion
-     * @param  integer $skip          goal to skip due to failure
      * @return void
      */
-    public static function countryGoals(&$c, $goals = [], $spend = null, $spend_partial = null, $skip = 0)
+    public function buy_highest_goal($goals, $spend)
     {
-        if (empty($goals)) {
-            return;
-        }
-
-        $c->goals = $goals;
-
-        if (isset($goals['dpa'])) {
-            $c->dpat = $goals['dpa'];
-        }
-
-        if (isset($goals['nlg'])) {
-            $c->nlgt = $goals['nlg'];
-        }
-
-        if ($spend == null) {
-            $spend = $c->money;
-        }
-
-        if ($spend_partial == null) {
-            $spend_partial = $spend;
-            //$spend_partial = $spend / 3;
-        }
-
-        if ($spend_partial < 1000000) {
-            $spend_partial = $spend;
-        }
-
-        if ($spend_partial < 1000000) {
-            return;
-        }
+        $this->updateMain();
+        if ($spend > $this->available_funds()) { return; }
+        if (empty($goals)) { return; }
 
         global $cpref;
         $tol = $cpref->price_tolerance; //should be between 0.5 and 1.5
 
-        $what = $c->highestGoal($goals, $skip);
-        //out("Highest Goal: ".$what.' Buy $'.$spend_partial);
-        $diff      = 0;
-        $techprice = 8000 * $tol;
+        $what = $this->highest_goal($goals);
+        out("Highest Goal: ".$what.' Buy $'.$spend);
 
-        if (substr($what,0,2) == 't_') {
-            $o = $c->money;
-            PublicMarket::buy_tech($c, $what, $spend_partial, $techprice);
-            $diff = $c->money - $o;
-        } elseif ($what == 'nlg') {
-            $o = $c->money;
-            defend_self($c, floor($c->money - $spend_partial)); //second param is *RESERVE* cash
-            $diff = $c->money - $o;
+        if ($what == 'nlg') {
+            return defend_self($this, floor($this->money - $spend)); //second param is *RESERVE* cash
         } elseif ($what == 'dpa') {
-            $o = $c->money;
-            defend_self($c, floor($c->money - $spend_partial)); //second param is *RESERVE* cash
-            $diff = $c->money - $o;
+            return defend_self($this, floor($this->money - $spend)); //second param is *RESERVE* cash
         } elseif ($what == 'food') {
-            $o = $c->money;
-            $market_price = PublicMarket::price('m_bu');
-            $quantity = floor(($spend_partial  / $market_price * $c->tax()));
-
-            PublicMarket::buy($c, ['m_bu' => $quantity], ['m_bu' => $market_price]);
-
-            $diff = $c->money - $o;
+            $market_goods = 'm_bu';
         } elseif ($what == 'oil') {
-            $o = $c->money;
-            $market_price = PublicMarket::price('m_oil');
-            $quantity = floor(($spend_partial  / $market_price * $c->tax()));
-
-            PublicMarket::buy($c, ['m_oil' => $quantity], ['m_oil' => $market_price]);
-
-            $diff = $c->money - $o;
+            $market_goods = 'm_oil';
+        } elseif (substr($what,0,2) == 't_') {
+            $market_goods = substr($what,2);
+        } else {
+            $market_goods = $what;
         }
 
-        if ($diff == 0) {
-            $skip++;
-        }
+        //out('market_goods:'.$market_goods);
+        $market_price = PublicMarket::price($market_goods);
+        //out('market_price:'.$market_price);
+        $market_avail = PublicMarket::available($market_goods);
+        //out('market_avail:'.$market_avail);
 
-        $spend -= $spend_partial;
-        //10000 because that's how much one tech point *could* cost, and i don't want it to get too ridiculous
-        if ($spend > 10000 && $skip < count($goals) - 1) {
-            self::countryGoals($c, $goals, $spend, $spend_partial, $skip);
-        }
-    }//end countryGoals()
+        $max_qty = $market_price > 0 ? floor(($spend / ($market_price * $this->tax()))) : 0;
+        //out('$max_qty:'.$max_qty);
 
+        $quantity = min($max_qty,$market_avail);
+        //out('$quantity:'.$quantity);
+
+        if ($quantity > 0) { return PublicMarket::buy($this, [ $market_goods => $quantity], [ $market_goods => $market_price]); };
+
+    } //end countryGoals()
 
     /**
      * Output country stats
@@ -781,7 +774,7 @@ class Country
       global $server;
       $turns_remaining = round(($server->reset_end - time()) / $server->turn_rate);
 
-      if ($this->turns > min(100, $turns_remaining - 50)) {
+      if ($this->turns > min(80, $turns_remaining - 50)) {
         return true;
       }
 
@@ -808,51 +801,51 @@ class Country
      *
      * @return void
      */
-    public static function addRetalDue($cnum, $type, $land)
-    {
-        global $cpref;
-
-        if (!isset($cpref->retal[$cnum])) {
-            $cpref->retal[$cnum] = ['cnum' => $cnum, 'num' => 1, 'land' => $land];
-        } else {
-             $cpref->retal[$cnum]['num']++;
-             $cpref->retal[$cnum]['land'] += $land;
-        }
-    }//end addRetalDue()
-
-    public static function listRetalsDue()
-    {
-        global $cpref;
-
-        if (!$cpref->retal) {
-            out("Retals Due: None!");
-            return;
-        }
-
-        out("Retals Due:");
-
-        $retals = (array)$cpref->retal;
-
-        usort(
-            $retals,
-            function ($a, $b) {
-                return $a['land'] <=> $b['land'];
-            }
-        );
-
-        foreach ($retals as $list) {
-            $country = Search::country($list['cnum']);
-            if ($country == null) {
-                continue;
-            }
-
-            out(
-                "Country: ".str_pad($country->cname, 32).str_pad(" (#".$list['cnum'].')', 9, ' ', STR_PAD_LEFT).
-                ' x '.str_pad($list['num'], 4, ' ', STR_PAD_LEFT).
-                ' or '.str_pad($list['land'], 6, ' ', STR_PAD_LEFT).' Acres'
-            );
-        }
-    }//end listRetalsDue()
+    // public static function addRetalDue($cnum, $type, $land)
+    // {
+    //     global $cpref;
+    //
+    //     if (!isset($cpref->retal[$cnum])) {
+    //         $cpref->retal[$cnum] = ['cnum' => $cnum, 'num' => 1, 'land' => $land];
+    //     } else {
+    //          $cpref->retal[$cnum]['num']++;
+    //          $cpref->retal[$cnum]['land'] += $land;
+    //     }
+    // }//end addRetalDue()
+    //
+    // public static function listRetalsDue()
+    // {
+    //     global $cpref;
+    //
+    //     if (!$cpref->retal) {
+    //         out("Retals Due: None!");
+    //         return;
+    //     }
+    //
+    //     out("Retals Due:");
+    //
+    //     $retals = (array)$cpref->retal;
+    //
+    //     usort(
+    //         $retals,
+    //         function ($a, $b) {
+    //             return $a['land'] <=> $b['land'];
+    //         }
+    //     );
+    //
+    //     foreach ($retals as $list) {
+    //         $country = Search::country($list['cnum']);
+    //         if ($country == null) {
+    //             continue;
+    //         }
+    //
+    //         out(
+    //             "Country: ".str_pad($country->cname, 32).str_pad(" (#".$list['cnum'].')', 9, ' ', STR_PAD_LEFT).
+    //             ' x '.str_pad($list['num'], 4, ' ', STR_PAD_LEFT).
+    //             ' or '.str_pad($list['land'], 6, ' ', STR_PAD_LEFT).' Acres'
+    //         );
+    //     }
+    // }//end listRetalsDue()
 
 
 

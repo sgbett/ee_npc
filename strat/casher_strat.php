@@ -68,25 +68,13 @@ function play_casher_strat(&$c)
         $hold = $hold || money_management($c);
         $hold = $hold || food_management($c);
 
+        $c->buy_goals(casherGoals($c));
+
         if ($hold) { break; }
-
-        //market actions
-
-        if (turns_of_food($c) > 40
-            && $c->money > 3500 * 500
-            && ($c->built() > 80 || $c->money > $c->fullBuildCost())
-        ) { // 40 turns of food
-            $spend = $c->money - $c->fullBuildCost(); //keep enough money to build out everything
-
-            if ($spend > $c->income * 7) {
-                //try to batch a little bit...
-                buy_casher_goals($c, $spend);
-            }
-        }
-
-        buy_cheap_military($c,1500000000,200);
-        buy_cheap_military($c);
     }
+
+    buy_cheap_military($c,1500000000,200);
+    buy_cheap_military($c);
 
     return $c;
 }//end play_casher_strat()
@@ -114,13 +102,6 @@ function play_casher_turn(&$c)
       return explore($c);
     }
 }//end play_casher_turn()
-
-function buy_casher_goals(&$c, $spend = null)
-{
-    $goals = casherGoals($c);
-    Country::countryGoals($c, $goals, $spend);
-}//end buy_casher_goals()
-
 
 function casherGoals(&$c)
 {

@@ -91,31 +91,9 @@ function play_rainbow_strat(&$c)
         $hold = $hold || money_management($c);
         $hold = $hold || food_management($c);
 
+        $c->buy_goals(defaultGoals($c));
+
         if ($hold) { break; }
-
-        if (turns_of_food($c) > 70
-            && turns_of_money($c) > 70
-            && $c->money > 3500 * 500
-            && ($c->built() > 80 || $c->money > $c->fullBuildCost() - $c->runCash())
-        ) {
-            // 70 turns of food
-            // keep enough money to build out everything
-            $spend = $c->money - $c->fullBuildCost() - $c->runCash();
-
-            if ($spend > abs($c->income) * 10) {
-                //try to batch a little bit...
-                buy_rainbow_goals($c, $spend);
-            }
-        }
-
-        if ($c->income < 0 && total_military($c) > 30) { //sell 1/4 of all military on PM
-            out("Losing money! Sell 1/4 of our military!");     //Text for screen
-            sell_all_military($c, 1 / 4);  //sell 1/4 of our military
-        }
-
-
-
-        //$main->turns = 0;             //use this to do one turn at a time
     }
 
     return $c;
@@ -230,40 +208,42 @@ function tech_rainbow(&$c, $turns=1)
     );
 }//end tech_rainbow()
 
+function techGoals() {
+    return [
+      //what, goal, priority
+      ['t_mil'  ,94  ,100],
+      ['t_med'  ,90  ,100],
+      ['t_bus'  ,150 ,100],
+      ['t_res'  ,150 ,100],
+      ['t_agri' ,200 ,100],
+      ['t_war'  ,5   ,100],
+      ['t_ms'   ,120 ,100],
+      ['t_weap' ,125 ,100],
+      ['t_indy' ,145 ,100],
+      ['t_spy'  ,125 ,100],
+      ['t_sdi'  ,60  ,100],
+    ];
+}
 
-
-function buy_rainbow_goals(&$c, $spend = null)
-{
-  $goals = defaultGoals($c);
-
-  Country::countryGoals($c, $goals, $spend);
-}//end buy_rainbow_goals()
-
-
-function defaultGoals(&$c)
+function militaryGoals(&$c)
 {
     return [
-        //what, goal, priority
-
-        //tech levels
-        ['t_mil'  ,94  ,100],
-        ['t_med'  ,90  ,100],
-        ['t_bus'  ,150 ,100],
-        ['t_res'  ,150 ,100],
-        ['t_agri' ,200 ,100],
-        ['t_war'  ,5   ,100],
-        ['t_ms'   ,120 ,100],
-        ['t_weap' ,125 ,100],
-        ['t_indy' ,145 ,100],
-        ['t_spy'  ,125 ,100],
-        ['t_sdi'  ,60  ,100],
-
         //military
         ['nlg'    ,$c->nlgTarget(),100],
         ['dpa'    ,$c->defPerAcreTarget(1.0),100],
+    ];
+}//end militaryGoals()
 
+function stockGoals()
+{
+    return [
         //stocking no goal just a priority
         ['food'   , 0, 1],
         ['oil'    , 0, 1],
     ];
-}//end deefaultGoals()
+}//end stockGoals()
+
+function defaultGoals(&$c)
+{
+    return array_merge(techGoals(),militaryGoals($c),stockGoals());
+}//end stockGoals()

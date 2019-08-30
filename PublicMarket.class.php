@@ -254,7 +254,7 @@ class PublicMarket
         $diff = $c->money - $spend;
         //out('Here;P:'.PublicMarket::price($tech).';Q:'.PublicMarket::available($tech).';S:'.$spend.';M:'.$maxprice.';');
         while ($spend > 0) {
-            self::update();
+            PublicMarket::update();
             if (self::price($tech) != null) { $price = self::price($tech); } else { return; }
             if ($price <= $maxprice) { $tobuy = min(floor($spend / ($price * $c->tax())), self::available($tech));} else { return; }
             if ($tobuy == 0) { return; }

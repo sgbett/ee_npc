@@ -76,13 +76,9 @@ function play_techer_strat(&$c)
         $hold = $hold || money_management($c);
         $hold = $hold || food_management($c);
 
+        $c->buy_goals(techerGoals($c));
+
         if ($hold) { break; }
-
-        //market actions
-
-        if (turns_of_food($c) > 50 && turns_of_money($c) > 50 && $c->money > 3500 * 500 && ($c->built() > 80 || $c->money > $c->fullBuildCost() - $c->runCash()) && $c->tpt > 200) { // 40 turns of food
-            buy_techer_goals($c, $c->money - $c->fullBuildCost() - $c->runCash()); //keep enough money to build out everything
-        }
     }
     buy_cheap_military($c,1500000000,200);
     buy_cheap_military($c);
@@ -215,12 +211,6 @@ function sell_max_tech(&$c)
 
     return $result;
 }//end sell_max_tech()
-
-function buy_techer_goals(&$c, $spend = null)
-{
-    $goals = techerGoals($c);
-    Country::countryGoals($c, $goals, $spend);
-}//end buy_techer_goals()
 
 function techerGoals(&$c)
 {
