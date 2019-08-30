@@ -244,11 +244,9 @@ class PublicMarket
         out($str);
         //sleep(1);
         return $result;
-    }//end sell()
+    }//end sell()    
 
-
-
-    public static function buy_tech(&$c, $tech = 't_bus', $spend = 0, $maxprice = 9999)
+    public static function buy_tech(&$c, $tech, $spend = 0, $maxprice = 9999)
     {
         $update = false;
         //$market_info = get_market_info();   //get the Public Market info
