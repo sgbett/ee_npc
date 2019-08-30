@@ -211,17 +211,17 @@ function tech_rainbow(&$c, $turns=1)
 function techGoals() {
     return [
       //what, goal, priority
-      ['t_mil'  ,94  ,100],
-      ['t_med'  ,90  ,100],
-      ['t_bus'  ,150 ,100],
-      ['t_res'  ,150 ,100],
-      ['t_agri' ,200 ,100],
-      ['t_war'  ,5   ,100],
-      ['t_ms'   ,120 ,100],
-      ['t_weap' ,125 ,100],
-      ['t_indy' ,145 ,100],
-      ['t_spy'  ,125 ,100],
-      ['t_sdi'  ,60  ,100],
+      ['t_mil'  ,94  ,50],
+      ['t_med'  ,90  ,10],
+      ['t_bus'  ,160 ,50],
+      ['t_res'  ,160 ,50],
+      ['t_agri' ,220 ,50],
+      ['t_war'  ,1   ,10],
+      ['t_ms'   ,120 ,20],
+      ['t_weap' ,125 ,30],
+      ['t_indy' ,120 ,20],
+      ['t_spy'  ,125 ,20],
+      ['t_sdi'  ,60  ,20],
     ];
 }
 
