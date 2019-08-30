@@ -689,7 +689,7 @@ class Country
         return true;
       }
 
-      if ($this->empty < $this->bpt ) {
+      if ($this->empty < 2 * $this->bpt ) {
         //otherwise only if less than target acreage
         return $this->land < $this->target_land();
       }
