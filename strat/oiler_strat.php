@@ -152,7 +152,7 @@ function oilerGoals(&$c)
         ['dpa'    ,$c->defPerAcreTarget(1.0),100],
 
         //stocking no goal just a priority
-        ['food'   , 0, 1],
-        ['oil'    , 0, 1],
+        ['food'   , 0, 0],
+        ['oil'    , 0, 0],
     ];
 }//end defaultGoals()
