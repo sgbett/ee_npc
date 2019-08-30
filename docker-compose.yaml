@@ -32,7 +32,6 @@ services:
     entrypoint:
       - php
       - ee_npc.php
-    restart: always
 
 volumes:
   ee_npc:
