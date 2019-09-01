@@ -90,7 +90,7 @@ function play_farmer_strat(&$c)
         $hold = $hold || money_management($c);
         $hold = $hold || food_management($c);
 
-        $c->buy_goals(defaultGoals($c));
+        $c->buy_goals(farmerGoals($c));
 
         if ($hold) { break; }
     }
