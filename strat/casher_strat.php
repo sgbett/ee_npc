@@ -112,17 +112,17 @@ function casherGoals(&$c)
         //what, goal, priority
 
         //tech levels
-        ['t_mil'  ,94  ,50],
-        ['t_med'  ,90  ,10],
-        ['t_bus'  ,175 ,100],
-        ['t_res'  ,175 ,100],
+        ['t_mil'  ,94  ,10],
+        ['t_med'  ,90  ,5],
+        ['t_bus'  ,155 ,100],
+        ['t_res'  ,155 ,100],
         ['t_agri' ,100 ,0],
-        ['t_war'  ,1   ,10],
-        ['t_ms'   ,120 ,20],
-        ['t_weap' ,125 ,30],
-        ['t_indy' ,120 ,20],
-        ['t_spy'  ,125 ,20],
-        ['t_sdi'  ,60  ,20],
+        ['t_war'  ,1   ,5],
+        ['t_ms'   ,120 ,5],
+        ['t_weap' ,120 ,5],
+        ['t_indy' ,100 ,0],
+        ['t_spy'  ,120 ,5],
+        ['t_sdi'  ,60  ,5],
 
         //military
         ['nlg'    ,$c->nlgTarget(),100],

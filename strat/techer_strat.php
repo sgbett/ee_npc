@@ -223,15 +223,15 @@ function techerGoals(&$c)
 
         //tech levels
         ['t_mil'  ,94  ,1],
-        ['t_med'  ,87  ,1],
-        ['t_bus'  ,160 ,1],
-        ['t_res'  ,160 ,1],
-        ['t_agri' ,100 ,1],
+        ['t_med'  ,90  ,1],
+        ['t_bus'  ,140 ,1],
+        ['t_res'  ,140 ,1],
+        ['t_agri' ,200 ,1],
         ['t_war'  ,3   ,1],
         ['t_ms'   ,130 ,1],
-        ['t_weap' ,125 ,1],
-        ['t_indy' ,100 ,1],
-        ['t_spy'  ,125 ,1],
+        ['t_weap' ,120 ,1],
+        ['t_indy' ,120 ,1],
+        ['t_spy'  ,120 ,1],
         ['t_sdi'  ,60  ,1],
 
         //military
