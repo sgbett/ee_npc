@@ -19,4 +19,4 @@ FROM php:7.2-cli
 WORKDIR /ee_npc
 COPY . .
 
-CMD ./ee_npc.php
+ENTRYPOINT docker/entrypoint.sh

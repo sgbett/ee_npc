@@ -30,8 +30,7 @@ services:
       - EENPC_AI_KEY
       - EENPC_USERNAME
     entrypoint:
-      - php
-      - ee_npc.php
+      - docker/entrypoint.sh
 
 volumes:
   ee_npc:
