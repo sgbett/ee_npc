@@ -91,6 +91,8 @@ function play_indy_turn(&$c)
       sell_all_military($c,1);
     } elseif (onmarket_value($c) == 0 && $c->built() < 75 && $c->income < 0) {
       sell_all_military($c,0.25);
+    } elseif ($c->turns > 119) {
+      sell_all_military($c,0.25);
     }
 
     if ($c->protection == 0 && total_cansell_military($c) > 7500 && sellmilitarytime($c)
