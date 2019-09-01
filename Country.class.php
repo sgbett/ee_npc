@@ -402,55 +402,62 @@ class Country
           $priority = ($goal[2]/100);
 
             if (($goal[0] == 't_sdi') || ($goal[0] == 't_war')) {
-              $target = $this->tech_multiplier() * ($goal[1]);
-              $remain = $goal[1] - $this->$point_att;
+              $t = $this->tech_multiplier() * ($goal[1]);
+              $a = $this->$point_att;
+              $target = $t;
+              $actual = $a;
             } elseif (($goal[0] == 't_mil') || ($goal[0] == 't_med')) {
-              $remain = $this->$point_att - $goal[1];
-              $target = 100 - $this->tech_multiplier() * (100 - $goal[1]);
+              $t = $this->tech_multiplier() * (100 - $goal[1]);
+              $a = $this->$point_att - $goal[1];
+              $target = 100 - $t;
+              $actual = 100 - $a;
             } elseif (substr($goal[0],0,2) == 't_') {
-              $remain = $goal[1] - $this->$point_att;
-              $target = 100 + $this->tech_multiplier() * ($goal[1] - 100);
+              $t = $this->tech_multiplier() * ($goal[1] - 100);
+              $a = $this->$point_att - 100;
+              $target = $t + 100;
+              $actual = $a + 100;
             }
 
             if (substr($goal[0],0,2) == 't_') {
 
-              $price           = PublicMarket::price(substr($goal[0],2));
+              if ($t == 0) { continue; } // none of this tech wanted
 
-              if ($target == 0) {
-                out_score($point_att,'','','','','nil');
-              } else {
-                $s = $price >0 ? ($remain / $target) * $priority * (exp((10000-$price)/2500)/15) : 0;
-                out_score($point_att,$priority,$price,$this->$point_att,$target,$s);
-              }
+              $need   = ($t - $a) / $t;
+              $price  = PublicMarket::price(substr($goal[0],2));
+
+              $s = $price >0 ? $need * $priority * (exp((10000-$price)/2500)/15) : 0;
+
             } elseif ($goal[0] == 'nlg') {
+                $price        = 'n/a';
                 $target       = $this->nlgt ?? $this->nlgTarget();
                 $actual       = $this->nlg();
                 $s            = ((($target - $actual)) / $target) * $priority;
-                out_score('nlg',$priority,'n/a',$actual,$target,$s);
             } elseif ($goal[0] == 'dpa') {
-                $target       = $this->dpat ?? $this->defPerAcreTarget();
-                $actual       = $this->defPerAcre();
+                $price        = 'n/a'; //TODO: Make this price sensitive?
+                $target       = round($this->dpat ?? $this->defPerAcreTarget());
+                $actual       = round($this->defPerAcre());
                 $s            = ((($target - $actual)) / $target) * $priority;
-                out_score('dpa',$priority,'n/a',$actual,$target,$s);
             } elseif ($goal[0] == 'food') {
-
               $price  = PublicMarket::price('m_bu');
               $s      = $price > 0 ? $priority * (45 / $price) :  0;
-
-              out_score('food',$priority,$price,'','',$s);
-
+              $target = null;
+              $actual = engnot($this->food);
             } elseif ($goal[0] == 'oil') {
               $price  = PublicMarket::price('m_oil');
               $s      = $price > 0 ? $priority * (200 / $price) :  0;
-
-              out_score('oil',$priority,$price,'','',$s);
+              $target = null;
+              $actual = engnot($this->oil);
             }
 
             if ($s > 0) {
+              if (!($actual === null)) { $actual = str_pad($actual, 5, ' ', STR_PAD_LEFT); }
+              if (!($target === null)) { $target = str_pad($target, 5, ' ', STR_PAD_LEFT); }
+              out_score($goal[0],$priority,$price,$actual,$target,$s);
               $score[$goal[0]] = round($s * 1000);
             }
             $psum += $priority;
         }
+
 
         arsort($score);
 
