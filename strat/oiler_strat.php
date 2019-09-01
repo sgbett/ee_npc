@@ -82,6 +82,7 @@ function play_oiler_strat(&$c)
         $hold = $hold || food_management($c);
 
         $c->buy_goals(oilerGoals($c));
+        $c->destock(destockGoals($c));
 
         if ($hold) { break; }
 
@@ -105,6 +106,8 @@ function play_oiler_turn(&$c)
       sell_food_to_private($c,0.25);
     } elseif (turns_of_money($c) < 5 and $c->foodnet > 0) {
       sell_food_to_private($c);
+    } elseif ($c->turns > 119) {
+      sell_all_military($c,0.25);
     }
 
     if ($c->protection == 0 && $c->food > 7000
@@ -113,9 +116,9 @@ function play_oiler_turn(&$c)
             || $c->turns == 1
         )
     ) { //Don't sell less than 30 turns of food unless you're on your last turn (and desperate?)
-        return sellextrafood($c);
+      return sellextrafood($c,$c->shouldSendStockToMarket(0)); // 0 negates the "min qty" requirement - it is satsified already
     } elseif ($c->protection == 0 && $c->oil > 30 * $c->land ) {
-        return selloil($c);
+        return selloil($c,$c->shouldSendStockToMarket(0));
     } elseif ($c->shouldBuildCS()) {
         return Build::cs();
     } elseif ($c->shouldBuildFullBPT()) {

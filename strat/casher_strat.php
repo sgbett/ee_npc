@@ -69,6 +69,7 @@ function play_casher_strat(&$c)
         $hold = $hold || food_management($c);
 
         $c->buy_goals(casherGoals($c));
+        $c->destock(destockGoals($c));
 
         if ($hold) { break; }
     }
@@ -90,7 +91,9 @@ function play_casher_turn(&$c)
 
     if ($c->protection == 1) { sell_all_military($c,1); }
 
-    if ($c->shouldBuildCS()) {
+    if ($c->shouldSendStockToMarket()) {
+      return sellextrafood($c,true);
+    } elseif ($c->shouldBuildCS()) {
       return Build::cs();
     } elseif ($c->shouldBuildFullBPT()) {
       return Build::casher($c);
@@ -130,3 +133,24 @@ function casherGoals(&$c)
         ['oil'    , 0, 1],
     ];
 }//end defaultGoals()
+
+function destockGoals() {
+    return [
+        //what, $nw
+        ['m_tr'   ,0.5],
+        ['m_j'    ,0.6],
+        ['m_tu'   ,0.6],
+        ['m_ta'   ,2],
+        ['t_mil'  ,2],
+        ['t_med'  ,2],
+        ['t_bus'  ,2],
+        ['t_res'  ,2],
+        ['t_agri' ,2],
+        ['t_war'  ,2],
+        ['t_ms'   ,2],
+        ['t_weap' ,2],
+        ['t_indy' ,2],
+        ['t_spy'  ,2],
+        ['t_sdi'  ,2],
+    ];
+}

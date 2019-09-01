@@ -404,6 +404,65 @@ class Country
 
     }//end fullBuildCost()
 
+    public function cheapest_dpnw_goal($goals = [],$dpnw)
+    {
+        // out('want_dpnw_goal:'.$dpnw);
+        $score = [];
+
+        // PrivateMarket::getInfo();
+        PublicMarket::update();
+
+        foreach ($goals as $goal) {
+          $what = $goal[0];
+          $nw   = $goal[1];
+
+          // out('$what:'.$what.' $nw:'.$nw);
+          if (substr($goal[0],0,2) == 't_') {
+            $market_good = substr($goal[0],2);
+          } else {
+            $market_good = $what;
+          }
+
+          // $public_price = PublicMarket::price($market_good) * $this->tax();
+          // $private_price = PrivateMarket::price($market_good);
+          //
+          // if ($public_price == 0) {
+          //   if ($private_price == 0) { continue; }
+          //   $market = 'PrivateMarket';
+          //   $price  = $private_price;
+          // } else {
+          //   if ($private_price == 0) {
+          //     $market = 'PublicMarket';
+          //     $price  = $public_price;
+          //   } else {
+          //     if ($private_price >  $public_price) {
+          //       $market = 'PublicMarket';
+          //       $price  = $public_price;
+          //     } else {
+          //       $market = 'PrivateMarket';
+          //       $price  = $private_price;
+          //     }
+          //   }
+          // }
+
+          $price = PublicMarket::price($market_good);
+          if ($price == 0) { continue; }
+          $market = 'PublicMarket';
+
+          // out('$market:'.$market.' $price:'.$price.' $/nw:'.round($price / $nw));
+
+          if ($price / $nw < $dpnw) {
+            $score[implode('.',[$what,$price,$market])] = $price / $nw;
+            // var_dump($score);
+          }
+        }
+
+        if ( empty($score) ) { return; }
+        // out('returning:'.key($score));
+        return explode('.',key($score));
+
+    }//end cheapest_dpnw_goal()
+
     /**
      * Find Highest Goal
      * @param  array $goals an array of goals to persue
@@ -491,7 +550,9 @@ class Country
       // out("reserved: ".$this->reserved_cash());
       return max(0,$this->money - $this->reserved_cash());
     }
+
     public function buy_goals($goals) {
+      if (turns_remaining() < 218) {return; } //to do 218 shoould be defined as something
       if ($this->built() < 90) { return; }
       if (turns_of_food($this) < 5) { return; }
       if ($this->available_funds() < $this->land*1000) { return; }
@@ -511,6 +572,79 @@ class Country
     }
 
     /**
+     * Try and spend stockpile on goods at $dpnw or better
+     * @param  array   $goals         an array of goals to persue [$market_good,$nw_value]
+     * @param  int     $dpnw          specify target $dpnw, omit for default based on time remaining, 0 is unlimited
+     * @return void
+     */
+
+    public function destock($goals, $dpnw = null) {
+
+      if (turns_remaining() > 200) { return; }
+      if ($dpnw === null && turns_remaining() > 5) { $dpnw = (200 - turns_remaining())**1.12; } //default s to gradually ramp up as we approach end
+      if ($dpnw === null) { $dpnw = 0; }
+
+      while ($this->destock_highest_goal($goals,$dpnw)) {
+        PublicMarket::update();
+      };
+
+    }
+
+    /**
+     * Try and spend stockpile on the highest goal
+     * @param  array   $goals         an array of goals to persue
+     * @return void
+     */
+    public function destock_highest_goal($goals,$dpnw)
+    {
+        $this->updateMain();
+        if (empty($goals)) { return; }
+
+        $goal = $this->cheapest_dpnw_goal($goals,$dpnw);
+
+        if (empty($goal)) { return; }
+
+        $what = $goal[0];
+        $price = $goal[1];
+        $market = $goal[2];
+
+        // out("Destock Goal: ".$what);
+
+        if (substr($what,0,2) == 't_') {
+            $market_good = substr($what,2);
+        } else {
+            $market_good = $what;
+        }
+
+        // out('$market_good:'.$market_good);
+        // out('$price:'.$price);
+
+        $market_avail = PublicMarket::available($market_good);
+        // out('$market_avail:'.$market_avail);
+
+        $total_cost = $price * $market_avail * ($market == 'PublicMarket' ? $this->tax() : 1);
+        // out('$total_cost:'.$total_cost);
+
+        //if necessary try and sell bushels to buy it all
+        if ($this->money < $total_cost && turns_of_food($this) > 0) {
+          $pm_info = PrivateMarket::getRecent($this);   //get the PM info
+          $p = $pm_info->sell_price->m_bu;
+          $q = min($this->food,($total_cost - $this->money) / $p);
+          // out('$p:'.$p.' $q:'.$q);
+          PrivateMarket::sell($this, ['m_bu' => $q],['m_bu' => $p]);
+        }
+
+        $max_qty = $price > 0 ? floor(($this->money / ($price * ($market == 'PublicMarket' ? $this->tax() : 1)))) : 0;
+        // out('$max_qty:'.$max_qty);
+
+        $quantity = min($max_qty,$market_avail);
+        // out('$quantity:'.$quantity);
+
+        if ($quantity > 0) { return PublicMarket::buy($this, [ $market_good => $quantity], [ $market_good => $price]); };
+
+    } //end destock_highest_goal()
+
+    /**
      * Try and spend up to $spend on the highest goal
      * @param  array   $goals         an array of goals to persue
      * @param  int     $spend         money to spend
@@ -526,6 +660,9 @@ class Country
         $tol = $cpref->price_tolerance; //should be between 0.5 and 1.5
 
         $what = $this->highest_goal($goals);
+
+        if ($what === null) { return; }
+
         out("Highest Goal: ".$what.' Buy $'.$spend);
 
         if ($what == 'nlg') {
@@ -533,19 +670,19 @@ class Country
         } elseif ($what == 'dpa') {
             return defend_self($this, floor($this->money - $spend)); //second param is *RESERVE* cash
         } elseif ($what == 'food') {
-            $market_goods = 'm_bu';
+            $market_good = 'm_bu';
         } elseif ($what == 'oil') {
-            $market_goods = 'm_oil';
+            $market_good = 'm_oil';
         } elseif (substr($what,0,2) == 't_') {
-            $market_goods = substr($what,2);
+            $market_good = substr($what,2);
         } else {
-            $market_goods = $what;
+            $market_good = $what;
         }
 
-        //out('market_goods:'.$market_goods);
-        $market_price = PublicMarket::price($market_goods);
+        //out('market_goods:'.$market_good);
+        $market_price = PublicMarket::price($market_good);
         //out('market_price:'.$market_price);
-        $market_avail = PublicMarket::available($market_goods);
+        $market_avail = PublicMarket::available($market_good);
         //out('market_avail:'.$market_avail);
 
         $max_qty = $market_price > 0 ? floor(($spend / ($market_price * $this->tax()))) : 0;
@@ -554,9 +691,9 @@ class Country
         $quantity = min($max_qty,$market_avail);
         //out('$quantity:'.$quantity);
 
-        if ($quantity > 0) { return PublicMarket::buy($this, [ $market_goods => $quantity], [ $market_goods => $market_price]); };
+        if ($quantity > 0) { return PublicMarket::buy($this, [ $market_good => $quantity], [ $market_good => $market_price]); };
 
-    } //end countryGoals()
+    } //end buy_highest_goal()
 
     /**
      * Output country stats
@@ -805,12 +942,15 @@ class Country
         return false;
       }
 
-      global $server;
-      $turns_remaining = round(($server->reset_end - time()) / $server->turn_rate);
 
-      if ($this->turns > min(80, $turns_remaining - 50)) {
-        return true;
+      if ($this->stockpiling()) {
+          return $this->turns > 1;
       }
+
+      //
+      // if ($this->turns > min(80, turns_remaining() - 50)) {
+      //   return true;
+      // }
 
       return false;
     }//end shouldExplore()
@@ -826,6 +966,42 @@ class Country
       return ($this->defPerAcre() < $target);
     }//end shouldSellMilitary()
 
+    public function shouldSendStockToMarket($qty = null) {
+      if ($this->stockpiling() == false) {
+        return false;
+      }
+
+      if(turns_of_money($this) < 20) {
+        return false;
+      }
+
+      if (turns_remaining() < 228) {
+        //5hrs on market + 36mins to arrive = 168 turns <- this would be ideal...
+        //...but we add 60 to make sure stuff returns 10 or more turns before the qzjul bots destock
+        return false;
+      }
+
+      if ($qty === null) {
+        $min   = 2000000;
+        $max   = 16000000;
+        $std_d = 3000000;
+        $step  = 1000000;
+        $qty = Math::purebell($min, $max, $std_d, $step);
+      };
+
+      return $this->food > $qty;
+
+    }
+
+    public function stockpiling() {
+      if ($this->land < $this->target_land()) {
+        return false;
+      }
+      if ($this->empty > 2 * $this->bpt) {
+        return false;
+      }
+      return true;
+    }
     /**
      * Add a retal to the list
      *

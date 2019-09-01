@@ -135,7 +135,6 @@ function buy_public_below_dpnw(&$c, $dpnw, &$money = null, $shuffle = false, $de
     }
 }//end buy_public_below_dpnw()
 
-
 function buy_private_below_dpnw(&$c, $dpnw, $money = 0, $shuffle = false, $defOnly = false)
 {
     //out("Stage 2");
@@ -234,17 +233,19 @@ function sell_food_to_private(&$c, $fraction = 1)
     return PrivateMarket::sell($c, $sell_units);
 }//end sell_food_to_private()
 
-function selloil(&$c) {
-  $c = get_advisor();     //UPDATE EVERYTHING
+function selloil(&$c,$stockpile = false) {
+  $c = get_advisor();
 
-  $quantity = ['m_oil' => $c->oil]; //sell it all! :)
+  $quantity = ['m_oil' => round(($stockpile ? 0.9 : 1) * $c->oil)];
 
-  $rmax    = 1.10; //percent
-  $rmin    = 0.90; //percent
+  $rmax    = 1.10;
+  $rmin    = 0.95;
   $rstep   = 0.01;
   $rstddev = 0.10;
   $max     = (turns_of_money($c) < 10) && $c->goodsStuck('m_oil') ? 0.99 : $rmax;
-  $price   = round(PublicMarket::price('m_oil') * Math::purebell($rmin, $rmax, $rstddev, $rstep));
+
+  $price   = $stockpile ? 2500 : PublicMarket::price('m_oil');
+  $price   = round($price * Math::purebell($rmin, $max, $rstddev, $rstep));
 
   if ($price == 0) {
     $price = Math::purebell(100, 1000, 500, 1);
@@ -256,20 +257,22 @@ function selloil(&$c) {
 
 }
 
-function sellextrafood(&$c)
+function sellextrafood(&$c,$stockpile = false)
 {
-    $c = get_advisor();     //UPDATE EVERYTHING
+    $c = get_advisor();
 
-    $quantity = ['m_bu' => $c->food]; //sell it all! :)
+    $quantity = ['m_bu' => round(($stockpile ? 0.9 : 1) * $c->food)];
 
     $pm_info = PrivateMarket::getRecent();
 
-    $rmax    = 1.10; //percent
-    $rmin    = 0.95; //percent
+    $rmax    = 1.10;
+    $rmin    = 0.95;
     $rstep   = 0.01;
     $rstddev = 0.10;
     $max     = (turns_of_money($c) < 10) && $c->goodsStuck('m_bu') ? 0.99 : $rmax;
-    $price   = round(PublicMarket::price('m_bu') * Math::purebell($rmin, $max, $rstddev, $rstep));
+
+    $price   = $stockpile ? 250 : PublicMarket::price('m_bu');
+    $price   = round($price * Math::purebell($rmin, $max, $rstddev, $rstep));
 
     if ($price == 0) {
       $price = Math::purebell(30, 288, 100, 1);
@@ -321,7 +324,6 @@ function turns_of_money(&$c)
     $incomeloss = -1 * $c->income;
     return floor($c->money / $incomeloss);
 }//end turns_of_money()
-
 
 function money_management(&$c)
 {
@@ -545,8 +547,8 @@ function sell_max_military(&$c)
         $quantity[$unit] = can_sell_mil($c, $unit);
     }
 
-    $rmax    = 1.30; //percent
-    $rmin    = 0.80; //percent
+    $rmax    = 1.30;
+    $rmin    = 0.80;
     $rstep   = 0.01;
     $rstddev = 0.10;
     $price   = [];
@@ -572,8 +574,8 @@ function sell_max_military(&$c)
         }
     }
     /*
-    $randomup = 120; //percent
-    $randomdown = 80; //percent
+    $randomup = 120;
+    $randomdown = 80;
     $price = array(
         'm_tr'=>    $quantity['m_tr'] == 0
         ? 0
@@ -606,6 +608,11 @@ function sell_max_military(&$c)
     $mktinfo = null;
     return $result;
 }//end sell_max_military()
+
+function turns_remaining(){
+  global $server;
+  return round(($server->reset_end - time()) / $server->turn_rate);
+}
 
 
 /**

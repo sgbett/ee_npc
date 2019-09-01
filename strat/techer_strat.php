@@ -77,6 +77,7 @@ function play_techer_strat(&$c)
         $hold = $hold || food_management($c);
 
         $c->buy_goals(techerGoals($c));
+        $c->destock(destockGoals($c));
 
         if ($hold) { break; }
     }
@@ -100,7 +101,9 @@ function play_techer_turn(&$c)
       if (turns_of_food($c) > 10) { sell_food_to_private($c); }
     }
 
-    if ($c->protection == 0 && total_cansell_tech($c) > 20 * $c->tpt && selltechtime($c)
+    if ($c->shouldSendStockToMarket()) {
+      return sellextrafood($c,true); //true tells it to stockpile
+    } elseif ($c->protection == 0 && total_cansell_tech($c) > 20 * $c->tpt && selltechtime($c)
         || $c->turns == 1 && total_cansell_tech($c) > 20
     ) {
         //never sell less than 20 turns worth of tech

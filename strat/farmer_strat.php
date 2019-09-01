@@ -91,6 +91,7 @@ function play_farmer_strat(&$c)
         $hold = $hold || food_management($c);
 
         $c->buy_goals(farmerGoals($c));
+        $c->destock(destockGoals($c));
 
         if ($hold) { break; }
     }
@@ -123,7 +124,7 @@ function play_farmer_turn(&$c)
             || $c->turns == 1
         )
     ) { //Don't sell less than 30 turns of food unless you're on your last turn (and desperate?)
-        return sellextrafood($c);
+        return sellextrafood($c,$c->shouldSendStockToMarket(0) ); // 0 negates the "min qty" requirement as that is satsified already
     } elseif ($c->shouldBuildCS()) {
         return Build::cs();
     } elseif ($c->shouldBuildFullBPT()) {
