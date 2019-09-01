@@ -184,7 +184,7 @@ class Bots
         $xnum   = self::getNextPlayCNUM($countries, min($next));
         $xstrat = self::txtStrat($xnum);
         $next   = max(0, min($next) - time());
-        out("Next Play in ".$next.'s: #'.$xnum." $xstrat    ".($rewrite ? "\r" : null), !$rewrite);
+        out("Next Play in ".$next.'s: #'.$xnum." $xstrat    \e[1A");
     }//end outNext()
 
 
