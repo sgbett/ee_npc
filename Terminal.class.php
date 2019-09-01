@@ -87,7 +87,14 @@ class Terminal
             $str = Colors::getColoredString($str, $foreground_color, $background_color);
         }
 
-        echo ($newline ? "\n" : null)."[".date("H:i:s")."] $str";
+        $output = ($newline ? "\n" : null)."[".date("H:i:s")."] $str";
+        echo $output;
+
+        if (substr($str,0,13) != 'Next Play in ') {
+          file_put_contents("logs/log.txt", $output, FILE_APPEND);
+        }
+
+
     }//end out()
 
 
