@@ -18,7 +18,10 @@ class Bots
 
     public static $strats = [];
 
-    public static function all_strats() { return ['C','F','T','I','R','O']; }
+    public static function all_strats() {
+      return str_split('RRROOOCCCCFFFFFFTTTTIIIII');
+    }
+
 
     /**
      * Get the next playing cnum
