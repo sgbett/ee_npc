@@ -146,6 +146,7 @@ class Country
         $new  = [];
         if (is_array($what)) {
             $sum = 0;
+
             foreach ($init as $item => $percentage) {
                 $new[$item] = isset($what[$item]) ? $what[$item] : 0;
                 $sum       += $percentage;
@@ -330,6 +331,27 @@ class Country
 
         return floor($this->networth / ($this->land * $govt));
     }//end nlg()
+
+    /**
+     * cs_per_bpt
+     * @return int Number of CS per bpt
+     */
+    public function cs_per_bpt()
+    {
+        switch ($this->govt) {
+            case 'H':
+                $modifier = 1.35;
+                break;
+            case 'I':
+                $modifier = 0.7;
+                break;
+            default:
+                $modifier = 1.0;
+        }
+
+        return 4/$modifier;
+    }//end nlg()
+
 
     /**
      * the multiple for max tech based on govt
@@ -639,12 +661,12 @@ class Country
      */
     public function shouldBuildCS($fraction = 0.6)
     {
-      if ($this->turns < 4) {
+      if ($this->turns < 5) {
           //not enough turns...
           return false;
       }
 
-      if ($this->empty < 4) {
+      if ($this->empty < 5) {
           //not enough land...
           return false;
       }
@@ -654,14 +676,13 @@ class Country
           return false;
       }
 
-      if ($this->money < 4 * $this->build_cost) {
+      if ($this->money < 5 * $this->build_cost) {
           //not enough money...
           return false;
       }
 
       if ($this->income < 0 && $this->money < 4 * $this->build_cost + 5 * $this->income) {
           //going to run out of money
-          //use 5 because growth of military typically
           return false;
       }
 
@@ -671,8 +692,10 @@ class Country
           return false;
       }
 
+      if ($this->protection == 1) { $fraction = 0.8; }//dont get stuck in protection!
+
       //consider the fraction of turns to spend on CS
-      return (4 * ($this->bpt - 5)) < ($this->turns_played * $fraction);
+      return ($this->cs_per_bpt() * ($this->bpt - 5)) < ($this->turns_played * $fraction);
 
     }//end shouldBuildCS()
 
@@ -683,6 +706,10 @@ class Country
      */
     public function shouldBuildFullBPT()
     {
+        if ($this->bpt < 10) {
+          return false;
+        };
+
         if ($this->turns < 2) {
             //not enough turns...
             return false;
