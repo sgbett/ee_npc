@@ -100,7 +100,7 @@ while (1) {
         $cpref = init_cpref();
 
         out("Less countries than allowed! (".$server->alive_count.'/'.$server->countries_allowed.')');
-        $send_data = ['cname' => $cpref->strat.' '.NameGenerator::rand_name()];
+        $send_data = ['cname' => substring($cpref->strat.' '.NameGenerator::rand_name(),0,20)];
         out("Making new country named '".$send_data['cname']."'");
         $cnum = ee('create', $send_data);
         out($send_data['cname'].' (#'.$cnum.') created!');
