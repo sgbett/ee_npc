@@ -102,7 +102,7 @@ function play_indy_turn(&$c)
     } elseif ($c->shouldBuildCS()) {
       return Build::cs();
     } elseif ($c->shouldBuildFullBPT()) {
-      return Build::indy($c);
+      return Build::indy($c->bpt);
     } elseif ($c->shouldExplore()) {
       return explore($c);
     } elseif ($c->shouldCash()) {

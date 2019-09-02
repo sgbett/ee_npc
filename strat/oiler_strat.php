@@ -122,7 +122,7 @@ function play_oiler_turn(&$c)
     } elseif ($c->shouldBuildCS()) {
         return Build::cs();
     } elseif ($c->shouldBuildFullBPT()) {
-      return Build::oiler($c);
+      return Build::oiler($c->bpt);
     } elseif ($c->shouldExplore())  {
       return explore($c);
     } elseif ($c->shouldCash()) {

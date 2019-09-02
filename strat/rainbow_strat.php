@@ -148,11 +148,11 @@ function play_rainbow_turn(&$c)
 function build_rainbow(&$c)
 {
     if ($c->foodnet < 0) {
-        return Build::farmer($c);
+        return Build::farmer($c->bpt);
     } elseif ($c->income < max(100000, 2 * $c->build_cost * $c->bpt / $c->explore_rate)) {
-      return Build::casher($c);
+      return Build::casher($c->bpt);
     } else {
-      return Build::rainbow($c);
+      return Build::rainbow($c->bpt);
     }
 }//end build_rainbow()
 

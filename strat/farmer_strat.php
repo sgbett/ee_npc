@@ -128,7 +128,7 @@ function play_farmer_turn(&$c)
     } elseif ($c->shouldBuildCS()) {
         return Build::cs();
     } elseif ($c->shouldBuildFullBPT()) {
-      return Build::farmer($c);
+      return Build::farmer($c->bpt);
     } elseif ($c->shouldExplore())  {
       return explore($c);
     } elseif ($c->shouldCash()) {

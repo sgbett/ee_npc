@@ -46,14 +46,14 @@ class Build
     /**
      * Build one BPT for techer
      *
-     * @param  object $c Country Object
+     * @param  object $bpt BPT
      *
      * @return $result   Game Result
      */
-    public static function techer(&$c)
+    public static function techer($bpt)
     {
-      $ind = floor($c->bpt / 20);
-      $lab = $c->bpt - $ind;
+      $ind = floor($bpt / 20);
+      $lab = $bpt - $ind;
       return self::buildings(['lab' => $lab, 'indy' => $ind]);
     }//end techer()
 
@@ -61,28 +61,28 @@ class Build
     /**
      * Build one BPT for farmer
      *
-     * @param  object $c Country Object
+     * @param  object $bpt BPT
      *
      * @return $result   Game Result
      */
-    public static function farmer(&$c)
+    public static function farmer($bpt)
     {
-      $ind = floor($c->bpt / 20);
-      $farm = $c->bpt - $ind;
+      $ind = floor($bpt / 20);
+      $farm = $bpt - $ind;
       return self::buildings(['farm' => $farm, 'indy' => $ind]);
     }//end farmer()
 
     /**
      * Build one BPT for oiler
      *
-     * @param  object $c Country Object
+     * @param  object $bpt BPT
      *
      * @return $result   Game Result
      */
-    public static function oiler(&$c)
+    public static function oiler($bpt)
     {
-      $rigfarm = floor(($c->bpt) * 0.475);
-      $ind = $c->bpt - 2 * $rigfarm;
+      $rigfarm = floor($bpt * 0.475);
+      $ind = $bpt - 2 * $rigfarm;
 
       return self::buildings(['rig' => $rigfarm, 'farm' => $rigfarm, 'indy' => $ind]);
     }//end farmer()
@@ -91,14 +91,14 @@ class Build
     /**
      * Build one BPT for casher
      *
-     * @param  object $c Country Object
+     * @param  object $bpt BPT
      *
      * @return $result   Game Result
      */
-    public static function casher(&$c)
+    public static function casher($bpt)
     {
-        $entres = floor(($c->bpt) * 0.475);
-        $ind = $c->bpt - 2 * $entres;
+        $entres = floor($bpt * 0.475);
+        $ind = $bpt - 2 * $entres;
 
         return self::buildings(['ent' => $entres, 'res' => $entres, 'indy' => $ind]);
     }//end casher()
@@ -107,28 +107,28 @@ class Build
     /**
      * Build one BPT for indy
      *
-     * @param  object $c Country Object
+     * @param  object $bpt BPT
      *
      * @return $result   Game Result
      */
-    public static function indy(&$c)
+    public static function indy($bpt)
     {
         //build indies
-        return self::buildings(['indy' => $c->bpt]);
+        return self::buildings(['indy' => $bpt]);
     }//end indy()
 
     /**
      * Build one BPT for rainbow
      *
-     * @param  object $c Country Object
+     * @param  object $bpt BPT
      *
      * @return $result   Game Result
      */
-    public static function rainbow(&$c)
+    public static function rainbow($bpt)
     {
-      $rig = floor(($c->bpt) * 0.1);
-      $lab = floor(($c->bpt) * 0.7);
-      $ind = $c->bpt - ($rig + $lab);
+      $rig = floor($bpt * 0.1);
+      $lab = floor($bpt * 0.7);
+      $ind = $bpt - ($rig + $lab);
 
       return self::buildings(['rig' => $rig, 'lab' => $lab, 'indy' => $ind]);
     }//end farmer()

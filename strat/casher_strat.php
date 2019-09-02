@@ -96,7 +96,7 @@ function play_casher_turn(&$c)
     } elseif ($c->shouldBuildCS()) {
       return Build::cs();
     } elseif ($c->shouldBuildFullBPT()) {
-      return Build::casher($c);
+      return Build::casher($c->bpt);
     } elseif ($c->shouldExplore())  {
       return explore($c);
     } elseif ($c->shouldCash()) {
