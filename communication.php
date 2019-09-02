@@ -69,7 +69,7 @@ function ee($function, $parameterArray = [])
  *
  * @return object The server info
  */
-function getServer()
+function get_server()
 {
     $server_loaded = false;
     $server        = null;
@@ -88,14 +88,14 @@ function getServer()
     }
 
     return $server;
-}//end getServer()
+}//end get_server()
 
 /**
  * Get the rules; handle EE being down
  *
  * @return object The rules
  */
-function getRules()
+function get_rules()
 {
     $rules_loaded = false;
     $rules        = null;
@@ -114,7 +114,7 @@ function getRules()
     }
 
     return $rules;
-}//end getRules()
+}//end get_rules()
 
 
 /**

@@ -8,7 +8,7 @@ function play_indy_strat(&$c)
 {
     global $cnum;
     global $cpref;
-    out("Playing ".INDY." Turns for #$cnum ".siteURL($cnum));
+    out("Playing ".INDY." Turns for #$cnum ".site_url($cnum));
     $c->setIndyFromMarket(true); //CHECK DPA
     out("Indy: {$c->pt_indy}%; Bus: {$c->pt_bus}%; Res: {$c->pt_res}%");
 
@@ -42,7 +42,7 @@ function play_indy_strat(&$c)
     }
 
     if (!isset($cpref->target_land) || $cpref->target_land == null) {
-      $cpref->target_land = Math::purebell(11000, 19000, 2000);
+      $cpref->target_land = Math::pureBell(11000, 19000, 2000);
       save_cpref($cnum,$cpref);
       out('Setting target acreage for #'.$cnum.' to '.$cpref->target_land);
     }
@@ -71,7 +71,7 @@ function play_indy_strat(&$c)
         $hold = $hold || money_management($c);
         $hold = $hold || food_management($c);
 
-        if ($c->built() > 0.75) { $c->buy_goals(indyGoals($c)); }
+        if ($c->built() > 0.75) { $c->buyGoals(indy_goals($c)); }
 
         if ($hold) { break; }
     }
@@ -89,7 +89,7 @@ function play_indy_turn(&$c)
 
     if ($c->protection == 1) {
       sell_all_military($c,1);
-    } elseif (onmarket_value($c) == 0 && $c->built() < 75 && $c->income < 0) {
+    } elseif (on_market_value($c) == 0 && $c->built() < 75 && $c->income < 0) {
       sell_all_military($c,0.25);
     } elseif ($c->turns > 119) {
       sell_all_military($c,0.25);
@@ -119,7 +119,7 @@ function sellmilitarytime(&$c)
     $sum = $om = 0;
     foreach ($military_list as $mil) {
         $sum += $c->$mil;
-        $om  += onmarket($mil, $c);
+        $om  += on_market($mil, $c);
     }
     if ($om < $sum / 6) {
         return true;
@@ -128,7 +128,7 @@ function sellmilitarytime(&$c)
     return false;
 }//end sellmilitarytime()
 
-function indyGoals(&$c)
+function indy_goals(&$c)
 {
     return [
         //what, goal, priority
@@ -153,4 +153,4 @@ function indyGoals(&$c)
         ['food'   , 0, 1],
         ['oil'    , 0, 1],
     ];
-}//end indyGoals()
+}//end indy_goals()

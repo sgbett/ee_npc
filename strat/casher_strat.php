@@ -6,7 +6,7 @@ function play_casher_strat(&$c)
 {
     global $cnum;
     global $cpref;
-    out("Playing ".CASHER." Turns for #$cnum ".siteURL($cnum));
+    out("Playing ".CASHER." Turns for #$cnum ".site_url($cnum));
 
     $c->setIndy('pro_spy');
 
@@ -31,7 +31,7 @@ function play_casher_strat(&$c)
     }
 
     if (!isset($cpref->target_land) || $cpref->target_land == null) {
-      $cpref->target_land = Math::purebell(10000, 18000, 2000);
+      $cpref->target_land = Math::pureBell(10000, 18000, 2000);
       save_cpref($cnum,$cpref);
       out('Setting target acreage for #'.$cnum.' to '.$cpref->target_land);
     }
@@ -68,8 +68,8 @@ function play_casher_strat(&$c)
         $hold = $hold || money_management($c);
         $hold = $hold || food_management($c);
 
-        $c->buy_goals(casherGoals($c));
-        $c->destock(destockGoals($c));
+        $c->buyGoals(casher_goals($c));
+        $c->destock(destock_goals($c));
 
         if ($hold) { break; }
     }
@@ -92,7 +92,7 @@ function play_casher_turn(&$c)
     if ($c->protection == 1) { sell_all_military($c,1); }
 
     if ($c->shouldSendStockToMarket()) {
-      return sellextrafood($c,true);
+      return sell_food($c,true);
     } elseif ($c->shouldBuildCS()) {
       return Build::cs();
     } elseif ($c->shouldBuildFullBPT()) {
@@ -106,7 +106,7 @@ function play_casher_turn(&$c)
     }
 }//end play_casher_turn()
 
-function casherGoals(&$c)
+function casher_goals(&$c)
 {
     return [
         //what, goal, priority
@@ -132,9 +132,9 @@ function casherGoals(&$c)
         ['food'   , 0, 1],
         ['oil'    , 0, 1],
     ];
-}//end defaultGoals()
+}//end default_goals()
 
-function destockGoals() {
+function destock_goals() {
     return [
         //what, $nw
         ['m_tr'   ,0.5],

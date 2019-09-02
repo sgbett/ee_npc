@@ -22,7 +22,7 @@ function play_farmer_strat(&$c)
     global $cnum;
     global $cpref;
 
-    out("Playing ".FARMER." turns for #$cnum ".siteURL($cnum));
+    out("Playing ".FARMER." turns for #$cnum ".site_url($cnum));
     $c->setIndy('pro_spy');
     //$c = get_advisor();     //c as in country! (get the advisor)
 
@@ -32,7 +32,7 @@ function play_farmer_strat(&$c)
     }
 
     if (!isset($cpref->target_land) || $cpref->target_land == null) {
-      $cpref->target_land = Math::purebell(11000, 19000, 2000);
+      $cpref->target_land = Math::pureBell(11000, 19000, 2000);
       save_cpref($cnum,$cpref);
       out('Setting target acreage for #'.$cnum.' to '.$cpref->target_land);
     }
@@ -90,8 +90,8 @@ function play_farmer_strat(&$c)
         $hold = $hold || money_management($c);
         $hold = $hold || food_management($c);
 
-        $c->buy_goals(farmerGoals($c));
-        $c->destock(destockGoals($c));
+        $c->buyGoals(farmer_goals($c));
+        $c->destock(destock_goals($c));
 
         if ($hold) { break; }
     }
@@ -124,7 +124,7 @@ function play_farmer_turn(&$c)
             || $c->turns == 1
         )
     ) { //Don't sell less than 30 turns of food unless you're on your last turn (and desperate?)
-        return sellextrafood($c,$c->shouldSendStockToMarket(0) ); // 0 negates the "min qty" requirement as that is satsified already
+        return sell_food($c,$c->shouldSendStockToMarket(0) ); // 0 negates the "min qty" requirement as that is satsified already
     } elseif ($c->shouldBuildCS()) {
         return Build::cs();
     } elseif ($c->shouldBuildFullBPT()) {
@@ -138,7 +138,7 @@ function play_farmer_turn(&$c)
     }
 }//end play_farmer_turn()
 
-function farmerGoals(&$c)
+function farmer_goals(&$c)
 {
     return [
         //what, goal, priority
@@ -164,4 +164,4 @@ function farmerGoals(&$c)
         ['food'   , 0, 0],
         ['oil'    , 0, 1],
     ];
-}//end defaultGoals()
+}//end default_goals()

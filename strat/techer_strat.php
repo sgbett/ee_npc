@@ -8,7 +8,7 @@ function play_techer_strat(&$c)
 {
     global $cnum;
     global $cpref;
-    out("Playing ".TECHER." Turns for #$cnum ".siteURL($cnum));
+    out("Playing ".TECHER." Turns for #$cnum ".site_url($cnum));
     $c->setIndy('pro_spy');
 
 
@@ -21,7 +21,7 @@ function play_techer_strat(&$c)
     }
 
     if (!isset($cpref->target_land) || $cpref->target_land == null) {
-      $cpref->target_land = Math::purebell(4000, 12000, 3000);
+      $cpref->target_land = Math::pureBell(4000, 12000, 3000);
       save_cpref($cnum,$cpref);
       out('Setting target acreage for #'.$cnum.' to '.$cpref->target_land);
     }
@@ -76,8 +76,8 @@ function play_techer_strat(&$c)
         $hold = $hold || money_management($c);
         $hold = $hold || food_management($c);
 
-        $c->buy_goals(techerGoals($c));
-        $c->destock(destockGoals($c));
+        $c->buyGoals(techer_goals($c));
+        $c->destock(destock_goals($c));
 
         if ($hold) { break; }
     }
@@ -102,7 +102,7 @@ function play_techer_turn(&$c)
     }
 
     if ($c->shouldSendStockToMarket()) {
-      return sellextrafood($c,true); //true tells it to stockpile
+      return sell_food($c,true); //true tells it to stockpile
     } elseif ($c->protection == 0 && total_cansell_tech($c) > 20 * $c->tpt && selltechtime($c)
         || $c->turns == 1 && total_cansell_tech($c) > 20
     ) {
@@ -115,7 +115,7 @@ function play_techer_turn(&$c)
       return $c->protection == 1 ? Build::farmer($c) : Build::techer($c);
     } elseif ($c->shouldExplore())  {
       return explore($c);
-    } elseif (onmarket_value($c) == 0 && $c->built() < 75) {
+    } elseif (on_market_value($c) == 0 && $c->built() < 75) {
       return tech($c, 1);
     } else {
       return tech($c, max(1, min(turns_of_money($c), turns_of_food($c), 13, $c->turns + 2) - 3));
@@ -197,13 +197,13 @@ function sell_max_tech(&$c)
 
                 $price[$key] = min(
                     7500,
-                    floor(PublicMarket::price($key) * Math::purebell($rmin, $max, $rstddev, $rstep))
+                    floor(PublicMarket::price($key) * Math::pureBell($rmin, $max, $rstddev, $rstep))
                 );
 
                 Debug::msg("sell_max_tech:C:$key");
             }
         } else {
-            $price[$key] = floor(Math::purebell($nogoods_low, $nogoods_high, $nogoods_stddev, $nogoods_step));
+            $price[$key] = floor(Math::pureBell($nogoods_low, $nogoods_high, $nogoods_stddev, $nogoods_step));
         }
     }
 
@@ -216,7 +216,7 @@ function sell_max_tech(&$c)
     return $result;
 }//end sell_max_tech()
 
-function techerGoals(&$c)
+function techer_goals(&$c)
 {
     return [
         //what, goal, priority
@@ -242,4 +242,4 @@ function techerGoals(&$c)
         ['food'   , 0, 1],
         ['oil'    , 0, 1],
     ];
-}//end defaultGoals()
+}//end default_goals()

@@ -7,7 +7,7 @@ function play_rainbow_strat(&$c)
     global $cnum;
     global $cpref;
 
-    out("Playing ".RAINBOW." turns for #$cnum ".siteURL($cnum));
+    out("Playing ".RAINBOW." turns for #$cnum ".site_url($cnum));
     out($c->turns.' turns left');
     out('Explore Rate: '.$c->explore_rate.'; Min Rate: '.$c->explore_min);
     //out_data($c) && exit;             //ouput the advisor data
@@ -54,7 +54,7 @@ function play_rainbow_strat(&$c)
     // }
 
     if (!isset($cpref->target_land) || $cpref->target_land == null) {
-      $cpref->target_land = Math::purebell(11000, 19000, 2000);
+      $cpref->target_land = Math::pureBell(11000, 19000, 2000);
       save_cpref($cnum,$cpref);
       out('Setting target acreage for #'.$cnum.' to '.$cpref->target_land);
     }
@@ -91,8 +91,8 @@ function play_rainbow_strat(&$c)
         $hold = $hold || money_management($c);
         $hold = $hold || food_management($c);
 
-        $c->buy_goals(defaultGoals($c));
-        $c->destock(destockGoals($c));
+        $c->buyGoals(default_goals($c));
+        $c->destock(destock_goals($c));
 
         if ($hold) { break; }
     }
@@ -128,7 +128,7 @@ function play_rainbow_turn(&$c)
             || $c->turns == 1
         )
     ) { //Don't sell less than 30 turns of food unless you're on your last turn (and desperate?)
-      return sellextrafood($c,$c->shouldSendStockToMarket(0) ); // 0 negates the "min qty" requirement as that is satsified already
+      return sell_food($c,$c->shouldSendStockToMarket(0) ); // 0 negates the "min qty" requirement as that is satsified already
     } elseif ($c->shouldBuildCS()) {
       return Build::cs();
     } elseif ($c->shouldBuildFullBPT()) {
@@ -208,7 +208,7 @@ function tech_rainbow(&$c, $turns=1)
     );
 }//end tech_rainbow()
 
-function techGoals() {
+function tech_goals() {
     return [
       //what, goal, priority
       ['t_mil'  ,94  ,10],
@@ -225,25 +225,25 @@ function techGoals() {
     ];
 }
 
-function militaryGoals(&$c)
+function military_goals(&$c)
 {
     return [
         //military
         ['nlg'    ,$c->nlgTarget(),100],
         ['dpa'    ,$c->defPerAcreTarget(1.0),100],
     ];
-}//end militaryGoals()
+}//end military_goals()
 
-function stockGoals()
+function stock_goals()
 {
     return [
         //stocking no goal just a priority
         ['food'   , 0, 1],
         ['oil'    , 0, 1],
     ];
-}//end stockGoals()
+}//end stock_goals()
 
-function defaultGoals(&$c)
+function default_goals(&$c)
 {
-    return array_merge(techGoals(),militaryGoals($c),stockGoals());
-}//end stockGoals()
+    return array_merge(tech_goals(),military_goals($c),stock_goals());
+}//end stock_goals()

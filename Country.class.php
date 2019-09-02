@@ -333,10 +333,10 @@ class Country
     }//end nlg()
 
     /**
-     * cs_per_bpt
+     * csPerBpt
      * @return int Number of CS per bpt
      */
-    public function cs_per_bpt()
+    public function csPerBpt()
     {
         switch ($this->govt) {
             case 'H':
@@ -357,7 +357,7 @@ class Country
      * the multiple for max tech based on govt
      * @return int the multipler
      */
-    public function tech_multiplier()
+    public function techMultiplier()
     {
         switch ($this->govt) {
             case 'H':
@@ -371,7 +371,7 @@ class Country
         }
 
         return $multiplier;
-    }//end tech_multiplier()
+    }//end techMultiplier()
 
 
     /**
@@ -389,9 +389,9 @@ class Country
         return $this->empty * $this->build_cost;
     }//end fullBuildCost()
 
-    public function reserved_cash()
+    public function reservedCash()
     {
-      if ($this->land > $this->target_land()) {
+      if ($this->land > $this->targetLand()) {
         return 0;
       }
 
@@ -404,7 +404,7 @@ class Country
 
     }//end fullBuildCost()
 
-    public function cheapest_dpnw_goal($goals = [],$dpnw)
+    public function cheapestDpnwGoal($goals = [],$dpnw)
     {
         // out('want_dpnw_goal:'.$dpnw);
         $score = [];
@@ -461,7 +461,7 @@ class Country
         // out('returning:'.key($score));
         return explode('.',key($score));
 
-    }//end cheapest_dpnw_goal()
+    }//end cheapestDpnwGoal()
 
     /**
      * Find Highest Goal
@@ -469,7 +469,7 @@ class Country
      *
      * @return string highest goal!
      */
-    public function highest_goal($goals = [])
+    public function highestGoal($goals = [])
     {
         global $market;
         $psum  = 0;
@@ -483,17 +483,17 @@ class Country
           $priority = ($goal[2]/100);
 
             if (($goal[0] == 't_sdi') || ($goal[0] == 't_war')) {
-              $t = $this->tech_multiplier() * ($goal[1]);
+              $t = $this->techMultiplier() * ($goal[1]);
               $a = $this->$point_att;
               $target = $t;
               $actual = $a;
             } elseif (($goal[0] == 't_mil') || ($goal[0] == 't_med')) {
-              $t = $this->tech_multiplier() * (100 - $goal[1]);
+              $t = $this->techMultiplier() * (100 - $goal[1]);
               $a = $this->$point_att - $goal[1];
               $target = 100 - $t;
               $actual = 100 - $a;
             } elseif (substr($goal[0],0,2) == 't_') {
-              $t = $this->tech_multiplier() * ($goal[1] - 100);
+              $t = $this->techMultiplier() * ($goal[1] - 100);
               $a = $this->$point_att - 100;
               $target = $t + 100;
               $actual = $a + 100;
@@ -543,29 +543,29 @@ class Country
         arsort($score);
 
         return key($score);
-    }//end highest_goal()
+    }//end highestGoal()
 
-    public function available_funds() {
+    public function availableFunds() {
       // out("money: $this->money");
-      // out("reserved: ".$this->reserved_cash());
-      return max(0,$this->money - $this->reserved_cash());
+      // out("reserved: ".$this->reservedCash());
+      return max(0,$this->money - $this->reservedCash());
     }
 
-    public function buy_goals($goals) {
+    public function buyGoals($goals) {
       if (turns_remaining() < 218) {return; } //to do 218 shoould be defined as something
       if ($this->built() < 90) { return; }
       if (turns_of_food($this) < 5) { return; }
-      if ($this->available_funds() < $this->land*1000) { return; }
+      if ($this->availableFunds() < $this->land*1000) { return; }
 
-      $spend = max($this->land*1000,$this->available_funds()/10);
+      $spend = max($this->land*1000,$this->availableFunds()/10);
       $spend = min($spend,$this->money);
 
       $str_spend = str_pad(''.engnot($spend), 8, ' ', STR_PAD_LEFT);
-      $str_avail = str_pad(''.engnot($this->available_funds()), 8, ' ', STR_PAD_LEFT);
+      $str_avail = str_pad(''.engnot($this->availableFunds()), 8, ' ', STR_PAD_LEFT);
 
       out("available: ".$str_avail."    spending: $".$str_spend." at a time");
 
-      while ($this->buy_highest_goal($goals, $spend)) {
+      while ($this->buyHighestGoal($goals, $spend)) {
         PublicMarket::update();
       }
 
@@ -584,7 +584,7 @@ class Country
       if ($dpnw === null && turns_remaining() > 5) { $dpnw = (200 - turns_remaining())**1.12; } //default s to gradually ramp up as we approach end
       if ($dpnw === null) { $dpnw = 0; }
 
-      while ($this->destock_highest_goal($goals,$dpnw)) {
+      while ($this->destockHighestGoal($goals,$dpnw)) {
         PublicMarket::update();
       };
 
@@ -595,12 +595,12 @@ class Country
      * @param  array   $goals         an array of goals to persue
      * @return void
      */
-    public function destock_highest_goal($goals,$dpnw)
+    public function destockHighestGoal($goals,$dpnw)
     {
         $this->updateMain();
         if (empty($goals)) { return; }
 
-        $goal = $this->cheapest_dpnw_goal($goals,$dpnw);
+        $goal = $this->cheapestDpnwGoal($goals,$dpnw);
 
         if (empty($goal)) { return; }
 
@@ -642,7 +642,7 @@ class Country
 
         if ($quantity > 0) { return PublicMarket::buy($this, [ $market_good => $quantity], [ $market_good => $price]); };
 
-    } //end destock_highest_goal()
+    } //end destockHighestGoal()
 
     /**
      * Try and spend up to $spend on the highest goal
@@ -650,16 +650,16 @@ class Country
      * @param  int     $spend         money to spend
      * @return void
      */
-    public function buy_highest_goal($goals, $spend)
+    public function buyHighestGoal($goals, $spend)
     {
         $this->updateMain();
-        if ($spend > $this->available_funds()) { return; }
+        if ($spend > $this->availableFunds()) { return; }
         if (empty($goals)) { return; }
 
         global $cpref;
         $tol = $cpref->price_tolerance; //should be between 0.5 and 1.5
 
-        $what = $this->highest_goal($goals);
+        $what = $this->highestGoal($goals);
 
         if ($what === null) { return; }
 
@@ -693,7 +693,7 @@ class Country
 
         if ($quantity > 0) { return PublicMarket::buy($this, [ $market_good => $quantity], [ $market_good => $market_price]); };
 
-    } //end buy_highest_goal()
+    } //end buyHighestGoal()
 
     /**
      * Output country stats
@@ -706,7 +706,7 @@ class Country
     public function countryStats($strat, $goals = [])
     {
         $land = str_pad(engnot($this->land), 8, ' ', STR_PAD_LEFT);
-        $t_l  = str_pad(engnot($this->target_land()), 8, ' ', STR_PAD_LEFT);
+        $t_l  = str_pad(engnot($this->targetLand()), 8, ' ', STR_PAD_LEFT);
         $netw = str_pad(engnot($this->networth), 8, ' ', STR_PAD_LEFT);
         $govt = str_pad($this->govt, 8, ' ', STR_PAD_LEFT);
         $t_pl = str_pad($this->turns_played, 8, ' ', STR_PAD_LEFT);
@@ -720,10 +720,10 @@ class Country
         $nlg  = str_pad($this->nlg(), 8, ' ', STR_PAD_LEFT);
         $nlgt = str_pad($this->nlgt ?? $this->nlgTarget(), 8, ' ', STR_PAD_LEFT);
         $cnum = $this->cnum;
-        $url  = str_pad(siteURL($this->cnum), 8, ' ', STR_PAD_LEFT);
+        $url  = str_pad(site_url($this->cnum), 8, ' ', STR_PAD_LEFT);
         $blt  = str_pad($this->built().'%', 8, ' ', STR_PAD_LEFT);
         $bpt  = str_pad($this->bpt, 8, ' ', STR_PAD_LEFT);
-        $bptt = str_pad($this->target_bpt(), 8, ' ', STR_PAD_LEFT);
+        $bptt = str_pad($this->targetBpt(), 8, ' ', STR_PAD_LEFT);
         $tpt  = str_pad($this->tpt, 8, ' ', STR_PAD_LEFT);
         $cash = str_pad(engnot($this->money), 8, ' ', STR_PAD_LEFT);
 
@@ -732,11 +732,11 @@ class Country
 
         $str = str_pad(' '.$govt.' '.$strat." #".$cnum.' ', 78, '-', STR_PAD_BOTH).'|';
 
-        $land = Colors::getColoredString($land, ($this->land < $this->target_land()) ? "red" : "green");
+        $land = Colors::getColoredString($land, ($this->land < $this->targetLand()) ? "red" : "green");
         $blt  = Colors::getColoredString($blt,  ($this->built() < 95) ? "red" : "green");
         $nlg  = Colors::getColoredString($nlg,  ($this->nlg() < ($this->nlgt ?? $this->nlgTarget())) ? "red" : "green");
         $dpa  = Colors::getColoredString($dpa,  ($this->defPerAcre() < ($this->dpat ?? $this->defPerAcreTarget())) ? "red" : "green");
-        $bpt  = Colors::getColoredString($bpt,  ($this->bpt < ($this->target_bpt())) ? "red" : "green");
+        $bpt  = Colors::getColoredString($bpt,  ($this->bpt < ($this->targetBpt())) ? "red" : "green");
 
         $str .= $s.'Turns Played: '.$t_pl. '         NLG:        '.$nlg .'         Mil: '.$pmil.$e;
         $str .= $s.'Land:         '.$land. '         NLG Target: '.$nlgt.'         Bus: '.$pbus.$e;
@@ -770,7 +770,7 @@ class Country
         return true;
     }//end affordBuildBPT()
 
-    public function target_land()
+    public function targetLand()
     {
       global $cpref;
       return $cpref->target_land;
@@ -782,9 +782,9 @@ class Country
      * @return int            the target BPT
      */
 
-    public function target_bpt()
+    public function targetBpt()
     {
-      $to_build = $this->target_land() - $this->land + $this->empty;
+      $to_build = $this->targetLand() - $this->land + $this->empty;
       if ($to_build > 0) {
         return floor(sqrt($to_build / 4));
       }
@@ -808,7 +808,7 @@ class Country
           return false;
       }
 
-      if ($this->bpt >= $this->target_bpt()) {
+      if ($this->bpt >= $this->targetBpt()) {
           //we're at the target!
           return false;
       }
@@ -832,7 +832,7 @@ class Country
       if ($this->protection == 1) { $fraction = 0.8; }//dont get stuck in protection!
 
       //consider the fraction of turns to spend on CS
-      return ($this->cs_per_bpt() * ($this->bpt - 5)) < ($this->turns_played * $fraction);
+      return ($this->csPerBpt() * ($this->bpt - 5)) < ($this->turns_played * $fraction);
 
     }//end shouldBuildCS()
 
@@ -876,7 +876,7 @@ class Country
         return false;
       }
 
-      if ($this->land > $this->target_land()) {
+      if ($this->land > $this->targetLand()) {
         return false;
       }
 
@@ -986,7 +986,7 @@ class Country
         $max   = 16000000;
         $std_d = 3000000;
         $step  = 1000000;
-        $qty = Math::purebell($min, $max, $std_d, $step);
+        $qty = Math::pureBell($min, $max, $std_d, $step);
       };
 
       return $this->food > $qty;
@@ -994,7 +994,7 @@ class Country
     }
 
     public function stockpiling() {
-      if ($this->land < $this->target_land()) {
+      if ($this->land < $this->targetLand()) {
         return false;
       }
       if ($this->empty > 2 * $this->bpt) {

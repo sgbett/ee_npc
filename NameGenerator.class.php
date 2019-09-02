@@ -5,15 +5,15 @@ namespace EENPC;
 //NOTE THIS WAS BORROWED FROM http://online-generator.com/ AND CONVERTED TO PHP
 
 /*for($i = 0; $i < 1000; $i++){
-    //echo "Guild:\t\t", guild_name(), "\n";
-    //echo "Fantasy:\t", fantasy_name(), "\n";
-    //echo "WoW:\t\t", wow_name(), "\n";
+    //echo "Guild:\t\t", guildName(), "\n";
+    //echo "Fantasy:\t", fantasyName(), "\n";
+    //echo "WoW:\t\t", wowName(), "\n";
     //echo "Nick:\t\t", nickname(), "\n";
-    //echo "Vampire:\t", vampirename(), "\n";
-    //echo "Pirate:\t\t", pirate_name(), "\n";
+    //echo "Vampire:\t", vampireName(), "\n";
+    //echo "Pirate:\t\t", pirateName(), "\n";
     //echo "Project:\t", projectname(), "\n";
     //echo "\n---- next round ----\n";
-    $name = rand_name();
+    $name = randName();
     if($name === 0)
         echo "\n\noops\n\n";
     echo $name, "\n";
@@ -25,28 +25,28 @@ exit;
 class NameGenerator
 {
 
-    public static function rand_name()
+    public static function randName()
     {
         switch (rand(0, 100) % 7) {
             case 0:
-                return self::guild_name();
+                return self::guildName();
             case 1:
-                return self::fantasy_name();
+                return self::fantasyName();
             case 2:
-                return self::wow_name();
+                return self::wowName();
             case 3:
                 return self::nickname();
             case 4:
-                return self::vampirename();
+                return self::vampireName();
             case 5:
-                return self::pirate_name();
+                return self::pirateName();
             case 6:
                 return self::projectname();
         }
-    }//end rand_name()
+    }//end randName()
 
 
-    public static function guild_name()
+    public static function guildName()
     {
         $guild_prefix  = [
             "alliance", "ancestor", "angels", "apotheoses", "beasts", "brothers", "brutes", "children", "conquerors",
@@ -150,10 +150,10 @@ class NameGenerator
         }
 
         return $name;
-    }//end guild_name()
+    }//end guildName()
 
 
-    public static function fantasy_name()
+    public static function fantasyName()
     {
         $fantasy_male    = [
             "Abardon", "Acaman", "Achard", "Ackmard", "Agon", "Agnar", "Abdun", "Aidan", "Airis", "Aldaren",
@@ -264,10 +264,10 @@ class NameGenerator
             $name = $prename_female." ".$extraname." ".$sufname;
         }
         return $name;
-    }//end fantasy_name()
+    }//end fantasyName()
 
 
-    public static function wow_name()
+    public static function wowName()
     {
         $wow_male       = [
             "Abardon", "Acaman", "Achard", "Ackmard", "Agon", "Agnar", "Abdun", "Aidan", "Airis", "Aldaren", "Alderman", "Alkirk", "Amerdan", "Anfarc", "Aslan", "Actar", "Atgur", "Atlin", "Aldan", "Badek", "Baduk", "Bedic", "Beeron", "Bein", "Bithon", "Bohl", "Boldel", "Bolrock", "Bredin", "Bredock", "Breen", "tristan", "Bydern", "Cainon", "Calden", "Camon", "Cardon", "Casdon", "Celthric", "Cevelt", "Chamon", "Chidak", "Cibrock", "Cipyar", "Colthan", "Connell", "Cordale", "Cos", "Cyton", "Daburn", "Dawood", "Dak", "Dakamon", "Darkboon", "Dark", "Darg", "Darmor", "Darpick", "Dask", "Deathmar", "Derik", "Dismer", "Dokohan", "Doran", "Dorn", "Dosman", "Draghone", "Drit", "Driz", "Drophar", "Durmark", "Dusaro", "Eckard", "Efar", "Egmardern", "Elvar", "Elmut", "Eli", "Elik", "Elson", "Elthin", "Elbane", "Eldor", "Elidin", "Eloon", "Enro", "Erik", "Erim", "Eritai", "Escariet", "Espardo", "Etar", "Eldar", "Elthen", "Elfdorn", "Etran", "Eythil", "Fearlock", "Fenrir", "Fildon", "Firdorn", "Florian", "Folmer", "Fronar", "Fydar", "Gai", "Galin", "Galiron", "Gametris", "Gauthus", "Gehardt", "Gemedes", "Gefir", "Gibolt", "Geth", "Gom", "Gosform", "Gothar", "Gothor", "Greste", "Grim", "Gryni", "Gundir", "Gustov", "Halmar", "Haston", "Hectar", "Hecton", "Helmon", "Hermedes", "Hezaq", "Hildar", "Idon", "Ieli", "Ipdorn", "Ibfist", "Iroldak", "Ixen", "Ixil", "Izic", "Jamik", "Jethol", "Jihb", "Jibar", "Jhin", "Julthor", "Justahl", "Kafar", "Kaldar", "Kelar", "Keran", "Kib", "Kilden", "Kilbas", "Kildar", "Kimdar", "Kilder", "Koldof", "Kylrad", "Lackus", "Lacspor", "Lahorn", "Laracal", "Ledal", "Leith", "Lalfar", "Lerin", "Letor", "Lidorn", "Lich", "Loban", "Lox", "Ludok", "Ladok", "Lupin", "Lurd", "Mardin", "Markard", "Merklin", "Mathar", "Meldin", "Merdon", "Meridan", "Mezo", "Migorn", "Milen", "Mitar", "Modric", "Modum", "Madon", "Mafur", "Mujardin", "Mylo", "Mythik", "Nalfar", "Nadorn", "Naphazw", "Neowald", "Nildale", "Nizel", "Nilex", "Niktohal", "Niro", "Nothar", "Nathon", "Nadale", "Nythil", "Ozhar", "Oceloth", "Odeir", "Ohmar", "Orin", "Oxpar", "Othelen", "Padan", "Palid", "Palpur", "Peitar", "Pendus", "Penduhl", "Pildoor", "Puthor", "Phar", "Phalloz", "Qidan", "Quid", "Qupar", "Randar", "Raydan", "Reaper", "Relboron", "Riandur", "Rikar", "Rismak", "Riss", "Ritic", "Ryodan", "Rysdan", "Rythen", "Rythorn", "Sabalz", "Sadaron", "Safize", "Samon", "Samot", "Secor", "Sedar", "Senic", "Santhil", "Sermak", "Seryth", "Seth", "Shane", "Shard", "Shardo", "Shillen", "Silco", "Sildo", "Silpal", "Sithik", "Soderman", "Sothale", "Staph", "Suktar", "zuth", "Sutlin", "Syr", "Syth", "Sythril", "Talberon", "Telpur", "Temil", "Tamilfist", "Tempist", "Teslanar", "Tespan", "Tesio", "Thiltran", "Tholan", "Tibers", "Tibolt", "Thol", "Tildor", "Tilthan", "Tobaz", "Todal", "Tothale", "Touck", "Tok", "Tuscan", "Tusdar", "Tyden", "Uerthe", "Uhmar", "Uhrd", "Updar", "Uther", "Vacon", "Valker", "Valyn", "Vectomon", "Veldar", "Velpar", "Vethelot", "Vildher", "Vigoth", "Vilan", "Vildar", "Vi", "Vinkol", "Virdo", "Voltain", "Wanar", "Wekmar", "Weshin", "Witfar", "Wrathran", "Waytel", "Wathmon", "Wider", "Wyeth", "Xandar", "Xavor", "Xenil", "Xelx", "Xithyl", "Yerpal", "Yesirn", "Ylzik", "Zak", "Zek", "Zerin", "Zestor", "Zidar", "Zigmal", "Zilex", "Zilz", "Zio", "Zotar", "Zutar", "Zytan", "Amlen", "Atmas", "Balbaar", "Bazol", "Bazyl", "", "Bealx", "", "Belep", "Bernin", "Bernout", "Bulxso", "Byakuya", "Calebaas", "Chaoshof", "Carelene", "Daigorn", "Darkonn", "Davezzorr", "Deltacus", "Diaboltz", "Dommekoe", "Donatel", "Druppel", "Elpenor", "Eriz", "Exz", "Falcord", "Fayenia", "Fhuyr", "Fibroe", "Grenjar", "Haiduc", "Holypetra", "Hubok", "Ihaspusi", "Ijin", "Irmeli", "Ixtli", "Jager", "Jelli", "Jihnbo", "Jihnj", "rambol", "Johno", "", "Kambui", "Karmak", "Kastenz", "Kdenseje", "Kiarani", "Latzaf", "Leeuwin", "Leurke", "Lolimgolas", "Looladin", "Lya", "Maevi", "Matsa", "Minox", "Mjoed", "Nomagestus", "Mutaro", "Narrayah", "Naterish", "Nothrad", "Okuni", "Omgicrit", "Onimia", "Pingala", "Pluitti", "Print", "Pronyma", "Psyra", "Purhara", "Qtis", "Rahe", "Realkoyo", "Saljin", "Slogum", "Sojiro", "Spirgel", "Staafsak", "Sucz", "Tiamath", "Tybell", "Valtaur", "Veulix", "Warmage", "Wortel", "Wroogny", "Yakkity", "Yakkityyak", "Yina", "Zhrug", "Xandread"
@@ -326,7 +326,7 @@ class NameGenerator
             }
         }
         return $name;
-    }//end wow_name()
+    }//end wowName()
 
 
     public static function nickname()
@@ -378,7 +378,7 @@ class NameGenerator
     }//end nickname()
 
 
-    public static function vampirename()
+    public static function vampireName()
     {
         $a = ["white", "black", "red", "bloody", "purple", "silver", "scarlet", "lightning"];
         $b = ["Count", "Lord", "Prince", "Darklord", "Count"];
@@ -440,10 +440,10 @@ class NameGenerator
             $name = $c[$t % 4]." ".$name;
         }
         return $name;
-    }//end vampirename()
+    }//end vampireName()
 
 
-    public static function pirate_name()
+    public static function pirateName()
     {
         $color          = ["black", "bloody", "crimson", "gold", "gray", "purple", "red", "scarlet", "silver", "white"];
         $pirate_title   = ["Captain", "Salty", "Bloody", "Captain", "Capt'n"];
@@ -489,7 +489,7 @@ class NameGenerator
             $name = $pirate_title[$n3 % 5]." ".$name;
         }
         return $name;
-    }//end pirate_name()
+    }//end pirateName()
 
 
     public static function projectname()
@@ -525,7 +525,7 @@ class NameGenerator
         return $name;
     }//end projectname()
 
-    public static function rand_country_name()
+    public static function randCountryName()
     {
         global $username;
         $name   = substr($username, 0, 2).' ';
@@ -545,5 +545,5 @@ class NameGenerator
 
         $name = trim($name);
         return $name;
-    }//end rand_country_name()
+    }//end randCountryName()
 }//end class

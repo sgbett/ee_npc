@@ -83,14 +83,14 @@ out('Entering Infinite Loop');
 $sleepcount = $loopcount = 0;
 $played     = true;
 
-$rules  = getRules();
-$server = getServer();
+$rules  = get_rules();
+$server = get_server();
 //$market            = new PublicMarket();
 $server_avg_networth = $server_avg_land = 0;
 
 while (1) {
     if (!is_object($server)) {
-        $server = getServer();
+        $server = get_server();
     }
 
     global $cpref;
@@ -100,11 +100,11 @@ while (1) {
         $cpref = init_cpref();
 
         out("Less countries than allowed! (".$server->alive_count.'/'.$server->countries_allowed.')');
-        $send_data = ['cname' => substring($cpref->strat.' '.NameGenerator::rand_name(),0,20)];
+        $send_data = ['cname' => substring($cpref->strat.' '.NameGenerator::randName(),0,20)];
         out("Making new country named '".$send_data['cname']."'");
         $cnum = ee('create', $send_data);
         out($send_data['cname'].' (#'.$cnum.') created!');
-        $server = getServer();
+        $server = get_server();
         if ($server->reset_start > time()) {
             $timeleft      = $server->reset_start - time();
             $countriesleft = $server->countries_allowed - $server->alive_count;
@@ -130,7 +130,7 @@ while (1) {
     $countries = $server->cnum_list->alive;
     shuffle($countries);
     if ($played) {
-        Bots::server_start_end_notification($server);
+        Bots::serverStartEndNotification($server);
         Bots::playstats($countries);
         echo "\n";
     }
@@ -201,27 +201,27 @@ while (1) {
             try {
                 switch ($cpref->strat) {
                     case 'F':
-                        $c->countryStats(FARMER, farmerGoals($c));
+                        $c->countryStats(FARMER, farmer_goals($c));
                         $c = play_farmer_strat($c);
                         break;
                     case 'T':
-                        $c->countryStats(TECHER, techerGoals($c));
+                        $c->countryStats(TECHER, techer_goals($c));
                         $c = play_techer_strat($c);
                         break;
                     case 'C':
-                        $c->countryStats(CASHER, casherGoals($c));
+                        $c->countryStats(CASHER, casher_goals($c));
                         $c = play_casher_strat($c);
                         break;
                     case 'I':
-                        $c->countryStats(INDY, indyGoals($c));
+                        $c->countryStats(INDY, indy_goals($c));
                         $c = play_indy_strat($c);
                         break;
                     case 'O':
-                        $c->countryStats(OILER, oilerGoals($c));
+                        $c->countryStats(OILER, oiler_goals($c));
                         $c = play_oiler_strat($c);
                         break;
                     default:
-                        $c->countryStats(RAINBOW, defaultGoals($c));
+                        $c->countryStats(RAINBOW, default_goals($c));
                         $c = play_rainbow_strat($c);
                 }
 
@@ -238,14 +238,14 @@ while (1) {
                 get_main();
 
                 $min             = 0;
-                $max             = 241 - ($cpref->lastTurns + $cpref->turnsStored); //sooner if stored turns
+                $max             = 181 - ($cpref->lastTurns + 0.5 * $cpref->turnsStored); //sooner if stored turns
 
                 $mintime         = $server->turn_rate * $min;
                 $maxtime         = $server->turn_rate * $max;
 
                 $nexttime        = round(Math::purebell($mintime, $maxtime, ($maxtime - $mintime)/2));
 
-                $maxin           = Bots::furthest_play($cpref);
+                $maxin           = Bots::furthestPlay($cpref);
 
                 $cpref->nextplay = $cpref->lastplay + round(min($maxin, $nexttime));
                 $nextturns       = floor($nexttime / $server->turn_rate);
@@ -319,7 +319,7 @@ while (1) {
 done(); //done() is defined below
 
 
-function govtStats($countries)
+function govt_stats($countries)
 {
     $cashers = $indies = $farmers = $techers = $oilers = $rainbows = 0;
     $undef   = 0;
@@ -383,7 +383,7 @@ function govtStats($countries)
             out(str_pad($gov[0], 18).': '.str_pad($gov[1], 4, ' ', STR_PAD_LEFT).$next.$anw.$ald.$cnums);
         }
     }
-}//end govtStats()
+}//end govt_stats()
 
 
 
@@ -392,17 +392,17 @@ function govtStats($countries)
 
 
 //COUNTRY PLAYING STUFF
-function onmarket($good = 'food', &$c = null)
+function on_market($good = 'food', &$c = null)
 {
     if ($c == null) {
         return out_data(debug_backtrace());
     }
 
     return $c->onMarket($good);
-}//end onmarket()
+}//end on_market()
 
 
-function onmarket_value($good = null, &$c = null)
+function on_market_value($good = null, &$c = null)
 {
     global $mktinfo;
     if (!$mktinfo) {
@@ -426,13 +426,13 @@ function onmarket_value($good = null, &$c = null)
     }
 
     return $value;
-}//end onmarket_value()
+}//end on_market_value()
 
 
-function totaltech($c)
+function total_tech($c)
 {
     return $c->t_mil + $c->t_med + $c->t_bus + $c->t_res + $c->t_agri + $c->t_war + $c->t_ms + $c->t_weap + $c->t_indy + $c->t_spy + $c->t_sdi;
-}//end totaltech()
+}//end total_tech()
 
 
 function total_military($c)
@@ -812,12 +812,6 @@ function get_main()
 
     return $main;
 }//end get_main()
-
-
-function get_rules()
-{
-    return ee('rules');      //get and return the RULES information
-}//end get_rules()
 
 function init_cpref()
 {

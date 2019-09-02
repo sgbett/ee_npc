@@ -233,7 +233,7 @@ function sell_food_to_private(&$c, $fraction = 1)
     return PrivateMarket::sell($c, $sell_units);
 }//end sell_food_to_private()
 
-function selloil(&$c,$stockpile = false) {
+function sell_oil(&$c,$stockpile = false) {
   $c = get_advisor();
 
   $quantity = ['m_oil' => round(($stockpile ? 0.9 : 1) * $c->oil)];
@@ -245,10 +245,10 @@ function selloil(&$c,$stockpile = false) {
   $max     = (turns_of_money($c) < 10) && $c->goodsStuck('m_oil') ? 0.99 : $rmax;
 
   $price   = $stockpile ? 2500 : PublicMarket::price('m_oil');
-  $price   = round($price * Math::purebell($rmin, $max, $rstddev, $rstep));
+  $price   = round($price * Math::pureBell($rmin, $max, $rstddev, $rstep));
 
   if ($price == 0) {
-    $price = Math::purebell(100, 1000, 500, 1);
+    $price = Math::pureBell(100, 1000, 500, 1);
   }
 
   $price   = ['m_oil' => $price];
@@ -257,7 +257,7 @@ function selloil(&$c,$stockpile = false) {
 
 }
 
-function sellextrafood(&$c,$stockpile = false)
+function sell_food(&$c,$stockpile = false)
 {
     $c = get_advisor();
 
@@ -272,10 +272,10 @@ function sellextrafood(&$c,$stockpile = false)
     $max     = (turns_of_money($c) < 10) && $c->goodsStuck('m_bu') ? 0.99 : $rmax;
 
     $price   = $stockpile ? 250 : PublicMarket::price('m_bu');
-    $price   = round($price * Math::purebell($rmin, $max, $rstddev, $rstep));
+    $price   = round($price * Math::pureBell($rmin, $max, $rstddev, $rstep));
 
     if ($price == 0) {
-      $price = Math::purebell(30, 288, 100, 1);
+      $price = Math::pureBell(30, 288, 100, 1);
     }
 
     if ($price <= max(35, $pm_info->sell_price->m_bu / $c->tax()))
@@ -286,7 +286,7 @@ function sellextrafood(&$c,$stockpile = false)
     $price   = ['m_bu' => $price];
 
     return PublicMarket::sell($c, $quantity, $price);
-}//end sellextrafood()
+}//end sell_food()
 
 function sell_all_military(&$c, $fraction = 1)
 {
@@ -412,7 +412,7 @@ function food_management(&$c)
     }
 
     //WAIT FOR GOODS/TECH TO SELL
-    if ($c->protection == 0 && $c->turns_stored < 30 && onmarket_value() > $pm_info->buy_price->m_bu * $foodloss) {
+    if ($c->protection == 0 && $c->turns_stored < 30 && on_market_value() > $pm_info->buy_price->m_bu * $foodloss) {
         out("We have goods on market; hold turns for now.");    //Text for screen
         return true;
     }
@@ -439,7 +439,7 @@ function food_management(&$c)
 }//end food_management()
 
 
-function minDpnw(&$c, $onlyDef = false)
+function min_dpnw(&$c, $onlyDef = false)
 {
     $pm_info = PrivateMarket::getRecent($c);   //get the PM info
 
@@ -466,7 +466,7 @@ function minDpnw(&$c, $onlyDef = false)
     }
 
     return min($dpnws);
-}//end minDpnw()
+}//end min_dpnw()
 
 
 function defend_self(&$c, $reserve_cash = 50000, $dpnwMax = 380)
@@ -477,7 +477,7 @@ function defend_self(&$c, $reserve_cash = 50000, $dpnwMax = 380)
     //BUY MILITARY?
     $spend      = $c->money - $reserve_cash;
     $nlg_target = $c->nlgTarget();
-    $dpnw       = minDpnw($c, true); //ONLY DEF
+    $dpnw       = min_dpnw($c, true); //ONLY DEF
     $nlg        = $c->nlg();
     $dpat       = $c->dpat ?? $c->defPerAcreTarget();
     $dpa        = $c->defPerAcre();
@@ -497,7 +497,7 @@ function defend_self(&$c, $reserve_cash = 50000, $dpnwMax = 380)
         // out("0.Hash: ".spl_object_hash($c));
 
         $dpnwOld = $dpnw;
-        $dpnw    = minDpnw($c, $dpa < $dpat); //ONLY DEF
+        $dpnw    = min_dpnw($c, $dpa < $dpat); //ONLY DEF
         //out("Old DPNW: ".round($dpnwOld, 1)."; New DPNW: ".round($dpnw, 1));
         if ($dpnw <= $dpnwOld) {
             $dpnw = $dpnwOld + 1;
@@ -520,7 +520,7 @@ function defend_self(&$c, $reserve_cash = 50000, $dpnwMax = 380)
 
         buy_private_below_dpnw($c, $dpnw, $spend, true, true); //ONLY DEF
         $dpnwOld = $dpnw;
-        $dpnw    = minDpnw($c, $dpa < $dpat); //ONLY DEF if dpa < dpat
+        $dpnw    = min_dpnw($c, $dpa < $dpat); //ONLY DEF if dpa < dpat
         if ($dpnw <= $dpnwOld) {
             $dpnw = $dpnwOld + 1;
         }
@@ -556,12 +556,12 @@ function sell_max_military(&$c)
         if ($q == 0) {
             $price[$key] = 0;
         } elseif (PublicMarket::price($key) == null || PublicMarket::price($key) == 0) {
-            $price[$key] = floor($pm_info->buy_price->$key * Math::purebell(0.5, 1.0, 0.3, 0.01));
+            $price[$key] = floor($pm_info->buy_price->$key * Math::pureBell(0.5, 1.0, 0.3, 0.01));
         } else {
             $max         = (turns_of_money($c) < 10) && $c->goodsStuck($key) ? 0.99 : $rmax; //undercut if we have goods stuck and are running low of cash
             $price[$key] = min(
                 $pm_info->buy_price->$key,
-                floor(PublicMarket::price($key) * Math::purebell($rmin, $max, $rstddev, $rstep))
+                floor(PublicMarket::price($key) * Math::pureBell($rmin, $max, $rstddev, $rstep))
             );
         }
 
@@ -622,11 +622,11 @@ function turns_remaining(){
  *
  * @return string    Spyop URL
  */
-function siteURL($cnum)
+function site_url($cnum)
 {
     global $config, $server;
     $name  = $config['server'];
     $round = $server->round_num;
 
     return "https://qz.earthempires.com/$name/$round/ranks/$cnum";
-}//end siteURL()
+}//end site_url()

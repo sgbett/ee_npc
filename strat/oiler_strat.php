@@ -21,7 +21,7 @@ function play_oiler_strat(&$c)
 {
     global $cnum;
     global $cpref;
-    out("Playing ".OILER." turns for #$cnum ".siteURL($cnum));
+    out("Playing ".OILER." turns for #$cnum ".site_url($cnum));
     $c->setIndy('pro_spy');
 
     if ($c->m_spy > 10000) {
@@ -29,7 +29,7 @@ function play_oiler_strat(&$c)
     }
 
     if (!isset($cpref->target_land) || $cpref->target_land == null) {
-      $cpref->target_land = Math::purebell(11000, 19000, 2000);
+      $cpref->target_land = Math::pureBell(11000, 19000, 2000);
       save_cpref($cnum,$cpref);
       out('Setting target acreage for #'.$cnum.' to '.$cpref->target_land);
     }
@@ -81,8 +81,8 @@ function play_oiler_strat(&$c)
         $hold = $hold || money_management($c);
         $hold = $hold || food_management($c);
 
-        $c->buy_goals(oilerGoals($c));
-        $c->destock(destockGoals($c));
+        $c->buyGoals(oiler_goals($c));
+        $c->destock(destock_goals($c));
 
         if ($hold) { break; }
 
@@ -102,7 +102,7 @@ function play_oiler_turn(&$c)
     if ($c->protection == 1) {
       sell_all_military($c,1);
       if (turns_of_food($c) > 10) { sell_food_to_private($c); }
-    } elseif (onmarket_value($c) == 0 && $c->built() < 75 && $c->income < 0) {
+    } elseif (on_market_value($c) == 0 && $c->built() < 75 && $c->income < 0) {
       sell_food_to_private($c,0.25);
     } elseif (turns_of_money($c) < 5 and $c->foodnet > 0) {
       sell_food_to_private($c);
@@ -116,9 +116,9 @@ function play_oiler_turn(&$c)
             || $c->turns == 1
         )
     ) { //Don't sell less than 30 turns of food unless you're on your last turn (and desperate?)
-      return sellextrafood($c,$c->shouldSendStockToMarket(0)); // 0 negates the "min qty" requirement - it is satsified already
+      return sell_food($c,$c->shouldSendStockToMarket(0)); // 0 negates the "min qty" requirement - it is satsified already
     } elseif ($c->protection == 0 && $c->oil > 30 * $c->land ) {
-        return selloil($c,$c->shouldSendStockToMarket(0));
+        return sell_oil($c,$c->shouldSendStockToMarket(0));
     } elseif ($c->shouldBuildCS()) {
         return Build::cs();
     } elseif ($c->shouldBuildFullBPT()) {
@@ -132,7 +132,7 @@ function play_oiler_turn(&$c)
     }
 }//end play_oiler_turn()
 
-function oilerGoals(&$c)
+function oiler_goals(&$c)
 {
     return [
         //what, goal, priority
@@ -158,4 +158,4 @@ function oilerGoals(&$c)
         ['food'   , 0, 0],
         ['oil'    , 0, 0],
     ];
-}//end defaultGoals()
+}//end default_goals()

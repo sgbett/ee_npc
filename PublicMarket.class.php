@@ -246,7 +246,7 @@ class PublicMarket
         return $result;
     }//end sell()
 
-    public static function buy_tech(&$c, $tech, $spend = 0, $maxprice = 9999)
+    public static function buyTech(&$c, $tech, $spend = 0, $maxprice = 9999)
     {
         $update = false;
         //$market_info = get_market_info();   //get the Public Market info
@@ -266,5 +266,5 @@ class PublicMarket
             $spend = $c->money - $diff;
 
         }
-    }//end buy_tech()
+    }//end buyTech()
 }//end class

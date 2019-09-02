@@ -18,7 +18,7 @@ class Bots
 
     public static $strats = [];
 
-    public static function all_strats() {
+    public static function allStrats() {
       return str_split('RRROOOCCCCFFFFFFTTTTIIIII');
     }
 
@@ -74,7 +74,7 @@ class Bots
         return max(self::getNextPlays($countries));
     }//end getFurthestNext()
 
-    public static function furthest_play($cpref)
+    public static function furthestPlay($cpref)
     {
         global $server, $rules;
         $max   = $rules->maxturns + $rules->maxstore;
@@ -83,10 +83,10 @@ class Bots
         $maxin = floor($diff * $server->turn_rate);
         out('Country is holding '.$cpref->lastTurns."(".$cpref->turnsStored.")".'. Turns will max in '.$maxin);
         return $maxin;
-    }//end furthest_play()
+    }//end furthestPlay()
 
 
-    public static function server_start_end_notification($server)
+    public static function serverStartEndNotification($server)
     {
         $start  = round((time() - $server->reset_start) / 3600, 1).' hours ago';
         $x      = floor((time() - $server->reset_start) / $server->turn_rate);
@@ -95,7 +95,7 @@ class Bots
         $x      = floor(($server->reset_end - time()) / $server->turn_rate);
         $end   .= " ($x turns)";
         out("Server started ".$start.' and ends in '.$end);
-    }//end server_start_end_notification()
+    }//end serverStartEndNotification()
 
 
     public static function pickStrat($cnum)
@@ -117,7 +117,7 @@ class Bots
     public static function evenlydistributedStrat()
     {
       if (count(self::$strats) == 0) {
-        self::$strats = self::all_strats();
+        self::$strats = self::allStrats;
       }
 
       return array_pop(self::$strats);
@@ -126,10 +126,10 @@ class Bots
 
     public static function playstats($countries)
     {
-        govtStats($countries);
+        govt_stats($countries);
 
         global $server;
-        $stddev = round(self::playtimes_stddev($countries));
+        $stddev = round(self::playtimesStdDev($countries));
         out("Standard Deviation of play is: $stddev; (".round($stddev / $server->turn_rate).' turns)');
         // if ($stddev < $server->turn_rate * 72 / 4 || $stddev > $server->turn_rate * 72) {
         //     out('Recalculating Nextplays');
@@ -138,10 +138,10 @@ class Bots
         //         $settings->$cnum->nextplay = time() + rand(0, $server->turn_rate * 72);
         //     }
         //
-        //     $stddev = round(self::playtimes_stddev($countries));
+        //     $stddev = round(self::playtimesStdDev($countries));
         //     out("Standard Deviation of play is: $stddev");
         //
-        //     govtStats($countries);
+        //     govt_stats($countries);
         //
         // }
 
@@ -212,11 +212,11 @@ class Bots
         }
     }//end txtStrat()
 
-    public static function playtimes_stddev($countries)
+    public static function playtimesStdDev($countries)
     {
         $nextplays = self::getNextPlays($countries);
         return Math::standardDeviation($nextplays);
-    }//end playtimes_stddev()
+    }//end playtimesStdDev()
 
 
     public static function lastPlays($countries)
