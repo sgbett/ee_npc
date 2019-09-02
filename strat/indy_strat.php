@@ -42,7 +42,7 @@ function play_indy_strat(&$c)
     }
 
     if (!isset($cpref->target_land) || $cpref->target_land == null) {
-      $cpref->target_land = Math::purebell(10000, 26000, 5000);
+      $cpref->target_land = Math::purebell(11000, 19000, 2000);
       save_cpref($cnum,$cpref);
       out('Setting target acreage for #'.$cnum.' to '.$cpref->target_land);
     }
