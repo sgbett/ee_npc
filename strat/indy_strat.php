@@ -71,10 +71,10 @@ function play_indy_strat(&$c)
         $hold = $hold || money_management($c);
         $hold = $hold || food_management($c);
 
-        if ($c->built() > 0.75) { $c->buyGoals(indy_goals($c)); }
-
         if ($hold) { break; }
     }
+
+    if ($c->built() > 0.75) { $c->buyGoals(indy_goals($c)); }
 
     return $c;
 }//end play_indy_strat()
