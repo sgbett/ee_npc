@@ -266,56 +266,7 @@ while (1) {
         }
     }
 
-
-    $loop      = false;
-    $until_end = 55;
-
-    if ($server->reset_end - $server->turn_rate * $until_end - time() < 0) {
-        for ($i = 0; $i < 5; $i++) {
-            foreach ($countries as $cnum) {
-                if ($settings->$cnum->lastplay < time() - $server->turn_rate * 10) {
-                    $settings->$cnum->nextplay = 0;
-                    $loop                      = true;
-                    continue;
-                }
-                $mktinfo = null;
-                destock($server, $cnum);
-            }
-        }
-        if (!$loop) {
-            out("Sleeping!");
-            out("\n");
-            while($server->reset_end + 1 >= time()) {
-                $end = $server->reset_end - time();
-                out("Sleep until end: ".$end."             \r", false);
-                sleep(1);//don't let them fluff things up, sleep through end of reset
-            }
-            out("Done Sleeping!\r");
-        }
-        $server = ee('server');
-    }
-
-    $cnum = null;
-    $loopcount++;
-    $sleepturns = 25;
-    $sleep      = 1;
-    //sleep 10s //min($sleepturns*$server->turn_rate,max(0,$server->reset_end - 60 - time())); //sleep for $sleepturns turns
-    //$sleepturns = ($sleep != $sleepturns*$server->turn_rate ? floor($sleep/$server->turn_rate) : $sleepturns);
-    //out("Played 'Day' $loopcount; Sleeping for " . $sleep . " seconds ($sleepturns Turns)");
-    if ($played) {
-        $sleepcount = 0;
-    } else {
-        $sleepcount++;
-    }
-
-
-    if ($sleepcount % 300 == 0) {
-        $server = ee('server');
-        //Bots::playstats($countries);
-        //echo "\n";
-    }
-
-    sleep($sleep); //sleep for $sleep seconds
+    sleep(1);
     Bots::outNext($countries, true);
     if ($playnow) { done(); }
 }

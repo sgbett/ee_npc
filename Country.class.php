@@ -352,7 +352,6 @@ class Country
         return 4/$modifier;
     }//end nlg()
 
-
     /**
      * the multiple for max tech based on govt
      * @return int the multipler
@@ -373,6 +372,22 @@ class Country
         return $multiplier;
     }//end techMultiplier()
 
+    /**
+     * the multiple for industrial production tech based on govt
+     * @return int the multipler
+     */
+    public function indyProductionMultiplier()
+    {
+        switch ($this->govt) {
+            case 'C':
+                $multiplier = 1.35;
+                break;
+            default:
+                $multiplier = 1.0;
+        }
+
+        return $multiplier;
+    }//end techMultiplier()
 
     /**
      * The float taxrate
@@ -791,6 +806,26 @@ class Country
       return 0;
     }
 
+    public function shouldPlayTurn($indy = false) {
+
+      if ($this->turns == 0) {
+        return false;
+      }
+
+      if ($this->stockpiling() == false) {
+        return true;
+      }
+
+      if ($this->netIncome() > 0) {
+        return true;
+      }
+
+      if ($indy) {
+        return true;
+      }
+      out("Negative income! Not playing any more turns for now.");
+      return false;
+    }
     /**
      * Check to see if we should build CS
      *
@@ -993,6 +1028,86 @@ class Country
 
     }
 
+    public function productionUnit($unit) {
+      if ($unit == 'm_spy') {
+        $multiplier = 0.62;
+      } elseif ($unit == 'm_ta') {
+        $multiplier = 0.4;
+      } else {
+        $multiplier = 1.86;
+      }
+
+      $percent      = str_replace("m_","pro_",$unit);
+      //out("$unit percent:".$this->$percent);
+
+      $raw_production = $this->b_indy * ($this->$percent/100) * $multiplier; //based on number of buildings, unit and %production set
+      //out("$unit raw_production:$raw_production");
+      $production = round($raw_production * ($this->pt_indy/100) * $this->indyProductionMultiplier()); // tech & govt bonus applied
+      //out("$unit production:$production");
+
+      return floor($production);
+    }
+    public function incomeMilitaryUnit($unit) {
+
+      if ($unit == 'm_spy') {
+        $price = PrivateMarket::sell_price($unit);
+      } else {
+        $public_price = PublicMarket::price($unit);
+        if ($public_price == 0) { $public_price = PrivateMarket::buy_price($unit); }
+        $price = max($public_price,PrivateMarket::sell_price($unit));
+      }
+
+      return $price * $this->productionUnit($unit);
+    }
+
+    public function incomeMilitary() {
+      $military_list = ['m_spy','m_tr','m_j','m_tu','m_ta'];
+      $income = 0;
+      foreach ($military_list as $unit) {
+        $income += $this->incomeMilitaryUnit($unit);
+      }
+      //out("incomeMilitary():$income");
+      return $income;
+    }
+
+    public function incomeFood() {
+      $income = $this->foodnet * PublicMarket::price('m_bu');
+      //out("incomeFood():$income");
+      return $income;
+    }
+
+    public function incomeOil() {
+      $income = $this->oilpro * PublicMarket::price('m_oil');
+      //out("incomeOil():$income");
+      return $income;
+    }
+
+    public function incomeTech() {
+      $income = $this->tpt * PublicMarket::meanTechPrice();
+      //out("incomeTech():$income");
+      return $income;
+    }
+
+    public function netIncome() {
+      PrivateMarket::getInfo();
+      PublicMarket::update();
+
+      $net  = $this->income;
+      $net += $this->incomeMilitary();
+      $net += $this->incomeFood();
+      $net += $this->incomeOil();
+      $net += $this->incomeTech();
+
+      //out("netIncome():$net");
+
+      return $net;
+    }
+
+    /**
+     * should we stock?
+     *
+     * @return boolean
+     */
     public function stockpiling() {
       if ($this->land < $this->targetLand()) {
         return false;

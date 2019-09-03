@@ -70,7 +70,7 @@ function play_rainbow_strat(&$c)
     //out_data($market_info);   //output the Public Market info
     //var_export($owned_on_market_info);
 
-    while ($c->turns > 0) {
+    while ($c->shouldPlayTurn()) {
         $result = play_rainbow_turn($c);
 
         if ($result === false) {  //UNEXPECTED RETURN VALUE
@@ -92,10 +92,11 @@ function play_rainbow_strat(&$c)
         $hold = $hold || food_management($c);
 
         $c->buyGoals(default_goals($c));
-        $c->destock(destock_goals($c));
 
         if ($hold) { break; }
     }
+
+    $c->destock(destock_goals($c));
 
     return $c;
 }//end play_rainbow_strat()

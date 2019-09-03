@@ -54,7 +54,7 @@ function play_techer_strat(&$c)
     //out_data($owned_on_market_info); //output the owned on market info
 
 
-    while ($c->turns > 0) {
+    while ($c->shouldPlayTurn()) {
         //$result = PublicMarket::buy($c,array('m_bu'=>100),array('m_bu'=>400));
         $result = play_techer_turn($c);
 
@@ -77,13 +77,11 @@ function play_techer_strat(&$c)
         $hold = $hold || food_management($c);
 
         $c->buyGoals(techer_goals($c));
-        $c->destock(destock_goals($c));
 
         if ($hold) { break; }
     }
 
-    buy_cheap_military($c,1500000000,200);
-    buy_cheap_military($c);
+    $c->destock(destock_goals($c));
 
     return $c;
 }//end play_techer_strat()

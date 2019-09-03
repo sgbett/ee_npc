@@ -50,7 +50,7 @@ function play_indy_strat(&$c)
     $owned_on_market_info = get_owned_on_market_info(); //find out what we have on the market
     //out_data($owned_on_market_info);  //output the Owned on Public Market info
 
-    while ($c->turns > 0) {
+    while ($c->shouldPlayTurn(true)) { //tell it you are indy!
         $result = play_indy_turn($c);
 
         if ($result === false) {  //UNEXPECTED RETURN VALUE

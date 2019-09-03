@@ -68,7 +68,7 @@ function play_farmer_strat(&$c)
     $owned_on_market_info = get_owned_on_market_info();     //find out what we have on the market
     //out_data($owned_on_market_info);  //output the Owned on Public Market info
 
-    while ($c->turns > 0) {
+    while ($c->shouldPlayTurn()) {
 
         $result = play_farmer_turn($c);
 
@@ -91,14 +91,11 @@ function play_farmer_strat(&$c)
         $hold = $hold || food_management($c);
 
         $c->buyGoals(farmer_goals($c));
-        $c->destock(destock_goals($c));
 
         if ($hold) { break; }
     }
 
-    buy_cheap_military($c,3000000000,250);
-    buy_cheap_military($c,1500000000,200);
-    buy_cheap_military($c);
+    $c->destock(destock_goals($c));
 
     return $c;
 }//end play_farmer_strat()
