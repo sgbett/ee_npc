@@ -145,7 +145,7 @@ function oiler_goals(&$c)
         ['t_res'  ,125 ,20],
         ['t_agri' ,220 ,100],
         ['t_war'  ,1   ,5],
-        ['t_ms'   ,120 ,5],
+        ['t_ms'   ,110 ,5],
         ['t_weap' ,120 ,5],
         ['t_indy' ,100 ,0],
         ['t_spy'  ,120 ,5],

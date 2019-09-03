@@ -116,7 +116,7 @@ function casher_goals(&$c)
         ['t_res'  ,155 ,100],
         ['t_agri' ,100 ,0],
         ['t_war'  ,1   ,5],
-        ['t_ms'   ,120 ,5],
+        ['t_ms'   ,110 ,5],
         ['t_weap' ,120 ,5],
         ['t_indy' ,100 ,0],
         ['t_spy'  ,120 ,5],

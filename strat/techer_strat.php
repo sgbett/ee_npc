@@ -226,7 +226,7 @@ function techer_goals(&$c)
         ['t_res'  ,140 ,1],
         ['t_agri' ,200 ,1],
         ['t_war'  ,3   ,1],
-        ['t_ms'   ,130 ,1],
+        ['t_ms'   ,110 ,1],
         ['t_weap' ,120 ,1],
         ['t_indy' ,120 ,1],
         ['t_spy'  ,120 ,1],
