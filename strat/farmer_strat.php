@@ -111,7 +111,11 @@ function play_farmer_turn(&$c)
     if ($c->protection == 1) {
       sell_all_military($c,1);
       if (turns_of_food($c) > 10) { sell_food_to_private($c); }
-    } elseif ($c->turns > 100 || (turns_of_money($c) < 5 && $c->foodnet > 0)) {
+    } elseif (on_market_value($c) == 0 && $c->built() < 75 && $c->income < 0) {
+      out('Need to sell some food to get built');
+      sell_food_to_private($c,0.25);
+    } elseif ($c->turns > 100 && turns_of_money($c) < 5 && $c->food && $c->foodnet > 0) {
+      out('Need to sell food');
       sell_food_to_private($c);
     }
 

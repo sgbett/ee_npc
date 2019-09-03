@@ -105,7 +105,8 @@ function play_oiler_turn(&$c)
       if (turns_of_food($c) > 10) { sell_food_to_private($c); }
     } elseif (on_market_value($c) == 0 && $c->built() < 75 && $c->income < 0) {
       sell_food_to_private($c,0.25);
-    } elseif (turns_of_money($c) < 5 and $c->foodnet > 0) {
+    } elseif ($c->turns > 100 && turns_of_money($c) < 5 && $c->food && $c->foodnet > 0) {
+      out('Need to sell food');
       sell_food_to_private($c);
     } elseif ($c->turns > 119) {
       sell_all_military($c,0.25);
