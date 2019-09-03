@@ -549,7 +549,7 @@ class Country
               if (!($actual === null)) { $actual = str_pad($actual, 5, ' ', STR_PAD_LEFT); }
               if (!($target === null)) { $target = str_pad($target, 5, ' ', STR_PAD_LEFT); }
               out_score($goal[0],$priority,$price,$actual,$target,$s);
-              $score[$goal[0]] = round($s * 1000);
+              $score[$goal[0]] = $s;
             }
             $psum += $priority;
         }

@@ -59,7 +59,7 @@ function out_score($what, $priority = '', $price = '', $current = '', $target = 
     .'  priority['.number_format($priority, 2).']'
     .'  price['.str_pad('$'.$price,5," ",STR_PAD_LEFT).']'
     .str_pad(implode(' ->',array_filter([$current,$target])),20," ",STR_PAD_LEFT)
-    .'  scores '.str_pad(round($score*1000),5," ",STR_PAD_LEFT)
+    .'  scores '.str_pad(round($score*10000),7," ",STR_PAD_LEFT)
   );
 }
 class Terminal
