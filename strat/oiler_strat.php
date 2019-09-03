@@ -130,7 +130,7 @@ function play_oiler_turn(&$c)
     } elseif ($c->shouldExplore())  {
       return explore($c);
     } elseif ($c->shouldCash()) {
-      return cash($c);
+      return cash($c, max(1, min(turns_of_money($c), turns_of_food($c), 13, $c->turns + 2) - 3));
     } elseif ($c->canExplore()) {
       return explore($c);
     }
