@@ -640,7 +640,7 @@ class Country
         // out('$total_cost:'.$total_cost);
 
         //if necessary try and sell bushels to buy it all
-        if ($this->money < $total_cost && turns_of_food($this) > 0) {
+        if ($this->money < $total_cost && turns_of_food($this) > 5) {
           $pm_info = PrivateMarket::getRecent($this);   //get the PM info
           $p = $pm_info->sell_price->m_bu;
           $q = ceil(min($this->food,($total_cost - $this->money) / $p));
