@@ -980,15 +980,9 @@ class Country
         return false;
       }
 
-
       if ($this->stockpiling()) {
           return $this->turns > 1;
       }
-
-      //
-      // if ($this->turns > min(80, turns_remaining() - 50)) {
-      //   return true;
-      // }
 
       return false;
     }//end shouldExplore()
@@ -1115,9 +1109,7 @@ class Country
       if ($this->land < $this->targetLand()) {
         return false;
       }
-      if ($this->empty > 2 * $this->bpt) {
-        return false;
-      }
+
       return true;
     }
 
