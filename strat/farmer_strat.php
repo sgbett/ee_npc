@@ -117,6 +117,9 @@ function play_farmer_turn(&$c)
     } elseif ($c->turns > 100 && turns_of_money($c) < 5 && $c->food && $c->foodnet > 0) {
       out('Need to sell food');
       sell_food_to_private($c);
+    } elseif ($c->turns > 119 && $c->turns_stored >59) {
+      out('Need to sell some military to get turns down');
+      sell_all_military($c,0.1);
     }
 
     if ($c->protection == 0 && $c->food > 7000
