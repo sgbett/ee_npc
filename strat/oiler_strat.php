@@ -117,7 +117,7 @@ function play_oiler_turn(&$c)
         )
     ) { //Don't sell less than 30 turns of food unless you're on your last turn (and desperate?)
       return sell_food($c,$c->shouldSendStockToMarket(0)); // 0 negates the "min qty" requirement - it is satsified already
-    } elseif ($c->protection == 0 && $c->oil > 30 * $c->land ) {
+    } elseif ($c->protection == 0 && $c->oil > 30 * $c->oilpro ) {
         return sell_oil($c,$c->shouldSendStockToMarket(0));
     } elseif ($c->shouldBuildCS()) {
         return Build::cs();
