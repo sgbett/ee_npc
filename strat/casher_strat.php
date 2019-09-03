@@ -68,12 +68,12 @@ function play_casher_strat(&$c)
         $hold = $hold || money_management($c);
         $hold = $hold || food_management($c);
 
+        $c->destock(destock_goals($c));
         $c->buyGoals(casher_goals($c));
 
         if ($hold) { break; }
     }
 
-    $c->destock(destock_goals($c));
 
     return $c;
 }//end play_casher_strat()
