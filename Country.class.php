@@ -643,8 +643,12 @@ class Country
         if ($this->money < $total_cost && turns_of_food($this) > 0) {
           $pm_info = PrivateMarket::getRecent($this);   //get the PM info
           $p = $pm_info->sell_price->m_bu;
-          $q = min($this->food,($total_cost - $this->money) / $p);
+          $q = ceil(min($this->food,($total_cost - $this->money) / $p));
+          // out('money:'.$this->money);
+          // out('total_cost:'.$total_cost);
+          // out('food:'.$this->food);
           // out('$p:'.$p.' $q:'.$q);
+          if ($q == 0) { return; }
           PrivateMarket::sell($this, ['m_bu' => $q],['m_bu' => $p]);
         }
 
@@ -1116,6 +1120,7 @@ class Country
       }
       return true;
     }
+
     /**
      * Add a retal to the list
      *
