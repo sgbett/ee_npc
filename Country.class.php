@@ -595,8 +595,7 @@ class Country
 
     public function destock($goals, $dpnw = null) {
 
-      if (turns_remaining() > 200) { return; }
-      if ($dpnw === null && turns_remaining() > 5) { $dpnw = (200 - turns_remaining())**1.12; } //default s to gradually ramp up as we approach end
+      if ($dpnw === null && turns_remaining() > 1) { $dpnw = 1000 * (turns_remaining()**(-1/3)); } //default is to ramp up as we approach end
       if ($dpnw === null) { $dpnw = 0; }
 
       while ($this->destockHighestGoal($goals,$dpnw)) {
