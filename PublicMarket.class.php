@@ -246,6 +246,18 @@ class PublicMarket
         return $result;
     }//end sell()
 
+    public static function meanTechPrice() {
+      $techlist = ['mil','med','bus','res','agri','war','ms','weap','indy','spy','sdi'];
+
+      $sum = 0;
+      foreach($techlist as $tech) {
+          $price = self::price($tech);
+          if ($price == 0) { $price = 4000; };
+          $sum += $price;
+      }
+      return round($sum/count($techlist));
+    }
+
     public static function buyTech(&$c, $tech, $spend = 0, $maxprice = 9999)
     {
         $update = false;
