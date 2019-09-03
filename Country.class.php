@@ -489,7 +489,7 @@ class Country
               $actual = $a;
             } elseif (($goal[0] == 't_mil') || ($goal[0] == 't_med')) {
               $t = $this->techMultiplier() * (100 - $goal[1]);
-              $a = $this->$point_att - $goal[1];
+              $a = 100 - $this->$point_att;
               $target = 100 - $t;
               $actual = 100 - $a;
             } elseif (substr($goal[0],0,2) == 't_') {
