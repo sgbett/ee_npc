@@ -215,19 +215,20 @@ function tech_rainbow(&$c, $turns=1)
 }//end tech_rainbow()
 
 function tech_goals() {
+  //pretty low as rainbow techs itself
     return [
       //what, goal, priority
-      ['t_mil'  ,94  ,10],
-      ['t_med'  ,90  ,5],
-      ['t_bus'  ,140 ,50],
-      ['t_res'  ,140 ,50],
-      ['t_agri' ,200 ,50],
+      ['t_mil'  ,98  ,10],
+      ['t_med'  ,97  ,5],
+      ['t_bus'  ,120 ,20],
+      ['t_res'  ,120 ,20],
+      ['t_agri' ,150 ,20],
       ['t_war'  ,1   ,5],
       ['t_ms'   ,110 ,5],
-      ['t_weap' ,120 ,5],
-      ['t_indy' ,125 ,50],
-      ['t_spy'  ,120 ,5],
-      ['t_sdi'  ,60  ,5],
+      ['t_weap' ,110 ,5],
+      ['t_indy' ,120 ,20],
+      ['t_spy'  ,110 ,5],
+      ['t_sdi'  ,20  ,5],
     ];
 }
 
