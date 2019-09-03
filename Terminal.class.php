@@ -90,8 +90,20 @@ class Terminal
         $output = ($newline ? "\n" : null)."[".date("H:i:s")."] $str";
         echo $output;
 
+        global $config;
+
+        if (isset($config) == false || array_key_exists('log_to_file',$config) == false ) { return; }
+
+        $path = explode('/',$config['log_to_file']);
+        if (count($path) > 1) { array_pop($path); }
+        $path = implode('/',$path);
+
+        if (!file_exists($path)) {
+            mkdir($path, 0777, true);
+        }
+
         if (substr($str,0,13) != 'Next Play in ') {
-          file_put_contents("logs/log.txt", $output, FILE_APPEND);
+          file_put_contents($config['log_to_file'], $output, FILE_APPEND);
         }
 
 

@@ -143,6 +143,10 @@ while (1) {
         Debug::off(); //reset for new country
         $save = false;
 
+        $name  = $config['server'];
+        $round = $server->round_num;
+        $config['log_to_file'] = "logs/$name/$round/$cnum.txt";
+
         $cpref = $settings->$cnum;
 
         // if (!isset($cpref->retal)) {
