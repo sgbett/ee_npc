@@ -133,6 +133,9 @@ class PrivateMarket
     public static function sell(&$c, $units = [])
     {
         $result    = ee('pm', ['sell' => $units]);
+
+        if ($result == 'NOINPUT') { debug_print_backtrace(); }
+
         $c->money += $result->money;
         $str       = '--- SELL Private Market: ';
         $pad       = "\n".str_pad(' ', 34);
@@ -165,4 +168,15 @@ class PrivateMarket
         out($str);
         return $result;
     }//end sell()
+
+    public static function buy_price($unit) {
+      $pm_info = PrivateMarket::getRecent();
+      return $pm_info->buy_price->$unit;
+    }
+
+    public static function sell_price($unit) {
+      $pm_info = PrivateMarket::getRecent();
+      return $pm_info->sell_price->$unit;
+    }
+
 }//end class
