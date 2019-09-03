@@ -111,6 +111,12 @@ function play_rainbow_turn(&$c)
 
     if ($c->protection == 1) {
       sell_all_military($c,1);
+    } elseif (on_market_value($c) == 0 && $c->built() < 75 && $c->income < 0) {
+      out('Need to sell some food to get built');
+      sell_food_to_private($c,0.25);
+    } elseif ($c->turns > 119 && $c->turns_stored >59) {
+      out('Need to sell some military to get turns down');
+      sell_all_military($c,0.1);
     }
 
     if ($c->protection == 0 && total_cansell_tech($c) > 20 * $c->tpt && selltechtime($c)
