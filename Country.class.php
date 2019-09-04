@@ -131,11 +131,11 @@ class Country
     {
       $food = $this->food;
       $food += $this->onMarket('m_bu');
-      out('$food:'.$food);
+      //out('$food:'.$food);
 
       $oil = $this->oil;
       $oil += $this->onMarket('m_oil');
-      out('$oil:'.$oil);
+      //out('$oil:'.$oil);
 
       if ($oil == 0) { return 0; }
 
