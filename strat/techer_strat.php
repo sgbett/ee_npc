@@ -95,10 +95,14 @@ function play_techer_turn(&$c)
 
     if ($c->protection == 1) {
       sell_all_military($c,1);
-      if (turns_of_food($c) > 10) { sell_food_to_private($c); }
     } elseif ($c->turns > 119 && $c->turns_stored >59) {
       out('Need to sell some military to get turns down');
       sell_all_military($c,0.1);
+    }
+
+    if ($c->foodnet > 0 && turns_of_food($c) > 10) {
+      //allows continued selling of surplus food from farm start when out of protection
+      sell_food_to_private($c);
     }
 
     if ($c->shouldSendStockToMarket()) {
@@ -112,7 +116,7 @@ function play_techer_turn(&$c)
     } elseif ($c->shouldBuildCS($c->protection ? 0.8 : 1)) { //frontload CS when OOP
       return Build::cs();
     } elseif ($c->shouldBuildFullBPT()) {
-      return $c->protection == 1 ? Build::farmer($c->bpt) : Build::techer($c->bpt);
+      return $c->protection == 1 ? Build::farmer($c->bpt) : Build::techer($c->bpt); //farm start
     } elseif ($c->shouldExplore())  {
       return explore($c);
     } elseif (on_market_value($c) == 0 && $c->built() < 75) {
