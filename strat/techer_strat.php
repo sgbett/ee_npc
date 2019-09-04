@@ -119,6 +119,9 @@ function play_techer_turn(&$c)
       return tech($c, 1);
     } elseif (turns_of_money($c) > 0 && turns_of_food($c) > 0) {
       return tech($c, max(1, min(turns_of_money($c), turns_of_food($c), 13, $c->turns + 2) - 3));
+    } elseif ($c->turns > 30) {
+      out(Colors::getColoredString('Cashing because no other options', 'red'));
+      return cash($c);
     }
 
 }//end play_techer_turn()

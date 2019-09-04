@@ -110,6 +110,9 @@ function play_indy_turn(&$c)
       return cash($c);
     } elseif ($c->canExplore()) {
       return explore($c);
+    } elseif ($c->turns > 30) {
+      out(Colors::getColoredString('Cashing because no other options', 'red'));
+      return cash($c);
     }
 
 }//end play_indy_turn()
