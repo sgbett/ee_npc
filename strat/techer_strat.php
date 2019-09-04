@@ -96,6 +96,9 @@ function play_techer_turn(&$c)
     if ($c->protection == 1) {
       sell_all_military($c,1);
       if (turns_of_food($c) > 10) { sell_food_to_private($c); }
+    } elseif ($c->turns > 119 && $c->turns_stored >59) {
+      out('Need to sell some military to get turns down');
+      sell_all_military($c,0.1);
     }
 
     if ($c->shouldSendStockToMarket()) {
@@ -116,9 +119,6 @@ function play_techer_turn(&$c)
       return tech($c, 1);
     } elseif (turns_of_money($c) > 0 && turns_of_food($c) > 0) {
       return tech($c, max(1, min(turns_of_money($c), turns_of_food($c), 13, $c->turns + 2) - 3));
-    } elseif ($c->turns > 119 && $c->turns_stored >59) {
-      out('Need to sell some military to get turns down');
-      sell_all_military($c,0.1);
     }
 
 }//end play_techer_turn()

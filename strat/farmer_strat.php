@@ -145,6 +145,9 @@ function play_farmer_turn(&$c)
 
 function farmer_goals(&$c)
 {
+    } else {
+      out(Colors::getColoredString('Cashing because no other options', 'red'));
+      return cash($c);
     return [
         //what, goal, priority
 
