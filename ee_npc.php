@@ -242,7 +242,7 @@ while (1) {
                 get_main();
 
                 $min             = 0;
-                $max             = 181 - ($cpref->lastTurns + 0.5 * $cpref->turnsStored); //sooner if stored turns
+                $max             = 121 - 0.5 * ($cpref->lastTurns + $cpref->turnsStored);
 
                 $mintime         = $server->turn_rate * $min;
                 $maxtime         = $server->turn_rate * $max;
