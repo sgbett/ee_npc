@@ -812,18 +812,22 @@ class Country
     public function shouldPlayTurn($indy = false) {
 
       if ($this->turns == 0) {
+        out('Cannot play - No turns!');
         return false;
       }
 
       if ($this->stockpiling() == false) {
+        out('Should Play because not stockpiling');
         return true;
       }
 
       if ($this->netIncome() > 0) {
+        out('Should Play because cashflow positive');
         return true;
       }
 
       if ($indy) {
+        out('Should Play because indy');
         return true;
       }
       out("Negative income! Not playing any more turns for now.");
@@ -837,37 +841,39 @@ class Country
     public function shouldBuildCS($fraction = 0.6)
     {
       if ($this->turns < 5) {
-          //not enough turns...
+          out('not enough turns for CS');
           return false;
       }
 
       if ($this->empty < 5) {
-          //not enough land...
+          out('not enough land for CS');
           return false;
       }
 
       if ($this->bpt >= $this->targetBpt()) {
-          //we're at the target!
+          out('no neeed for CS - at target BPT');
           return false;
       }
 
       if ($this->money < 5 * $this->build_cost) {
-          //not enough money...
+          out('not enough money for CS');
           return false;
       }
 
       if ($this->income < 0 && $this->money < 4 * $this->build_cost + 5 * $this->income) {
-          //going to run out of money
+          out('going to run out of money for CS');
           return false;
       }
 
+      //use 5 because growth of pop & military typically
       if ($this->foodnet < 0 && $this->food < $this->foodnet * -5) {
-          //going to run out of food
-          //use 5 because growth of pop & military typically
+          out('going to run out of food for CS');
           return false;
       }
 
       if ($this->protection == 1) { $fraction = 0.8; }//dont get stuck in protection!
+
+      out(($this->csPerBpt()*($this->bpt - 5)).' needs to be lower than '.($this->turns_played * $fraction));
 
       //consider the fraction of turns to spend on CS
       return ($this->csPerBpt() * ($this->bpt - 5)) < ($this->turns_played * $fraction);
@@ -881,9 +887,6 @@ class Country
      */
     public function shouldBuildFullBPT()
     {
-        if ($this->bpt < 10) {
-          return false;
-        };
 
         if ($this->turns < 2) {
             //not enough turns...
