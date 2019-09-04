@@ -109,7 +109,7 @@ function play_techer_turn(&$c)
         //never sell less than 20 turns worth of tech
         //always sell if we can????
         return sell_max_tech($c);
-    } elseif ($c->shouldBuildCS(0.8)) { //target 80% of turns on cs rather than default 50
+    } elseif ($c->shouldBuildCS($c->protection ? 0.8 : 1)) { //frontload CS when OOP
       return Build::cs();
     } elseif ($c->shouldBuildFullBPT()) {
       return $c->protection == 1 ? Build::farmer($c->bpt) : Build::techer($c->bpt);
