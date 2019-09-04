@@ -117,7 +117,7 @@ class Bots
     public static function evenlydistributedStrat()
     {
       if (count(self::$strats) == 0) {
-        self::$strats = self::allStrats;
+        self::$strats = self::allStrats();
       }
 
       return array_pop(self::$strats);
