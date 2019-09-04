@@ -127,6 +127,20 @@ class Country
         return false;
     }//end goodsStuck()
 
+    public function foodToOilRatio()
+    {
+      $food = $this->food;
+      $food += $this->onMarket('m_bu');
+      out('$food:'.$food);
+
+      $oil = $this->oil;
+      $oil += $this->onMarket('m_oil');
+      out('$oil:'.$oil);
+
+      if ($oil == 0) { return 0; }
+
+      return ($food/$oil);
+    }
 
     /**
      * Set the indy production
@@ -535,12 +549,14 @@ class Country
                 $s            = ((($target - $actual)) / $target) * $priority;
             } elseif ($goal[0] == 'food') {
               $price  = PublicMarket::price('m_bu');
-              $s      = $price > 0 ? $priority * (45 / $price) :  0;
+              $priority = $priority * ($this->foodToOilRatio() > 8 ? 0.5 : 2);
+              $s      = $price > 0 ? $priority * (40 / $price)**2 : 0;
               $target = null;
               $actual = engnot($this->food);
             } elseif ($goal[0] == 'oil') {
               $price  = PublicMarket::price('m_oil');
-              $s      = $price > 0 ? $priority * (200 / $price) :  0;
+              $priority = $priority * ($this->foodToOilRatio() < 8 ? 0.5 : 2);
+              $s      = $price > 0 ? $priority * (200 / $price)**2 : 0;
               $target = null;
               $actual = engnot($this->oil);
             }
