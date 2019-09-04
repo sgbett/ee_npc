@@ -809,12 +809,30 @@ class Country
       return 0;
     }
 
-    public function shouldPlayTurn($indy = false) {
-
+    public function canPlayTurn() {
       if ($this->turns == 0) {
-        out('Cannot play - No turns!');
+        out('cannot play - no turns!');
         return false;
       }
+
+      // TODO: rework the logic for playing_turns to check can play and try remedial measures if it cannot
+      //       each strategy should be able to define these measures individually
+      //
+      // if ($this->turns_of_money()) {
+      //   out('cannot play - would get cash shortage');
+      //   return false;
+      // }
+      //
+      // if ($this->turns_of_food()) {
+      //   out('cannot play - would get food shortage');
+      //   return false;
+      // }
+
+      return true;
+    }
+
+
+    public function shouldPlayTurn($indy = false) {
 
       if ($this->stockpiling() == false) {
         out('Should Play because not stockpiling');
@@ -833,13 +851,9 @@ class Country
       out("Negative income! Not playing any more turns for now.");
       return false;
     }
-    /**
-     * Check to see if we should build CS
-     *
-     * @return bool            Build or not
-     */
-    public function shouldBuildCS($fraction = 0.6)
-    {
+
+    public function canBuildCS() {
+
       if ($this->turns < 5) {
           out('not enough turns for CS');
           return false;
@@ -850,35 +864,78 @@ class Country
           return false;
       }
 
-      if ($this->bpt >= $this->targetBpt()) {
-          out('no neeed for CS - at target BPT');
-          return false;
-      }
-
       if ($this->money < 5 * $this->build_cost) {
           out('not enough money for CS');
           return false;
       }
 
+      return true;
+    }
+    /**
+     * Check to see if we should build CS
+     *
+     * @return bool            Build or not
+     */
+    public function shouldBuildCS($fraction = 0.6)
+    {
+      if ($this->canBuildCS() == false) {
+        return false;
+      }
+
+      if ($this->bpt >= $this->targetBpt()) {
+          out('should not build CS - at target BPT ('.$this->targetBpt().')');
+          return false;
+      }
+
       if ($this->income < 0 && $this->money < 4 * $this->build_cost + 5 * $this->income) {
-          out('going to run out of money for CS');
+        out('should not build CS - we will run out of money');
           return false;
       }
 
       //use 5 because growth of pop & military typically
       if ($this->foodnet < 0 && $this->food < $this->foodnet * -5) {
-          out('going to run out of food for CS');
+          out('should not build CS - we will run out of food');
           return false;
       }
 
       if ($this->protection == 1) { $fraction = 0.8; }//dont get stuck in protection!
 
-      out(($this->csPerBpt()*($this->bpt - 5)).' needs to be lower than '.($this->turns_played * $fraction));
+      //consider the fraction of turns to spend on CS...
+      if ($this->b_cs < $this->turns_played * $fraction) {
+        out("should build CS - count ($this->b_cs) is less than turns played ($this->turns_played) * $fraction (".($this->turns_played * $fraction).')');
+        return true;
+      }
 
-      //consider the fraction of turns to spend on CS
-      return ($this->csPerBpt() * ($this->bpt - 5)) < ($this->turns_played * $fraction);
+      //...otherwise we prefer building/exploring, as we;ve spent more than $fraction of turns on CS...
+      if ($this->canBuildFullBPT() || $this->canExplore()) {
+        out('should not build CS - we can build or explore instead');
+        return false;
+      }
+
+      //...however, if we can't build or explore then we better CS anyway!
+      return true;
 
     }//end shouldBuildCS()
+
+    public function canBuildFullBPT()
+    {
+      if ($this->turns < 2) {
+          out('cannot build BPT - not enough turns');
+          return false;
+      }
+
+      if ($this->empty < $this->bpt + 4) { //always leave 4 for CS
+          out('cannot build BPT - not enough land');
+          return false;
+      }
+
+      if ($this->money < ($this->bpt + 4) * $this->build_cost + ($this->income > 0 ? 0 : $this->income * -5)) {
+          //do we have enough money? This accounts for 5 turns of burn if income < 0 and leaves enough for 4 more CS if needed
+          out('cannot build BPT - not enough money');
+          return false;
+      }
+      return true;
+    }
 
     /**
      * Should we build a full BPT?
@@ -887,23 +944,11 @@ class Country
      */
     public function shouldBuildFullBPT()
     {
-
-        if ($this->turns < 2) {
-            //not enough turns...
-            return false;
+        //if we can, we probably should!
+        if ($this->canBuildFullBPT()) {
+          return true;
         }
-
-        if ($this->empty < $this->bpt + 4) { //always leave 4 for CS
-            //not enough land
-            return false;
-        }
-
-        if ($this->money < $this->bpt * $this->build_cost + ($this->income > 0 ? 0 : $this->income * -5)) {
-            //do we have enough money? This accounts for 5 turns of burn if income < 0
-            return false;
-        }
-
-        return true;
+        return false;
     }//end shouldBuildFullBPT()
 
     /**
@@ -914,18 +959,17 @@ class Country
     public function canExplore()
     {
       if ($this->built() < 50) {
-        return false;
-      }
-
-      if ($this->land > $this->targetLand()) {
-        return false;
-      }
-
-      if (turns_of_money($this) < 5) {
+        out('cannot explore - not built enough ('.$this->built().')');
         return false;
       }
 
       if (turns_of_money($this) < 5) {
+        out('cannot explore - not enough cash');
+        return false;
+      }
+
+      if (turns_of_food($this) < 5) {
+        out('cannot explore - not enough food');
         return false;
       }
 
@@ -942,15 +986,22 @@ class Country
       if ($this->canExplore() == false) {
         return false;
       }
-      if ($this->turns < 2) {
-        //save turn for selling
+
+      if ($this->land > $this->targetLand()) {
+        out('should not explore  - at target land');
         return false;
       }
 
-      if ($this->empty < 2 * $this->bpt ) {
-        return true;
+      if ($this->turns < 2) {
+        out('should not explore - save a turn for selling');
+        return false;
       }
-      return false;
+
+      if ($this->empty > 2 * $this->bpt ) {
+        out('should not explore - not fully built');
+        return false;
+      }
+      return true;
     }//end shouldExplore()
 
     /**
