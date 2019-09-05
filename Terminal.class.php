@@ -40,7 +40,7 @@ print $t('Hello, World');
 function out()
 {
     call_user_func_array(['\EENPC\Terminal', 'out'], func_get_args());
-}//end out()
+}
 
 
 /**
@@ -51,7 +51,7 @@ function out()
 function out_data()
 {
     call_user_func_array(['\EENPC\Terminal', 'data'], func_get_args());
-}//end out_data()
+}
 
 function out_score($what, $priority = '', $price = '', $current = '', $target = '', $score = '' ) {
   out(
@@ -90,11 +90,11 @@ class Terminal
         $output = ($newline ? "\n" : null)."[".date("H:i:s")."] $str";
         echo $output;
 
-        global $config;
+        $log_file = Logger::getLocation();
 
-        if (isset($config) == false || array_key_exists('log_to_file',$config) == false ) { return; }
+        if ( $log_file == null ) { return; }
 
-        $path = explode('/',$config['log_to_file']);
+        $path = explode('/',$log_file);
         if (count($path) > 1) { array_pop($path); }
         $path = implode('/',$path);
 
@@ -103,11 +103,11 @@ class Terminal
         }
 
         if (substr($str,0,13) != 'Next Play in ') {
-          file_put_contents($config['log_to_file'], $output, FILE_APPEND);
+          file_put_contents($log_file, $output, FILE_APPEND);
         }
 
 
-    }//end out()
+    }
 
 
 
@@ -126,7 +126,7 @@ class Terminal
         $file = $backtrace[3]['file'] ?? '--';
         out("DATA: ($file:$line)\n".json_encode($data));
         //str_replace(",\n", "\n", var_export($data, true)));
-    }//end data()
+    }
 
 
     /**
@@ -142,5 +142,5 @@ class Terminal
         for ($i = 0; $i < $num; $i++) {
             self::$columns[$i] = null;
         }
-    }//end initColumns()
-}//end class
+    }
+}

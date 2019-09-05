@@ -41,7 +41,7 @@ class PrivateMarket
         self::$updated = time();
 
         return self::$info;
-    }//end getInfo()
+    }
 
     /**
      * Get a recent version of the info, but don't fetch a new one
@@ -59,7 +59,7 @@ class PrivateMarket
         }
 
         return self::$info;
-    }//end getRecent()
+    }
 
     /**
      * Buy on the Private Market
@@ -79,7 +79,7 @@ class PrivateMarket
 
             self::getInfo(); //update the PM, because weird
 
-            $c = get_advisor();   //Do both??
+            $c->updateAdvisor();
             //$c->updateMain();     //UPDATE EVERYTHING
 
             return $result;
@@ -119,7 +119,7 @@ class PrivateMarket
         //$str .= 'for $'.$result->cost.' on PM';
         out($str);
         return $result;
-    }//end buy()
+    }
 
 
     /**
@@ -154,7 +154,7 @@ class PrivateMarket
                 }
                 $c->$type -= $amount;
                 $str      .= str_pad(engnot($amount), 8, ' ', STR_PAD_LEFT)
-                            .str_pad($type, 5, ' ', STR_PAD_LEFT);
+                            .str_pad($type, 6, ' ', STR_PAD_LEFT);
 
                 if ($first) {
                     $str .= str_pad('$'.engnot($c->money), 28, ' ', STR_PAD_LEFT)
@@ -167,7 +167,7 @@ class PrivateMarket
 
         out($str);
         return $result;
-    }//end sell()
+    }
 
     public static function buy_price($unit) {
       $pm_info = PrivateMarket::getRecent();
@@ -179,4 +179,48 @@ class PrivateMarket
       return $pm_info->sell_price->$unit;
     }
 
-}//end class
+    public static function sellMilitary(&$c, $fraction = 1)
+    {
+        $fraction   = max(0, min(1, $fraction));
+        $sell_units = [
+            'm_spy' => floor($c->m_spy * $fraction),     //$fraction of spies
+            'm_tr'  => floor($c->m_tr * $fraction),      //$fraction of troops
+            'm_j'   => floor($c->m_j * $fraction),       //$fraction of jets
+            'm_tu'  => floor($c->m_tu * $fraction),      //$fraction of turrets
+            'm_ta'  => floor($c->m_ta * $fraction)       //$fraction of tanks
+        ];
+        if (array_sum($sell_units) == 0) {
+            //out("No Military!");
+            return;
+        }
+        return PrivateMarket::sell($c, $sell_units);  //Sell 'em
+    }
+
+    public static function sellMilitaryUnit(&$c, $unit = 'm_tr', $fraction = 1)
+    {
+        $fraction   = max(0, min(1, $fraction));
+        $sell_units = [$unit => floor($c->$unit * $fraction)];
+        if (array_sum($sell_units) == 0) {
+            //out("No Military!");
+            return;
+        }
+        return PrivateMarket::sell($c, $sell_units);  //Sell 'em
+    }
+
+
+    public static function sellFood(&$c, $fraction = 1)
+    {
+        $c->updateMain();
+        $fraction   = max(0, min(1, $fraction));
+        $sell_units = [
+            'm_bu'  => floor($c->food * $fraction)
+        ];
+        if (array_sum($sell_units) == 0) {
+            out("No Food!");
+            return;
+        }
+        return PrivateMarket::sell($c, $sell_units);
+    }
+
+
+}

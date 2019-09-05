@@ -27,7 +27,7 @@ class Build
     {
         //default is an empty array
         return ee('build', ['build' => $buildings]);
-    }//end buildings()
+    }
 
 
     /**
@@ -40,7 +40,7 @@ class Build
     public static function cs($turns = 4)
     {
         return self::buildings(['cs' => $turns]);
-    }//end cs()
+    }
 
 
     /**
@@ -55,7 +55,7 @@ class Build
       $ind = floor($bpt / 20);
       $lab = $bpt - $ind;
       return self::buildings(['lab' => $lab, 'indy' => $ind]);
-    }//end techer()
+    }
 
 
     /**
@@ -70,7 +70,7 @@ class Build
       $ind = floor($bpt / 20);
       $farm = $bpt - $ind;
       return self::buildings(['farm' => $farm, 'indy' => $ind]);
-    }//end farmer()
+    }
 
     /**
      * Build one BPT for oiler
@@ -85,7 +85,7 @@ class Build
       $ind = $bpt - 2 * $rigfarm;
 
       return self::buildings(['rig' => $rigfarm, 'farm' => $rigfarm, 'indy' => $ind]);
-    }//end farmer()
+    }
 
 
     /**
@@ -101,7 +101,7 @@ class Build
         $ind = $bpt - 2 * $entres;
 
         return self::buildings(['ent' => $entres, 'res' => $entres, 'indy' => $ind]);
-    }//end casher()
+    }
 
 
     /**
@@ -115,7 +115,7 @@ class Build
     {
         //build indies
         return self::buildings(['indy' => $bpt]);
-    }//end indy()
+    }
 
     /**
      * Build one BPT for rainbow
@@ -131,6 +131,6 @@ class Build
       $ind = $bpt - ($rig + $lab);
 
       return self::buildings(['rig' => $rig, 'lab' => $lab, 'indy' => $ind]);
-    }//end farmer()
+    }
 
-}//end class
+}

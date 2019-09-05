@@ -29,8 +29,11 @@ services:
     environment:
       - EENPC_AI_KEY
       - EENPC_USERNAME
-    entrypoint:
-      - docker/entrypoint.sh
+    command:
+      - php
+      - ee_npc.php
+    # entrypoint:
+    #   - docker/entrypoint.sh
 
 volumes:
   ee_npc:

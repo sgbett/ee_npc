@@ -28,18 +28,18 @@ only the real bot logic in the ee_npc file...
  */
 function ee($function, $parameterArray = [])
 {
-    global $baseURL, $username, $aiKey, $serv, $cnum, $APICalls;
+    global $cnum, $APICalls;
 
     $init                       = $parameterArray;
-    $parameterArray['ai_key']   = $aiKey;
-    $parameterArray['username'] = $username;
-    $parameterArray['server']   = $serv;
+    $parameterArray['ai_key']   = EENPC_AI_KEY;
+    $parameterArray['username'] = EENPC_USERNAME;
+    $parameterArray['server']   = EENPC_SERVER;
     if ($cnum) {
-        $parameterArray['cnum'] = $cnum;
+      $parameterArray['cnum'] = $parameterArray['cnum'] ?? $cnum;
     }
 
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $baseURL);
+    curl_setopt($ch, CURLOPT_URL, EENPC_URL);
     curl_setopt($ch, CURLOPT_POST, 1);
     $send = "api_function=".$function."&api_payload=".json_encode($parameterArray);
     //out($send);
@@ -62,33 +62,7 @@ function ee($function, $parameterArray = [])
 
     //out($function);
     return $return;
-}//end ee()
-
-/**
- * Get the server; handle EE being down
- *
- * @return object The server info
- */
-function get_server()
-{
-    $server_loaded = false;
-    $server        = null;
-    while (!$server_loaded) {
-        if ($server_loaded === false) {
-            $server = ee('server');
-            if (is_object($server)) {
-                $server_loaded = true;
-            }
-        }
-
-        if (!$server_loaded) {
-            out("Server didn't load, try again in 2...");
-            sleep(2); //try again in 2 seconds.
-        }
-    }
-
-    return $server;
-}//end get_server()
+}
 
 /**
  * Get the rules; handle EE being down
@@ -114,7 +88,7 @@ function get_rules()
     }
 
     return $rules;
-}//end get_rules()
+}
 
 
 /**
@@ -151,9 +125,7 @@ function handle_output($serverOutput, $function)
         return null;
     } elseif ($message == "ERROR" && $response == "MAXIMUM_COUNTRIES_REACHED") {
         out("Already have total allowed countries!");
-        out("Refresh Server");
-        global $server; //do all this with a class sometime soon
-        $server = ee('server');
+        Server::reload();
         return null;
     } elseif ($message == "ERROR" && $response == "MONEY") {
         out("Not enough Money!");
@@ -189,7 +161,7 @@ function handle_output($serverOutput, $function)
     }
 
     return $response;
-}//end handle_output()
+}
 
 
 /**
@@ -239,7 +211,7 @@ function expected_result($input)
     ];
 
     return $expected[$lastFunction] ?? null;
-}//end expected_result()
+}
 
 
 /**
@@ -257,4 +229,4 @@ function actual_count($data)
     }
 
     return $i;
-}//end actual_count()
+}

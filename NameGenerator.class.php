@@ -43,7 +43,7 @@ class NameGenerator
             case 6:
                 return self::projectname();
         }
-    }//end randName()
+    }
 
 
     public static function guildName()
@@ -150,7 +150,7 @@ class NameGenerator
         }
 
         return $name;
-    }//end guildName()
+    }
 
 
     public static function fantasyName()
@@ -264,7 +264,7 @@ class NameGenerator
             $name = $prename_female." ".$extraname." ".$sufname;
         }
         return $name;
-    }//end fantasyName()
+    }
 
 
     public static function wowName()
@@ -326,7 +326,7 @@ class NameGenerator
             }
         }
         return $name;
-    }//end wowName()
+    }
 
 
     public static function nickname()
@@ -375,7 +375,7 @@ class NameGenerator
             $name = "The ".$c;
         }
         return $name;
-    }//end nickname()
+    }
 
 
     public static function vampireName()
@@ -440,7 +440,7 @@ class NameGenerator
             $name = $c[$t % 4]." ".$name;
         }
         return $name;
-    }//end vampireName()
+    }
 
 
     public static function pirateName()
@@ -489,7 +489,7 @@ class NameGenerator
             $name = $pirate_title[$n3 % 5]." ".$name;
         }
         return $name;
-    }//end pirateName()
+    }
 
 
     public static function projectname()
@@ -523,12 +523,11 @@ class NameGenerator
             $name = $prename." ".$sufname;
         }
         return $name;
-    }//end projectname()
+    }
 
     public static function randCountryName()
     {
-        global $username;
-        $name   = substr($username, 0, 2).' ';
+        $name   = substr(EENPC_USERNAME, 0, 2).' ';
         //name them by the first 2 chars of a username; should still be fairly unique on this server
         $last   = chr(32); //we just added a space
         $length = rand(5, 24);
@@ -545,5 +544,5 @@ class NameGenerator
 
         $name = trim($name);
         return $name;
-    }//end randCountryName()
-}//end class
+    }
+}

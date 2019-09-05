@@ -100,5 +100,5 @@ class Events
         // }
 
         return $result;
-    }//end new()
-}//end class
+    }
+}

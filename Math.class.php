@@ -25,8 +25,9 @@ class Math
      *
      * @return float                 A random number
      */
-    public static function pureBell($min, $max, $std_deviation, $step = 1)
+    public static function pureBell($min, $max, $std_deviation = null, $step = 1)
     {
+        $std_deviation = $std_deviation ?? ($max - $min)/2;
      //box-muller-method
         $rand1           = (float)mt_rand() / (float)mt_getrandmax();
         $rand2           = (float)mt_rand() / (float)mt_getrandmax();
@@ -40,7 +41,7 @@ class Math
             $random_number = self::pureBell($min, $max, $std_deviation, $step);
         }
         return $random_number;
-    }//end pureBell()
+    }
 
     /**
      * Calculate the standard deviation
@@ -69,5 +70,5 @@ class Math
                 )
             ) / (count($array) - 1)
         );
-    }//end standardDeviation()
-}//end class
+    }
+}

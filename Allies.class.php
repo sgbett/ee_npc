@@ -29,7 +29,7 @@ class Allies
         // out("Ally List");
         //out($result);
         return $result;
-    }//end getList()
+    }
 
     /**
      * Get the list of candidates
@@ -44,7 +44,7 @@ class Allies
         $result = ee('ally/candidates', ['type' => $type]);
         //out($result);
         return $result;
-    }//end getCandidates()
+    }
 
     /**
      * Offer an alliance
@@ -66,7 +66,7 @@ class Allies
 
         //out($result);
         return $result;
-    }//end offer()
+    }
 
     /**
      * Accept an alliance
@@ -82,7 +82,7 @@ class Allies
         $result = ee('ally/accept', ['target' => $target, 'type' => $type]);
         //out($result);
         return $result;
-    }//end accept()
+    }
 
     /**
      * Cancel an alliance
@@ -98,7 +98,7 @@ class Allies
         $result = ee('ally/cancel', ['target' => $target, 'type' => $type]);
         //out($result);
         return $result;
-    }//end cancel()
+    }
 
     /**
      * Automatically fill spots from candidates
@@ -148,5 +148,5 @@ class Allies
             $candidate = array_shift($candidates);
             self::offer($candidate->cnum, $type);
         }
-    }//end fill()
-}//end class
+    }
+}
