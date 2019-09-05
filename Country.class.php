@@ -535,7 +535,7 @@ class Country
               $need   = ($t - $a) / $t;
               $price  = PublicMarket::price(substr($goal[0],2));
 
-              $s = $price >0 ? $need * $priority * (exp((10000-$price)/2500)/15) : 0;
+              $s = $price > 0 ? $need * $priority * (exp((10000-$price)/1500)/100) : 0;
 
             } elseif ($goal[0] == 'nlg') {
                 $price        = 'n/a';
