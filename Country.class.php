@@ -137,7 +137,7 @@ class Country
       $oil += $this->onMarket('m_oil');
       //out('$oil:'.$oil);
 
-      if ($oil == 0) { return 0; }
+      if ($oil == 0) { return 8; }
 
       return ($food/$oil);
     }
