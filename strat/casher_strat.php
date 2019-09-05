@@ -155,3 +155,12 @@ function destock_goals() {
         ['t_sdi'  ,2],
     ];
 }
+
+function dpa_goals() {
+    return [
+        //what, $nw
+        ['m_tr'   ,0.5],
+        ['m_tu'   ,0.6],
+        ['m_ta'   ,2],
+    ];
+}

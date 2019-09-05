@@ -433,7 +433,7 @@ class Country
 
     }//end fullBuildCost()
 
-    public function cheapestDpnwGoal($goals = [],$dpnw)
+    public function cheapestDpnwGoal($goals = [],$dpnw = null)
     {
         // out('want_dpnw_goal:'.$dpnw);
         $score = [];
@@ -480,7 +480,7 @@ class Country
 
           // out('$market:'.$market.' $price:'.$price.' $/nw:'.round($price / $nw));
 
-          if ($price / $nw < $dpnw) {
+          if ($dpnw == null || $price / $nw < $dpnw) {
             $score[implode('.',[$what,$price,$market])] = $price / $nw;
             // var_dump($score);
           }
@@ -543,10 +543,26 @@ class Country
                 $actual       = $this->nlg();
                 $s            = ((($target - $actual)) / $target) * $priority;
             } elseif ($goal[0] == 'dpa') {
-                $price        = 'n/a'; //TODO: Make this price sensitive?
+                $dpnwgoal     = $this->cheapestDpnwGoal(dpa_goals());
+
+                $price        = $dpnwgoal[1];
+                out('price:'.$price);
+
+                if ($dpnwgoal[0] == 'm_tr') {
+                  $price = $price / 0.5;
+                } elseif ($dpnwgoal[0] == 'm_ta'){
+                  $price = $price / 2;
+                } else {
+                  $price = $price / 0.6;
+                }
+
+                $goal[0]      = $dpnwgoal[0];
+                out('goal:'.$goal[0]);
+
                 $target       = round($this->dpat ?? $this->defPerAcreTarget());
                 $actual       = round($this->defPerAcre());
-                $s            = ((($target - $actual)) / $target) * $priority;
+                $need         = ((($target - $actual)) / $target);
+                $s            = $price > 0 ? $need * $priority * (exp((500-$price)/100)/15) : 0;
             } elseif ($goal[0] == 'food') {
               $price  = PublicMarket::price('m_bu');
               $priority = $priority * ($this->foodToOilRatio() > 8 ? 0.5 : 2);
