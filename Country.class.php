@@ -773,7 +773,7 @@ class Country
         $url  = str_pad(site_url($this->cnum), 8, ' ', STR_PAD_LEFT);
         $blt  = str_pad($this->built().'%', 8, ' ', STR_PAD_LEFT);
         $bpt  = str_pad($this->bpt, 8, ' ', STR_PAD_LEFT);
-        $bptt = str_pad($this->targetBpt(), 8, ' ', STR_PAD_LEFT);
+        $bptt = str_pad($this->desiredBpt(), 8, ' ', STR_PAD_LEFT);
         $tpt  = str_pad($this->tpt, 8, ' ', STR_PAD_LEFT);
         $cash = str_pad(engnot($this->money), 8, ' ', STR_PAD_LEFT);
 
@@ -786,7 +786,7 @@ class Country
         $blt  = Colors::getColoredString($blt,  ($this->built() < 95) ? "red" : "green");
         $nlg  = Colors::getColoredString($nlg,  ($this->nlg() < ($this->nlgt ?? $this->nlgTarget())) ? "red" : "green");
         $dpa  = Colors::getColoredString($dpa,  ($this->defPerAcre() < ($this->dpat ?? $this->defPerAcreTarget())) ? "red" : "green");
-        $bpt  = Colors::getColoredString($bpt,  ($this->bpt < ($this->targetBpt())) ? "red" : "green");
+        $bpt  = Colors::getColoredString($bpt,  ($this->bpt < ($this->desiredBpt())) ? "red" : "green");
 
         $str .= $s.'Turns Played: '.$t_pl. '         NLG:        '.$nlg .'         Mil: '.$pmil.$e;
         $str .= $s.'Land:         '.$land. '         NLG Target: '.$nlgt.'         Bus: '.$pbus.$e;
@@ -832,7 +832,7 @@ class Country
      * @return int            the target BPT
      */
 
-    public function targetBpt()
+    public function desiredBpt()
     {
       $to_build = $this->targetLand() - $this->land + $this->empty;
       if ($to_build > 0) {
@@ -914,8 +914,8 @@ class Country
         return false;
       }
 
-      if ($this->bpt >= $this->targetBpt()) {
-          out('should not build CS - at target BPT ('.$this->targetBpt().')');
+      if ($this->bpt >= $this->desiredBpt()) {
+          out('should not build CS - at target BPT ('.$this->desiredBpt().')');
           return false;
       }
 
@@ -956,11 +956,6 @@ class Country
           return false;
       }
 
-      if ($this->empty < $this->bpt + 4) { //always leave 4 for CS
-          out('cannot build BPT - not enough land');
-          return false;
-      }
-
       if ($this->money < ($this->bpt + 4) * $this->build_cost + ($this->income > 0 ? 0 : $this->income * -5)) {
           //do we have enough money? This accounts for 5 turns of burn if income < 0 and leaves enough for 4 more CS if needed
           out('cannot build BPT - not enough money');
@@ -977,10 +972,16 @@ class Country
     public function shouldBuildFullBPT()
     {
         //if we can, we probably should!
-        if ($this->canBuildFullBPT()) {
-          return true;
+        if ($this->canBuildFullBPT() == false) {
+          return false;
         }
-        return false;
+
+        if ($this->empty < $this->bpt + ($this->bpt >= $this->desiredBpt() ? 0 : 4)) { //leave 4 for CS, if not at target BPT
+            out('should not build BPT - not enough land left for CS');
+            return false;
+        }
+
+        return true;
     }//end shouldBuildFullBPT()
 
     /**
