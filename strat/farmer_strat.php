@@ -138,9 +138,9 @@ function play_farmer_turn(&$c)
       return explore($c);
     } elseif ($c->shouldCash()) {
       return cash($c, max(1, min(turns_of_money($c), turns_of_food($c), 13, $c->turns + 2) - 3));
-    } elseif ($c->canExplore()) {
-      return explore($c);
-    } elseif ($c->turns > 30) {
+    } elseif ($c->shouldCash()) {
+      return cash($c);
+    } elseif ($c->canCash() && on_market_value($c) == 0 && total_cansell_military($c) < 7500) {
       out(Colors::getColoredString('Cashing because no other options', 'red'));
       return cash($c);
     }

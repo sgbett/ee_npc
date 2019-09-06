@@ -108,12 +108,10 @@ function play_indy_turn(&$c)
       return explore($c);
     } elseif ($c->shouldCash()) {
       return cash($c);
-    } elseif ($c->canExplore()) {
-      return explore($c);
     } elseif ($c->canCash() && on_market_value($c) == 0 && total_cansell_military($c) < 7500) {
       out(Colors::getColoredString('Cashing because no other options', 'red'));
       return cash($c);
-    } 
+    }
 
 }//end play_indy_turn()
 
