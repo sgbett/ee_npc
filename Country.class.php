@@ -1045,16 +1045,18 @@ class Country
     public function canCash()
     {
 
-      if (turns_of_money($this) > 5) {
-        return true;
+      if (turns_of_food($this) < 5) {
+        out('cannot cash - not enough food');
+        return false;
       }
 
-      if (turns_of_money($this) > 5) {
-        return true;
+      if (turns_of_money($this) < 5) {
+        out('cannot cash - not enough money');
+        return false;
       }
 
-      return false;
-    } //end shouldExplore()
+      return true;
+    } //end canCash()
 
     /**
      * Should we cash?
