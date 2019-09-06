@@ -137,6 +137,7 @@ class Country
       $oil += $this->onMarket('m_oil');
       //out('$oil:'.$oil);
 
+      if ($food == 0) { $food = 1; }
       if ($oil == 0) { $oil = 1; }
 
       return ($food/$oil);
@@ -420,8 +421,10 @@ class Country
 
     public function reservedCash()
     {
+      $turn_cost = max(0,-$this->income);
+
       if ($this->land > $this->targetLand()) {
-        return 0;
+        return max($this->land * 1000,$this->turns * $turn_cost);
       }
 
       //min 5 turn buffer so we dont stop exploring/building
@@ -598,19 +601,25 @@ class Country
       return max(0,$this->money - $this->reservedCash());
     }
 
+    public function spendAmount() {
+      $spend = max($this->land*1000,$this->availableFunds()/8);
+      $spend = min($spend,$this->availableFunds());
+
+      $str_total = str_pad(engnot($this->money), 8, ' ', STR_PAD_LEFT);
+      $str_avail = str_pad(engnot($this->availableFunds()), 8, ' ', STR_PAD_LEFT);
+      $str_spend = str_pad(engnot($spend), 8, ' ', STR_PAD_LEFT);
+
+      out("total: $str_total      available: $str_avail       spending: $".$str_spend." at a time");
+      return $spend;
+    }
+
     public function buyGoals($goals) {
       if (turns_remaining() < 218) {return; } //to do 218 shoould be defined as something
       if ($this->built() < 90) { return; }
       if (turns_of_food($this) < 5) { return; }
       if ($this->availableFunds() < $this->land*1000) { return; }
 
-      $spend = max($this->land*1000,$this->availableFunds()/10);
-      $spend = min($spend,$this->money);
-
-      $str_spend = str_pad(''.engnot($spend), 8, ' ', STR_PAD_LEFT);
-      $str_avail = str_pad(''.engnot($this->availableFunds()), 8, ' ', STR_PAD_LEFT);
-
-      out("available: ".$str_avail."    spending: $".$str_spend." at a time");
+      $spend = $this->spendAmount();
 
       while ($this->buyHighestGoal($goals, $spend)) {
         PublicMarket::update();
@@ -627,10 +636,15 @@ class Country
 
     public function destock($goals, $dpnw = null) {
 
+      if (turns_of_food($this) < 5) { return; }
+      if ($this->availableFunds() < $this->land*1000) { return; }
+
       if ($dpnw === null && turns_remaining() > 1) { $dpnw = 1000 * (turns_remaining()**(-1/3)); } //default is to ramp up as we approach end
       if ($dpnw === null) { $dpnw = 0; }
 
-      while ($this->destockHighestGoal($goals,$dpnw)) {
+      $spend = $this->spendAmount();
+
+      while ($this->destockHighestGoal($goals,$dpnw, $spend)) {
         PublicMarket::update();
       };
 
@@ -641,9 +655,11 @@ class Country
      * @param  array   $goals         an array of goals to persue
      * @return void
      */
-    public function destockHighestGoal($goals,$dpnw)
+    public function destockHighestGoal($goals,$dpnw,$spend)
     {
         $this->updateMain();
+        if ($this->availableFunds() == 0) { return; }
+
         if (empty($goals)) { return; }
 
         $goal = $this->cheapestDpnwGoal($goals,$dpnw);
@@ -703,7 +719,7 @@ class Country
     public function buyHighestGoal($goals, $spend)
     {
         $this->updateMain();
-        if ($spend > $this->availableFunds()) { return; }
+        if ($this->availableFunds() == 0) { return; }
         if (empty($goals)) { return; }
 
         global $cpref;

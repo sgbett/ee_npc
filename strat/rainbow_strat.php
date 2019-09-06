@@ -124,10 +124,6 @@ function play_rainbow_turn(&$c)
         //never sell less than 20 turns worth of tech
         //always sell if we can????
         return sell_max_tech($c);
-    } elseif ($c->protection == 0 && total_cansell_military($c) > 7500 && sellmilitarytime($c)
-        || $c->turns == 1 && total_cansell_military($c) > 7500
-    ) {
-        return sell_max_military($c);
     } elseif ($c->protection == 0 && $c->food > 7000
         && (
             $c->foodnet > 0 && $c->foodnet > 3 * $c->foodcon && $c->food > 30 * $c->foodnet
