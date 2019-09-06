@@ -137,7 +137,7 @@ class Country
       $oil += $this->onMarket('m_oil');
       //out('$oil:'.$oil);
 
-      if ($oil == 0) { return 8; }
+      if ($oil == 0) { $oil = 1; }
 
       return ($food/$oil);
     }
@@ -565,13 +565,13 @@ class Country
                 $s            = $price > 0 ? $need * $priority * (exp((500-$price)/100)/15) : 0;
             } elseif ($goal[0] == 'food') {
               $price  = PublicMarket::price('m_bu');
-              $priority = $priority * ($this->foodToOilRatio() > 8 ? 0.5 : 2);
+              $priority = $priority * (8 / $this->foodToOilRatio());
               $s      = $price > 0 ? $priority * (40 / $price)**2 : 0;
               $target = null;
               $actual = engnot($this->food);
             } elseif ($goal[0] == 'oil') {
               $price  = PublicMarket::price('m_oil');
-              $priority = $priority * ($this->foodToOilRatio() < 8 ? 0.5 : 2);
+              $priority = $priority * ($this->foodToOilRatio() / 8);
               $s      = $price > 0 ? $priority * (200 / $price)**2 : 0;
               $target = null;
               $actual = engnot($this->oil);
