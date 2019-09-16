@@ -121,7 +121,6 @@ function handle_output($serverOutput, $function)
         return null;
     } elseif ($message == 'OWNED') {
         out("Trying to sell more than owned!");
-
         return null;
     } elseif ($message == "ERROR" && $response == "MAXIMUM_COUNTRIES_REACHED") {
         out("Already have total allowed countries!");
@@ -133,6 +132,10 @@ function handle_output($serverOutput, $function)
     } elseif ($message == "ERROR" && $response == "NOT_ENOUGH_TURNS") {
         out("Not enough Turns!");
         return null;
+    } elseif ($message == "ERROR" && $response == "INVALID_CNUM") {
+      out("Invalid CNUM!");
+      Server::reload();
+      return null;
     } elseif ($function == 'ally/offer' && $message == "ERROR" && $response == "disallowed_by_server") {
         out("Allies are not allowed!");
         Allies::$allowed = false;

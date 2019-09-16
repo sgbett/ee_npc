@@ -95,9 +95,7 @@ while (1) {
 
     if (isset($playnow) || Settings::getNextPlay($cnum) < time()) {
       Events::new();
-
       Strategy::play($cnum);
-
     }
   }
 
