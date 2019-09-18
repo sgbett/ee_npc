@@ -81,8 +81,8 @@ abstract class Strategy {
       $this->c->updateAdvisor();
       $this->c->updateMain();
 
-      $this->destock();
-      $this->buyGoals();
+      if ($this->willDestock()) { $this->destock(); }
+      if ($this->willBuyGoals()) { $this->buyGoals(); }
 
       $this->afterGetNextTurn();
       usleep(100000); //TODO: fetch from config once its a class
@@ -386,6 +386,69 @@ abstract class Strategy {
     return false;
   }
 
+  public function shouldDestock() {
+
+    //always try to destock near the end!
+    if (Server::turnsRemaining() < 10) { return true; }
+
+    //dont destock if we are not in good shape to do so
+    if ($this->c->land < $this->c->targetLand()) {
+      out('should not destock  - not at target land');
+      return false;
+    }
+
+    if ($this->c->built() < 90) {
+      out('should not destock - not built');
+      return false;
+    }
+
+    if (turns_of_money($this->c) < 5) {
+      out('should not destock - not enough money');
+      return false;
+    }
+
+    if (turns_of_food($this->c) < 5) {
+      out('should not destock - not enough food');
+      return false;
+    }
+
+    if ($this->c->availableFunds() < $this->c->land*5000) {
+      out('should not destock - available funds too low');
+      return false;
+    }
+
+    return true;
+  }
+
+  public function shouldBuyGoals() {
+
+    if (Server::turnsRemaining() < 218) { //TODO: should 218 be defined as something?
+      out('should not buy goals - near end of reset');
+      return false;
+    }
+    if ($this->c->built() < 90) {
+      out('should not buy goals - not built');
+      return false;
+    }
+
+    if (turns_of_money($this->c) < 5) {
+      out('should not buy goals - not enough money');
+      return false;
+    }
+
+    if (turns_of_food($this->c) < 5) {
+      out('should not buy goals - not ehough food');
+      return false;
+    }
+
+    if ($this->c->availableFunds() < $this->c->land*1000) {
+      out('should not buy goals - available funds too low ');
+      return false;
+    }
+
+    return true;
+  }
+
   protected function willBuildCS($cs_turn_ratio = null) {
     return $this->c->canBuildCS() && $this->shouldBuildCS($cs_turn_ratio);
   }
@@ -421,6 +484,14 @@ abstract class Strategy {
 
   protected function willSellOil() {
     if ($this->c->canSellOil() && $this->shouldSellOil()) { out('willSellOil'); return true; };
+  }
+
+  protected function willDestock() {
+    if ($this->c->canDestock() && $this->shouldDestock()) { out('willDestock'); return true; };
+  }
+
+  protected function willBuyGoals() {
+    if ($this->c->canBuyGoals() && $this->shouldBuyGoals()) { out('willBuyGoals'); return true; };
   }
 
   public function buildings() {
