@@ -405,6 +405,9 @@ function explore(&$c, $turns = 0)
     $turns = max(1,ceil(($c->bpt - $c->empty)/$c->explore_rate));
   }
 
+  //prevent food/cash shortages
+  $turns = min($turns,turns_of_food($c),turns_of_money($c));
+
   if ($turns >= $c->turns) {
     //leave a turn for selling
     $turns = $turns - 1;
