@@ -199,7 +199,7 @@ abstract class Strategy {
   }
 
   protected function willPlayTurn() {
-    return $this->c->canPlayTurn() && $this->shouldPlayTurn();
+    if ($this->c->canPlayTurn() && $this->shouldPlayTurn()) { out('willPlayTurn'); return true; };
   }
 
   /**
@@ -391,36 +391,36 @@ abstract class Strategy {
   }
 
   protected function willBuildFullBPT() {
-    return $this->c->canBuildFullBPT() && $this->shouldBuildFullBPT();
+    if ($this->c->canBuildFullBPT() && $this->shouldBuildFullBPT()) { out('willBuildFullBPT'); return true; };
   }
   protected function willExplore() {
-    return $this->c->canExplore() && $this->shouldExplore();
+    if ($this->c->canExplore() && $this->shouldExplore()) { out('willExplore'); return true; };
   }
 
   protected function willCash() {
-    return $this->c->canCash() && $this->shouldCash();
+    if ($this->c->canCash() && $this->shouldCash()) { out('willCash'); return true; };
   }
   protected function willTech() {
-    return $this->c->canTech() && $this->shouldTech();
+    if ($this->c->canTech() && $this->shouldTech()) { out('willTech'); return true; };
   }
 
   protected function willSendStockToMarket() {
-    return $this->c->canSendStockToMarket() && $this->shouldSendStockToMarket();
+    if ($this->c->canSendStockToMarket() && $this->shouldSendStockToMarket()) { out('willSendStockToMarket'); return true; };
   }
 
   protected function willSellMilitary() {
-    return $this->c->canSellMilitary() && $this->shouldSellMilitary();
+    if ($this->c->canSellMilitary() && $this->shouldSellMilitary()) { out('willSellMilitary'); return true; };
   }
   protected function willSellTech() {
-    return $this->c->canSellTech() && $this->shouldSellTech();
+    if ($this->c->canSellTech() && $this->shouldSellTech()) { out('willSellTech'); return true; };
   }
 
   protected function willSellFood() {
-    return $this->c->canSellFood() && $this->shouldSellFood();
+    if ($this->c->canSellFood() && $this->shouldSellFood()) { out('willSellFood'); return true; };
   }
 
   protected function willSellOil() {
-    return $this->c->canSellOil() && $this->shouldSellOil();
+    if ($this->c->canSellOil() && $this->shouldSellOil()) { out('willSellOil'); return true; };
   }
 
   public function buildings() {
