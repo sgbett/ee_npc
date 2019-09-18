@@ -659,10 +659,6 @@ class Country
   }
 
   public function buyGoals($goals) {
-    if (Server::turnsRemaining() < 218) {return; } //to do 218 shoould be defined as something
-    if ($this->built() < 90) { return; }
-    if (turns_of_food($this) < 5) { return; }
-    if ($this->availableFunds() < $this->land*1000) { return; }
 
     $spend = $this->spendAmount();
 
@@ -1070,6 +1066,22 @@ class Country
     }
 
     if ($this->oil < 5000) {
+      return false;
+    }
+
+    return true;
+  }
+
+  public function canDestock() {
+    if ( $this->protection == 1 ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  public function canBuyGoals() {
+    if ( $this->protection == 1 ) {
       return false;
     }
 
