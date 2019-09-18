@@ -56,7 +56,6 @@ END;
 
   public static function getLastPlayCNUM($countries, $time = 0)
   {
-    global $settings;
     foreach ($countries as $cnum) {
       if (Settings::getLastPlay($cnum) == $time) {
         return $cnum;
@@ -134,7 +133,6 @@ END;
     out("Standard Deviation of play is: $stddev; (".round($stddev / Server::instance()->turn_rate).' turns)');
     // if ($stddev < Server::instance()->turn_rate * 72 / 4 || $stddev > Server::instance()->turn_rate * 72) {
     //     out('Recalculating Nextplays');
-    //     global $settings;
     //     foreach ($countries as $cnum) {
     //         Settings::getNextPlay($cnum) = time() + rand(0, Server::instance()->turn_rate * 72);
     //     }
@@ -161,8 +159,7 @@ END;
     out("Oldest Play: ".$old."s ago by #$onum $ostrat (".round($old / Server::instance()->turn_rate)." turns)");
     if ($old > 86400 * 2) {
       out("OLD TOO FAR: RESET NEXTPLAY");
-      global $settings;
-      $settings->$onum->nextplay = 0;
+      Settings::setNextPlay($onum);
     }
   }
 
@@ -214,7 +211,6 @@ END;
 
   public static function lastPlays($countries)
   {
-    global $settings;
     $lastplays = [];
     foreach ($countries as $cnum) {
       $lastplay = Settings::getLastPlay($cnum);
