@@ -486,13 +486,11 @@ class Country
     // PrivateMarket::getInfo();
     PublicMarket::update();
 
-    foreach ($goals as $goal) {
-      $what = $goal[0];
-      $nw   = $goal[1];
+    foreach ($goals as $what => $nw) {
 
       // out('$what:'.$what.' $nw:'.$nw);
-      if (substr($goal[0],0,2) == 't_') {
-        $market_good = substr($goal[0],2);
+      if (substr($what,0,2) == 't_') {
+        $market_good = substr($what,2);
       } else {
         $market_good = $what;
       }
@@ -554,43 +552,43 @@ class Country
 
     PublicMarket::update();
 
-    foreach ($goals as $goal) {
+    foreach ($goals as $what => $goal) {
 
-      $point_att = "p$goal[0]";
-      $priority = ($goal[2]/100);
+      $point_att = "p$what";
+      $priority = ($goal[1]/100);
 
-      if (($goal[0] == 't_sdi') || ($goal[0] == 't_war')) {
-        $t = $this->techMultiplier() * ($goal[1]);
+      if (($what == 't_sdi') || ($what == 't_war')) {
+        $t = $this->techMultiplier() * ($goal[0]);
         $a = $this->$point_att;
         $target = $t;
         $actual = $a;
-      } elseif (($goal[0] == 't_mil') || ($goal[0] == 't_med')) {
-        $t = $this->techMultiplier() * (100 - $goal[1]);
+      } elseif (($what == 't_mil') || ($what == 't_med')) {
+        $t = $this->techMultiplier() * (100 - $goal[0]);
         $a = 100 - $this->$point_att;
         $target = 100 - $t;
         $actual = 100 - $a;
-      } elseif (substr($goal[0],0,2) == 't_') {
-        $t = $this->techMultiplier() * ($goal[1] - 100);
+      } elseif (substr($what,0,2) == 't_') {
+        $t = $this->techMultiplier() * ($goal[0] - 100);
         $a = $this->$point_att - 100;
         $target = $t + 100;
         $actual = $a + 100;
       }
 
-      if (substr($goal[0],0,2) == 't_') {
+      if (substr($what,0,2) == 't_') {
 
         if ($t == 0) { continue; } // none of this tech wanted
 
         $need   = ($t - $a) / $t;
-        $price  = PublicMarket::price(substr($goal[0],2));
+        $price  = PublicMarket::price(substr($what,2));
 
         $s = $price > 0 ? $need * $priority * (exp((10000-$price)/1500)/100) : 0;
 
-      } elseif ($goal[0] == 'nlg') {
+      } elseif ($what == 'nlg') {
         $price        = 'n/a';
         $target       = $this->nlgt ?? $this->nlgTarget();
         $actual       = $this->nlg();
         $s            = ((($target - $actual)) / $target) * $priority;
-      } elseif ($goal[0] == 'dpa') {
+      } elseif ($what == 'dpa') {
         $dpnwgoal     = $this->cheapestDpnwGoal($this->dpaGoals());
 
         $price        = $dpnwgoal[1];
@@ -604,22 +602,22 @@ class Country
         }
 
         $price        = round($price);
-        $goal[0]      = $dpnwgoal[0];
+        $what      = $dpnwgoal[0];
 
         // out('price:'.$price);
-        // out('goal:'.$goal[0]);
+        // out('goal:'.$what);
 
         $target       = round($this->dpat ?? $this->defPerAcreTarget());
         $actual       = round($this->defPerAcre());
         $need         = ((($target - $actual)) / $target);
         $s            = $price > 0 ? $need * $priority * (exp((500-$price)/100)/15) : 0;
-      } elseif ($goal[0] == 'food') {
+      } elseif ($what == 'food') {
         $price  = PublicMarket::price('m_bu');
         $priority = $priority * (8 / $this->foodToOilRatio());
         $s      = $price > 0 ? $priority * (40 / $price)**2 : 0;
         $target = null;
         $actual = engnot($this->food);
-      } elseif ($goal[0] == 'oil') {
+      } elseif ($what == 'oil') {
         $price  = PublicMarket::price('m_oil');
         $priority = $priority * ($this->foodToOilRatio() / 8);
         $s      = $price > 0 ? $priority * (200 / $price)**2 : 0;
@@ -630,8 +628,8 @@ class Country
       if ($s > 0) {
         if (!($actual === null)) { $actual = str_pad($actual, 5, ' ', STR_PAD_LEFT); }
         if (!($target === null)) { $target = str_pad($target, 5, ' ', STR_PAD_LEFT); }
-        out_score($goal[0],$priority,$price,$actual,$target,$s);
-        $score[$goal[0]] = $s;
+        out_score($what,$priority,$price,$actual,$target,$s);
+        $score[$what] = $s;
       }
       $psum += $priority;
     }
@@ -708,13 +706,13 @@ class Country
 
     if (empty($goals)) { return; }
 
-    $goal = $this->cheapestDpnwGoal($goals,$dpnw);
+    $goal_array = $this->cheapestDpnwGoal($goals,$dpnw);
 
-    if (empty($goal)) { return; }
+    if (empty($goal_array)) { return; }
 
-    $what = $goal[0];
-    $price = $goal[1];
-    $market = $goal[2];
+    $what = $goal_array[0];
+    $price = $goal_array[1];
+    $market = $goal_array[2];
 
     // out("Destock Goal: ".$what);
 
@@ -1195,31 +1193,31 @@ class Country
 
   function dpaGoals() {
     return [
-      //what, $/defense (e.g 1 turret) - used to prioritise buying when "dpa" is the highestGoal
-      ['m_tr'   ,0.5],
-      ['m_tu'   ,1],
-      ['m_ta'   ,2],
+      //$/defense relative to 1 turret - used to prioritise buying when "dpa" is the highestGoal
+      'm_tr'    => 0.5,
+      'm_tu'    => 1,
+      'm_ta'    => 2,
     ];
   }
 
   function destockGoals() {
     return [
-      //what, $/nw
-      ['m_tr'   ,0.5],
-      ['m_j'    ,0.6],
-      ['m_tu'   ,0.6],
-      ['m_ta'   ,2],
-      ['t_mil'  ,2],
-      ['t_med'  ,2],
-      ['t_bus'  ,2],
-      ['t_res'  ,2],
-      ['t_agri' ,2],
-      ['t_war'  ,2],
-      ['t_ms'   ,2],
-      ['t_weap' ,2],
-      ['t_indy' ,2],
-      ['t_spy'  ,2],
-      ['t_sdi'  ,2],
+      //$/nw values of goods
+      'm_tr'    => 0.5,
+      'm_j'     => 0.6,
+      'm_tu'    => 0.6,
+      'm_ta'    => 2,
+      't_mil'   => 2,
+      't_med'   => 2,
+      't_bus'   => 2,
+      't_res'   => 2,
+      't_agri'  => 2,
+      't_war'   => 2,
+      't_ms'    => 2,
+      't_weap'  => 2,
+      't_indy'  => 2,
+      't_spy'   => 2,
+      't_sdi'   => 2,
     ];
   }
 

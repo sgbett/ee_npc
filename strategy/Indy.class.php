@@ -37,32 +37,24 @@ class Indy extends Strategy {
 
   public function techGoals() {
     return [
-      ['t_mil'  ,94  ,10],
-      ['t_med'  ,90  ,5],
-      ['t_bus'  ,125 ,20],
-      ['t_res'  ,125 ,20],
-      ['t_agri' ,100 ,0],
-      ['t_war'  ,1   ,5],
-      ['t_ms'   ,110 ,5],
-      ['t_weap' ,120 ,5],
-      ['t_indy' ,155 ,100],
-      ['t_spy'  ,120 ,5],
-      ['t_sdi'  ,60  ,5],
+      't_agri'  => [100 ,0],
+      't_indy'  => [154 ,100],
     ];
   }
 
-  public function militaryGoals()
+  function militaryGoals()
   {
     return [
-      ['nlg'    ,$this->c->nlgTarget(),0],
-      ['dpa'    ,$this->c->defPerAcreTarget(1.0),0],
+      'nlg' => [0, 0],
+      'dpa' => [0, 0],
     ];
   }
+
   public function stockGoals()
   {
     return [
-      ['food'   , 0, 0],
-      ['oil'    , 0, 0],
+      'food' => [0, 0],
+      'oil'  => [0, 0],
     ];
   }
 

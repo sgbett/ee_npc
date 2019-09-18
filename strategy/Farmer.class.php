@@ -41,25 +41,16 @@ class Farmer extends Strategy {
 
   function techGoals() {
     return [
-      ['t_mil'  ,94  ,10],
-      ['t_med'  ,90  ,5],
-      ['t_bus'  ,125 ,20],
-      ['t_res'  ,125 ,20],
-      ['t_agri' ,220 ,100],
-      ['t_war'  ,1   ,5],
-      ['t_ms'   ,110 ,5],
-      ['t_weap' ,120 ,5],
-      ['t_indy' ,100 ,0],
-      ['t_spy'  ,120 ,5],
-      ['t_sdi'  ,60  ,5],
+      't_agri'  => [217 ,100],
+      't_indy'  => [100 ,0],
     ];
   }
 
   function stockGoals()
   {
       return [
-          ['food'   , 0, 0],
-          ['oil'    , 0, 1],
+          'food'    => [ 0, 0],
+          'oil'     => [ 0, 1],
       ];
   }
 

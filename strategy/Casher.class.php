@@ -34,17 +34,10 @@ class Casher extends Strategy {
 
   function techGoals() {
     return [
-      ['t_mil'  ,94  ,10],
-      ['t_med'  ,90  ,5],
-      ['t_bus'  ,155 ,100],
-      ['t_res'  ,155 ,100],
-      ['t_agri' ,100 ,0],
-      ['t_war'  ,1   ,5],
-      ['t_ms'   ,110 ,5],
-      ['t_weap' ,120 ,5],
-      ['t_indy' ,100 ,0],
-      ['t_spy'  ,120 ,5],
-      ['t_sdi'  ,60  ,5],
+      't_bus'   => [172 ,100],
+      't_res'   => [172 ,100],
+      't_agri'  => [100 ,0],
+      't_indy'  => [100 ,0],
     ];
   }
 
