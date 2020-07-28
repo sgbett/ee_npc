@@ -22,45 +22,40 @@ only the real bot logic in the ee_npc file...
 
 /**
  * Main Communication
- * @param  string $function       which string to call
- * @param  array  $parameterArray parameters to send
+ * @param  string $api_function       which string to call
+ * @param  array  $api_payload parameters to send
  * @return object                 a JSON object converted to class
  */
-function ee($function, $parameterArray = [])
+function ee($api_function, $api_payload = [])
 {
     global $cnum, $APICalls;
 
-    $init                       = $parameterArray;
-    $parameterArray['ai_key']   = EENPC_AI_KEY;
-    $parameterArray['username'] = EENPC_USERNAME;
-    $parameterArray['server']   = EENPC_SERVER;
-    if ($cnum) {
-      $parameterArray['cnum'] = $parameterArray['cnum'] ?? $cnum;
-    }
+    $init                       = $api_payload;
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, EENPC_URL);
+    $api_payload['ai_key']   = EENPC_AI_KEY;
+    $api_payload['username'] = EENPC_USERNAME;
+    $api_payload['server']   = EENPC_SERVER;
+    if ($cnum) { $api_payload['cnum'] = $api_payload['cnum'] ?? $cnum; }
+
+    $params['api_function'] = $api_function;
+    $params['api_payload']  = json_encode($api_payload);
+
+    $ch = curl_init(EENPC_URL);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
     curl_setopt($ch, CURLOPT_POST, 1);
-    $send = "api_function=".$function."&api_payload=".json_encode($parameterArray);
-    //out($send);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $send);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-
-    // receive server response ...
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-    $serverOutput = curl_exec($ch);
-
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+    $result = curl_exec($ch);
     curl_close($ch);
 
-    $APICalls++;
-
-    $return = handle_output($serverOutput, $function);
+    $return = handle_output($result, $api_function);
     if ($return === false) {
         out_data($init);
     }
 
-    //out($function);
+    out_data($params);
     return $return;
 }
 
@@ -93,26 +88,26 @@ function get_rules()
 
 /**
  * Handle the server output
- * @param  JSON   $serverOutput JSON return
- * @param  string $function     function to call
+ * @param  JSON   $result JSON return
+ * @param  string $api_function     function to call
  * @return object               json object -> class
  */
-function handle_output($serverOutput, $function)
+function handle_output($result, $api_function)
 {
-    $response = json_decode($serverOutput);
+    $response = json_decode($result);
     if (!$response) {
-        out('Not acceptable response: '. $function .' - '. $serverOutput);
+        out('Not acceptable response: '. $api_function .' - '. $result);
         return false;
     }
 
-    // if ($function == 'buy') {
+    // if ($api_function == 'buy') {
     //     out("DEBUGGING BUY");
     //     out_data($response);
     // }
 
     $message  = key($response);
     $response = $response->$message ?? null;
-    //$parts = explode(':', $serverOutput, 2);
+    //$parts = explode(':', $result, 2);
     //This will simply kill the script if EE returns with an error
     //This is to avoid foulups, and to simplify the code checking above
     if ($message == 'COUNTRY_IS_DEAD') {
@@ -136,30 +131,30 @@ function handle_output($serverOutput, $function)
       out("Invalid CNUM!");
       Server::reload();
       return null;
-    } elseif ($function == 'ally/offer' && $message == "ERROR" && $response == "disallowed_by_server") {
+    } elseif ($api_function == 'ally/offer' && $message == "ERROR" && $response == "disallowed_by_server") {
         out("Allies are not allowed!");
         Allies::$allowed = false;
         return null;
-    } elseif (expected_result($function) && $message != expected_result($function)) {
+    } elseif (expected_result($api_function) && $message != expected_result($api_function)) {
         if (is_object($message) || is_object($response)) {
             out("Message:");
             out_data($message);
             out("Response:");
             out_data($response);
-            out("Server Output: \n".$serverOutput);
+            out("Server Output: \n".$result);
             return $response;
         }
 
-        out("\n\nUnexpected Result for '$function': ".$message.':'.$response."\n\n");
+        out("\n\nUnexpected Result for '$api_function': ".$message.':'.$response."\n\n");
 
         return $response;
-    } elseif (!expected_result($function)) {
+    } elseif (!expected_result($api_function)) {
         out("Function:");
-        out($function);
+        out($api_function);
         out("Message:");
         out($message);
         out_data($response);
-        out("Server Output: \n".$serverOutput);
+        out("Server Output: \n".$result);
         return false;
     }
 
