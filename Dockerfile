@@ -6,7 +6,7 @@
 #
 # you can drop into a shell with this:
 #
-# docker run -it ee_npc /bin/bash
+# docker run -it --entrypoint /bin/bash ee_npc 
 #
 # inside the container you can run the bot script with:
 #

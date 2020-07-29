@@ -68,9 +68,12 @@ END;
   public static function getNextPlays($countries)
   {
     $nextplays = [];
+    $time = time();
     foreach ($countries as $cnum) {
-      $nextplay = Settings::getNextPlay($cnum);
-      $nextplays[$cnum] = $nextplay ?? Settings::setNextPlay($cnum);
+      $nextplay = Settings::getNextPlay($cnum) ?? Settings::setNextPlay($cnum);
+      $nextplays[$cnum] = $nextplay;
+
+      // out("#$cnum|".($nextplay - $time));
     }
     return $nextplays;
   }
@@ -131,6 +134,7 @@ END;
 
     $stddev = round(self::playtimesStdDev($countries));
     out("Standard Deviation of play is: $stddev; (".round($stddev / Server::instance()->turn_rate).' turns)');
+    
     // if ($stddev < Server::instance()->turn_rate * 72 / 4 || $stddev > Server::instance()->turn_rate * 72) {
     //     out('Recalculating Nextplays');
     //     foreach ($countries as $cnum) {
@@ -166,10 +170,11 @@ END;
 
   public static function outFurthest($countries)
   {
+    $time     = time();
     $furthest = self::getFurthestNext($countries);
     $fnum     = self::getNextPlayCNUM($countries, $furthest);
     $fstrat   = self::txtStrat($fnum);
-    $furthest = $furthest - time();
+    $furthest = $furthest - $time;
     out("Furthest Play in ".$furthest."s for #$fnum $fstrat (".round($furthest / Server::instance()->turn_rate)." turns)");
   }
 

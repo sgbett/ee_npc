@@ -14,8 +14,13 @@
 
 namespace EENPC;
 
-// set to true to force all to play once, or country numner to force country to play - if set iteerates once
-// $playnow = '146';
+/********************************************************************************************************************
+*                                                                                                                   *
+* set $playnow to true to force all to play once, or country number to force country to play - if set iterates once *
+*                                                                                                                   *
+*********************************************************************************************************************/
+
+// $playnow = '84';
 // $playnow = true;
 
 spl_autoload_register(
@@ -62,6 +67,7 @@ out('Entering Infinite Loop');
 
 $rules  = get_rules();
 $server_avg_networth = $server_avg_land = 0;
+
 
 while (1) {
 
@@ -382,11 +388,13 @@ function event_text($event)
 
 
 
-function cash(&$c, $turns = null)
+function cash(&$c, $turns = 10)
 {
-  if ($turns == null) {
-    $turns = max(1, min(turns_of_money($c), turns_of_food($c), 13, $c->turns + 2) - 3);
-  }
+
+  //prevent food/cash shortages
+  $turns = min(3 + $turns, $c->turns, turns_of_food($c), turns_of_money($c)) - 3;
+  if ($turns < 1) { return; }
+
   return ee('cash', ['turns' => $turns]);
 }
 
@@ -401,18 +409,13 @@ function explore(&$c, $turns = 0)
 
   if ($turns == 0) {
     // default is to explore enough turns to be able to build 1BPT
-    $main = get_main();
+    $c->updateMain();
     $turns = max(1,ceil(($c->bpt - $c->empty)/$c->explore_rate));
   }
 
   //prevent food/cash shortages
-  $turns = min($turns,turns_of_food($c),turns_of_money($c));
-
-  if ($turns >= $c->turns) {
-    //leave a turn for selling
-    $turns = $turns - 1;
-    if ($turns < 1) { return; }
-  }
+  $turns = min(3 + $turns, $c->turns, turns_of_food($c), turns_of_money($c)) - 3;
+  if ($turns < 1) { return; }
 
   $result = ee('explore', ['turns' => $turns]);
   if ($result === null) {
@@ -431,7 +434,7 @@ function explore(&$c, $turns = 0)
 *
 * @return EEResult       Teching
 */
-function tech(&$c, $turns = 1)
+function tech(&$c, $turns = 10)
 {
   //lets do random weighting... to some degree
   //$market_info = get_market_info();   //get the Public Market info
@@ -452,7 +455,10 @@ function tech(&$c, $turns = 1)
   $sdi  = max(pow(PublicMarket::price('sdi') - $techfloor, 2), rand(2, 2000));
   $tot  = $mil + $med + $bus + $res + $agri + $war + $ms + $weap + $indy + $spy + $sdi;
 
-  $turns = max(1, min($turns, $c->turns));
+  //prevent food/cash shortages
+  $turns = min(3 + $turns, $c->turns, turns_of_food($c), turns_of_money($c)) - 3;
+  if ($turns < 1) { return; }
+
   $left  = $c->tpt * $turns;
   $left -= $mil = min($left, floor($c->tpt * $turns * ($mil / $tot)));
   $left -= $med = min($left, floor($c->tpt * $turns * ($med / $tot)));

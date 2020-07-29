@@ -25,16 +25,17 @@ class Oiler extends Strategy {
   }
 
   function buildings() {
-    $rigfarm = floor($this->c->bpt * 0.475);
-    $ind = $this->c->bpt - 2 * $rigfarm;
-    return ['rig' => $rigfarm, 'farm' => $rigfarm, 'indy' => $ind];
+    $rig = floor($this->c->bpt * 0.25);
+    $farm = floor($this->c->bpt * 0.7);
+    $indy = $this->c->bpt - $rig - $farm;
+    return ['rig' => rig, 'farm' => $farm, 'indy' => $indy];
   }
 
   // goals are specified as [what, goal%, wieght(0-100)]
 
   function techGoals() {
     return [
-      't_agri'  => [217 ,100],
+      't_agri'  => [210 ,100],
       't_indy'  => [100 ,0],
     ];
   }

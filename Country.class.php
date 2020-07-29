@@ -171,9 +171,15 @@ class Country
     $qty   = min($foodrequired,PublicMarket::available('m_bu'));
     $price = PublicMarket::price('m_bu');
 
+    //spend at most half cash if negative income
+    if ($this->income < 0) {
+      $max = floor($this->money / 2 * $price);
+      $qty = min($qty,$max);
+    }
+
     if ($qty < 1) { return; }
 
-    if ($qty * $price > $this->money) {
+    if ($qty * $price * $this->tax() > $this->money) {
       out("can't afford $turns turns of food, trying to buy less");
       return $this->buyTurnsOfFood($turns - 1);
     }
@@ -452,7 +458,12 @@ class Country
   */
   public function tax()
   {
-    return (100 + $this->g_tax) / 100;
+    $tax = (100 + $this->g_tax) / 100;
+
+    // out('g_tax:'.$this->g_tax);
+    // out('$tax:'.$tax);
+
+    return $tax;
   }
 
 
@@ -483,48 +494,48 @@ class Country
     // out('want_dpnw_goal:'.$dpnw);
     $score = [];
 
-    // PrivateMarket::getInfo();
+    PrivateMarket::getInfo();
     PublicMarket::update();
 
     foreach ($goals as $what => $nw) {
 
       // out('$what:'.$what.' $nw:'.$nw);
+
       if (substr($what,0,2) == 't_') {
         $market_good = substr($what,2);
+        $public_price = PublicMarket::available($market_good) > 0 ? PublicMarket::price($market_good) : 0;
+        $private_price = 0;
       } else {
-        $market_good = $what;
+        $public_price = PublicMarket::available($what) > 0 ? PublicMarket::price($what) : 0;
+        $private_price = PrivateMarket::available($what) > 0 ? PrivateMarket::buy_price($what) : 0;
       }
 
-      // $public_price = PublicMarket::price($market_good) * $this->tax();
-      // $private_price = PrivateMarket::price($market_good);
-      //
-      // if ($public_price == 0) {
-      //   if ($private_price == 0) { continue; }
-      //   $market = 'PrivateMarket';
-      //   $price  = $private_price;
-      // } else {
-      //   if ($private_price == 0) {
-      //     $market = 'PublicMarket';
-      //     $price  = $public_price;
-      //   } else {
-      //     if ($private_price >  $public_price) {
-      //       $market = 'PublicMarket';
-      //       $price  = $public_price;
-      //     } else {
-      //       $market = 'PrivateMarket';
-      //       $price  = $private_price;
-      //     }
-      //   }
-      // }
+      $market = null;
 
-      $price = PublicMarket::price($market_good);
-      if ($price == 0) { continue; }
-      $market = 'PublicMarket';
+      if ($public_price == 0) {
+        if ($private_price == 0) { continue; }
+        $market = 'PrivateMarket';
+        $price  = $private_price;
+      } else {
+        if ($private_price == 0) {
+          $market = 'PublicMarket';
+          $price  = $public_price;
+        } else {
+          if ($private_price > $public_price * $this->tax()) {
+            $market = 'PublicMarket';
+            $price  = $public_price;
+          } else {
+            $market = 'PrivateMarket';
+            $price  = $private_price;
+          }
+        }
+      }
 
-      // out('$market:'.$market.' $price:'.$price.' $/nw:'.round($price / $nw));
+      $price_with_tax = $market == 'PublicMarket' ? $price * $this->tax() : $price;
 
-      if ($dpnw == null || $price / $nw < $dpnw) {
-        $score[implode('.',[$what,$price,$market])] = round($price / $nw);
+      if ($dpnw == null || $price_with_tax / $nw < $dpnw) {
+        $score[implode('|',[$what,$price,$market])] = round($price / $nw);
+        out('$what:'.$what.'$market:'.$market.' $price:'.$price.' $/nw:'.round($price_with_tax / $nw));
         // var_dump($score);
       }
     }
@@ -533,8 +544,8 @@ class Country
 
     asort($score); // we want *lowest*
 
-    // out('returning:'.key($score));
-    return explode('.',key($score));
+    out('returning:'.key($score));
+    return explode('|',key($score));
 
   }
 
@@ -646,15 +657,17 @@ class Country
     return max(0,$this->money - $this->reservedCash());
   }
 
-  public function spendAmount() {
-    $spend = max($this->land*1000,$this->availableFunds()/8);
-    $spend = min($spend,$this->availableFunds());
+  public function spendAmount($available = 0) {
+    if ($available == 0) { $available = $this->availableFunds(); }
+    $spend = max($this->land*1000,$available/8);
+    $spend = min($spend,$available);
 
     $str_total = str_pad(engnot($this->money), 8, ' ', STR_PAD_LEFT);
     $str_avail = str_pad(engnot($this->availableFunds()), 8, ' ', STR_PAD_LEFT);
+    $str_stockavail = str_pad(engnot($available), 8, ' ', STR_PAD_LEFT);
     $str_spend = str_pad(engnot($spend), 8, ' ', STR_PAD_LEFT);
 
-    out("total: $str_total      available: $str_avail       spending: $".$str_spend." at a time");
+    out("total: $str_total      available: $str_avail    ".($this->availableFunds() == $available ? "" : "stock: $str_stockavail       ")."spending: $".$str_spend." at a time");
     return $spend;
   }
 
@@ -677,12 +690,13 @@ class Country
   public function destock($dpnw = null) {
 
     if ($dpnw === null && Server::turnsRemaining() > 1) {
-      //exponential function that ramps up as we approach end see: https://www.desmos.com/calculator/gdfvui1jpx
-      $dpnw = 1000 * (Server::turnsRemaining()**(-1/3));
+      $dpnw = Strategy::dpnwFloor();
     }
-
+    out('Looking for goods at $'.round($dpnw).'/nw or less... (Tr: '.round($dpnw*0.5).', J/Tu: '.round($dpnw*0.6).'Ta: '.round($dpnw*2).')');
     $goals = $this->destockGoals();
-    $spend = $this->spendAmount();
+
+    //try to spend the cash we would get from selling food on hand
+    $spend = $this->spendAmount($this->availableFunds() + $this->food * PrivateMarket::sell_price('m_bu'));
 
     while ($this->destockHighestGoal($goals,$dpnw, $spend)) {
       PublicMarket::update();
@@ -698,7 +712,6 @@ class Country
   public function destockHighestGoal($goals,$dpnw,$spend)
   {
     $this->updateMain();
-    if ($this->availableFunds() < $spend) { return; }
 
     if (empty($goals)) { return; }
 
@@ -708,7 +721,7 @@ class Country
 
     $what = $goal_array[0];
     $price = $goal_array[1];
-    $market = $goal_array[2];
+    $market = 'EENPC\\'.$goal_array[2];
 
     // out("Destock Goal: ".$what);
 
@@ -721,32 +734,35 @@ class Country
     // out('$market_good:'.$market_good);
     // out('$price:'.$price);
 
-    $market_avail = PublicMarket::available($market_good);
+    $market_avail = $market::available($market_good);
     // out('$market_avail:'.$market_avail);
 
-    $total_cost = $price * $market_avail * ($market == 'PublicMarket' ? $this->tax() : 1);
+    $total_cost = ceil($price * $market_avail * ($market == 'EENPC\\PublicMarket' ? $this->tax() : 1));
     // out('$total_cost:'.$total_cost);
 
     //if necessary try and sell bushels to buy it all
     if ($this->money < $total_cost && turns_of_food($this) > 5) {
       $pm_info = PrivateMarket::getRecent($this);   //get the PM info
       $p = $pm_info->sell_price->m_bu;
-      $q = ceil(min($this->food,($total_cost - $this->money) / $p));
+      $q = ceil(min($this->food + 5 * $this->foodnet,($total_cost - $this->availableFunds()) / $p));
       // out('money:'.$this->money);
       // out('total_cost:'.$total_cost);
       // out('food:'.$this->food);
       // out('$p:'.$p.' $q:'.$q);
-      if ($q == 0) { return; }
+      if ($q < 1) { return; }
       PrivateMarket::sell($this, ['m_bu' => $q],['m_bu' => $p]);
     }
 
-    $max_qty = $price > 0 ? floor(($this->money / ($price * ($market == 'PublicMarket' ? $this->tax() : 1)))) : 0;
+    if ($this->availableFunds() < 0) { return; }
+
+    $max_qty = $price > 0 ? $this->availableFunds() / $price : 0;
+    $max_qty = floor($max_qty / ($market == 'EENPC\\PublicMarket' ? $this->tax() : 1));
     // out('$max_qty:'.$max_qty);
 
     $quantity = min($max_qty,$market_avail);
     // out('$quantity:'.$quantity);
 
-    if ($quantity > 0) { return PublicMarket::buy($this, [ $market_good => $quantity], [ $market_good => $price]); }
+    if ($quantity > 0) { return $market::buy($this, [ $market_good => $quantity], [ $market_good => $price]); }
 
   }
 
@@ -962,6 +978,10 @@ class Country
       return false;
     }
 
+    if ($this->turns < 1) {
+      out('cannot explore - no turns');
+      return false;
+    }
     return true;
   }
 
@@ -972,12 +992,12 @@ class Country
   */
   public function canCash() {
 
-    if (turns_of_food($this) < 2) {
+    if (turns_of_food($this) < 3) {
       out('cannot cash - not enough food');
       return false;
     }
 
-    if (turns_of_money($this) < 2) {
+    if (turns_of_money($this) < 3) {
       out('cannot cash - not enough money');
       return false;
     }
@@ -987,12 +1007,12 @@ class Country
 
   public function canTech() {
 
-    if (turns_of_food($this) < 2) {
+    if (turns_of_food($this) < 3) {
       out('cannot tech - not enough food');
       return false;
     }
 
-    if (turns_of_money($this) < 2) {
+    if (turns_of_money($this) < 3) {
       out('cannot tech - not enough money');
       return false;
     }

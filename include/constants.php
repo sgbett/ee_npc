@@ -4,7 +4,7 @@ namespace EENPC;
 
 require_once 'Colors.class.php';
 
-define('EENPC_URL',           'http://www.earthempires.com/api' );
+define('EENPC_URL',           'https://www.earthempires.com/api' );
 define('EENPC_SERVER',        'ai' );
 define('EENPC_SETTINGS_FILE', 'tmp/settings.json');
 

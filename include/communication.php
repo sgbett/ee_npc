@@ -40,6 +40,8 @@ function ee($api_function, $api_payload = [])
     $params['api_function'] = $api_function;
     $params['api_payload']  = json_encode($api_payload);
 
+    // out_data($params);
+
     $ch = curl_init(EENPC_URL);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
@@ -47,6 +49,7 @@ function ee($api_function, $api_payload = [])
     curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt($ch, CURLOPT_ENCODING, 'gzip');
     $result = curl_exec($ch);
     curl_close($ch);
 
@@ -55,7 +58,6 @@ function ee($api_function, $api_payload = [])
         out_data($init);
     }
 
-    out_data($params);
     return $return;
 }
 
@@ -100,10 +102,10 @@ function handle_output($result, $api_function)
         return false;
     }
 
-    // if ($api_function == 'buy') {
-    //     out("DEBUGGING BUY");
-    //     out_data($response);
-    // }
+    if ($api_function == 'clan/create') {
+        out("DEBUGGING CLAN");
+        out_data($response);
+    }
 
     $message  = key($response);
     $response = $response->$message ?? null;

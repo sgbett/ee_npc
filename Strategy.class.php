@@ -32,6 +32,10 @@ abstract class Strategy {
     $strategy->afterPlayTurns();
   }
 
+  public static function dpnwFloor() {
+    //exponential function that ramps up as we approach end see: https://www.desmos.com/calculator/gdfvui1jpx
+    return 1000 * (Server::turnsRemaining()**(-1/3));
+  }
   //Object attributes/meethods
 
   public $name;
@@ -59,13 +63,25 @@ abstract class Strategy {
     if (Settings::getGdi($this->c->cnum) && !$this->c->gdi) {
       GDI::join();
     }
+    // Clan::join($this->c->cnum);
+  }
+
+  public function jump() {
+    PrivateMarket::sellFood($this->c);
+    $this->destock();
   }
 
   public function playTurns() {
     while(true) {
+      // out_data($this->goals());
       $this->beforeGetNextTurn();
       $this->ensureMoney();
       $this->ensureFood();
+
+      if (Server::turnsRemaining() < 10) {
+        $this->jump();
+        break;
+      };
 
       if ($this->c->canPlayTurn() == false) { break; }
 
@@ -90,6 +106,7 @@ abstract class Strategy {
   }
 
   public function afterPlayTurns() {
+    Settings::setLastPlay($this->c->cnum);
     Settings::updateCPrefs($this->c);
     $this->c->countryStats($this->name,$this->goals());
     Bots::serverStartEndNotification();
@@ -300,6 +317,10 @@ abstract class Strategy {
 
   protected function shouldTech() {
 
+    if ($this->c->turns < 2) {
+      return false;
+    };
+
     if ($this->c->empty > 2 * $this->c->bpt && $this->c->canBuildFullBPT()) {
       return false;
     }
@@ -322,6 +343,19 @@ abstract class Strategy {
     }
 
     return $this->c->food > $qty;
+  }
+
+  protected function shouldSellStock($qty = null) {
+    if ($this->stockpiling() == false) {
+      return false;
+    }
+
+    if (Server::turnsRemaining() > 218) { //TODO: should 218 be defined as something?
+      out('should not sell stock - not near end of reset');
+      return false;
+    }
+
+    return true;
   }
 
   protected function shouldSellMilitary() {
@@ -368,11 +402,14 @@ abstract class Strategy {
   }
 
   protected function shouldSellFood() {
+
+    if (Server::turnsRemaining() < 218) { return false; }
+
     if ($this->stockpiling() == false && $this->c->money < $this->c->fullBuildCost()) {
       return true;
     }
 
-    if ($this->c->food > (30 * $this->c->foodnet)) {
+    if ($this->c->food > (30 * $this->c->foodpro)) {
       return true;
     }
 
@@ -402,18 +439,8 @@ abstract class Strategy {
       return false;
     }
 
-    if (turns_of_money($this->c) < 5) {
-      out('should not destock - not enough money');
-      return false;
-    }
-
-    if (turns_of_food($this->c) < 5) {
+    if (turns_of_food($this->c) < $this->c->turns) {
       out('should not destock - not enough food');
-      return false;
-    }
-
-    if ($this->c->availableFunds() < $this->c->land*5000) {
-      out('should not destock - available funds too low');
       return false;
     }
 
@@ -531,32 +558,36 @@ abstract class Strategy {
 
   function goals()
   {
-    return array_merge($this->techGoals(),$this->militaryGoals(),$this->stockGoals());
+    return array_merge($this->defaultTechGoals(),$this->techGoals(),$this->militaryGoals(),$this->stockGoals());
+  }
+
+  function defaultTechGoals() {
+    return [
+      //what, goal, priority
+      't_mil'   => [94  ,10],
+      't_med'   => [90  ,5],
+      't_bus'   => [140 ,50],
+      't_res'   => [140 ,50],
+      't_agri'  => [180 ,50],
+      't_war'   => [2   ,10],
+      't_ms'    => [110 ,5],
+      't_weap'  => [125 ,10],
+      't_indy'  => [130 ,50],
+      't_spy'   => [125 ,5],
+      't_sdi'   => [45  ,10],
+    ];
   }
 
   function techGoals() {
-    return [
-      //what, goal, priority
-      ['t_mil'  ,98  ,10],
-      ['t_med'  ,97  ,5],
-      ['t_bus'  ,120 ,20],
-      ['t_res'  ,120 ,20],
-      ['t_agri' ,150 ,20],
-      ['t_war'  ,1   ,5],
-      ['t_ms'   ,110 ,5],
-      ['t_weap' ,110 ,5],
-      ['t_indy' ,120 ,20],
-      ['t_spy'  ,110 ,5],
-      ['t_sdi'  ,20  ,5],
-    ];
+    return [];
   }
 
   function militaryGoals()
   {
     return [
       //military
-      ['nlg'    ,$this->c->nlgTarget(),100],
-      ['dpa'    ,$this->c->defPerAcreTarget(1.0),100],
+      'nlg' => [$this->c->nlgTarget(),100],
+      'dpa' => [$this->c->defPerAcreTarget(1.0),100],
     ];
   }
 
@@ -564,8 +595,8 @@ abstract class Strategy {
   {
     return [
       //stocking - no goal, just a priority
-      ['food'   , 0, 1],
-      ['oil'    , 0, 1],
+      'food'    => [ 0, 1],
+      'oil'     => [ 0, 1],
     ];
   }
 

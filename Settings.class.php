@@ -16,7 +16,7 @@ class Settings
     if (substr($name,0,3) == 'set') {
       $attr = self::snake_case(substr($name,3));
       $cnum  = $args[0];
-      $value = isset($args[1]) ? $args[1]  : call_user_func('self::default'.substr($name,3),$cnum);
+      $value = isset($args[1]) ? $args[1] : call_user_func('self::default'.substr($name,3),$cnum);
       return self::__setStatic($cnum,$attr,$value);
     }
     if (substr($name,0,3) == 'init') {
@@ -98,14 +98,25 @@ class Settings
     $stored = self::getTurnsStored($cnum);
 
     $min             = 0;
-    $max             = max(1,121 - 0.5 * ($turns + $stored));
+    $max             = min(121 - 0.5 * ($turns + $stored),0.5 * Server::turnsRemaining());
+    $max             = max(1,$max);
+
+    // out('$min:'.$min);
+    // out('$max:'.$max);
 
     $mintime         = Server::instance()->turn_rate * $min;
     $maxtime         = Server::instance()->turn_rate * $max;
 
-    $nexttime        = round(Math::purebell($mintime, $maxtime, ($maxtime - $mintime)/2));
+    // out('$mintime:'.$mintime);
+    // out('$maxtime:'.$maxtime);
+
+    $nexttime        = floor(Math::purebell($mintime, $maxtime, ($maxtime - $mintime)/2));
+
+    // out('$nexttime:'.$nexttime);
 
     $maxin           = Bots::furthestPlay($cnum);
+
+    // out('$nexttime:'.$maxin);
 
     return time() + round(min($maxin, $nexttime));
 

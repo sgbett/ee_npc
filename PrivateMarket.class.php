@@ -61,6 +61,12 @@ class PrivateMarket
         return self::$info;
     }
 
+    public static function available($item)
+    {
+      self::getInfo();
+      return self::$info->available->$item;
+    }
+
     /**
      * Buy on the Private Market
      *
@@ -69,7 +75,7 @@ class PrivateMarket
      *
      * @return object        Return value
      */
-    public static function buy(&$c, $units = [])
+    public static function buy(&$c, $units = [], $price = null) //$price is a placeholder so we can call public/private buy with same params
     {
         // out("2.Hash: ".spl_object_hash($c));
 
@@ -170,13 +176,13 @@ class PrivateMarket
     }
 
     public static function buy_price($unit) {
-      $pm_info = PrivateMarket::getRecent();
-      return $pm_info->buy_price->$unit;
+      PrivateMarket::getInfo();
+      return self::$info->buy_price->$unit;
     }
 
     public static function sell_price($unit) {
-      $pm_info = PrivateMarket::getRecent();
-      return $pm_info->sell_price->$unit;
+      PrivateMarket::getInfo();
+      return self::$info->sell_price->$unit;
     }
 
     public static function sellMilitary(&$c, $fraction = 1)

@@ -170,10 +170,9 @@ class PublicMarket {
 
   public static function sell(&$c, $quantity = [], $price = [], $tonm = [])
   {
-    //out_data($c);
-
-    out_data($quantity);
-    out_data($price);
+    // out_data($c);
+    // out_data($quantity);
+    // out_data($price);
     if (array_sum($quantity) == 0) {
       out("Trying to sell nothing?");
       $c->updateMain();
@@ -282,7 +281,7 @@ class PublicMarket {
       if ($q == 0) {
         $price[$key] = 0;
       } elseif (PublicMarket::price($key) == null || PublicMarket::price($key) == 0) {
-        $price[$key] = floor($pm_info->buy_price->$key * Math::pureBell(0.5, 1.0, 0.3, 0.01));
+        $price[$key] = floor($pm_info->buy_price->$key * Math::pureBell(0.8, 1.0, 0.1, 0.01));
       } else {
         $price[$key] = min(
           $pm_info->buy_price->$key,

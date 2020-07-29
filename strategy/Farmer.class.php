@@ -41,7 +41,7 @@ class Farmer extends Strategy {
 
   function techGoals() {
     return [
-      't_agri'  => [217 ,100],
+      't_agri'  => [215 ,100],
       't_indy'  => [100 ,0],
     ];
   }
