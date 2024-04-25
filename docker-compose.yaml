@@ -24,14 +24,12 @@ services:
        DOCKER_RAILS:
     image: ee_npc
     volumes:
-      - .:/ee_npc:cached
+      - .:/ee_npc
     working_dir: /ee_npc
     environment:
       - EENPC_AI_KEY
       - EENPC_USERNAME
-    command:
-      - php
-      - ee_npc.php
+    command: php ee_npc.php
     # entrypoint:
     #   - docker/entrypoint.sh
 
