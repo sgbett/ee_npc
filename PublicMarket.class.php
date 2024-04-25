@@ -185,7 +185,7 @@ class PublicMarket {
 
     if (isset($result->error) && $result->error) {
       out('ERROR: '.$result->error);
-      sleep(1);
+      usleep(10); //TODO: fetch from config once its a class
       return;
     }
 

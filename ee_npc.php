@@ -105,7 +105,7 @@ while (1) {
     }
   }
 
-  sleep(1);
+  usleep(10); //TODO: fetch from config once its a class
   Bots::outNext(Server::countries(), true);
   if (isset($playnow)) { done(); }
 }

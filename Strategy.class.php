@@ -101,7 +101,7 @@ abstract class Strategy {
       if ($this->willBuyGoals()) { $this->buyGoals(); }
 
       $this->afterGetNextTurn();
-      usleep(100000); //TODO: fetch from config once its a class
+      usleep(10); //TODO: fetch from config once its a class
     }
   }
 
