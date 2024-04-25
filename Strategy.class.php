@@ -72,8 +72,9 @@ abstract class Strategy {
   }
 
   public function playTurns() {
-    while(true) {
-      // out_data($this->goals());
+    $i = 1;
+    while($i < 20) {
+      out("Taking action ".$i++);
       $this->beforeGetNextTurn();
       $this->ensureMoney();
       $this->ensureFood();
