@@ -137,7 +137,7 @@ abstract class Strategy {
     }
   }
 
-  protected function ensureMoney($turns = 1) {
+  protected function ensureMoney($turns = 10) {
     if ($this->c->protection == 1) { PrivateMarket::sellMilitary($this->c,1); }
 
     // out('money:'.turns_of_money($this->c));
