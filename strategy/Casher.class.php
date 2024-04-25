@@ -7,8 +7,9 @@ class Casher extends Strategy {
   public $name = CASHER;
 
   protected $govts = [
-    ['R',80],
+    ['R',50],
     ['I',10],
+    ['H',10],
     ['D',10]
   ];
 

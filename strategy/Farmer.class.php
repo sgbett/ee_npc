@@ -7,7 +7,7 @@ class Farmer extends Strategy {
   public $name = FARMER;
 
   protected $govts = [
-    ['F',80],
+    ['F',50],
     ['I',10],
     ['D',10],
     ['T',10]
