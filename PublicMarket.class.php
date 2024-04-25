@@ -157,7 +157,6 @@ class PublicMarket {
         self::update();
       }
 
-      //sleep(1);
       return false;
     }
 
@@ -225,7 +224,6 @@ class PublicMarket {
     }
 
     out($str);
-    //sleep(1);
     return $result;
   }
 

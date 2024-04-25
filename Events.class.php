@@ -54,8 +54,6 @@ class Events
             }
         }
 
-        //sleep(1);
-
         if (isset(self::$results->events)) {
             self::$events = self::$results->events;
 

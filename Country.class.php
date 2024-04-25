@@ -544,7 +544,7 @@ class Country
 
     asort($score); // we want *lowest*
 
-    out('returning:'.key($score));
+    out('returning cheapestDpnwGoal:'.key($score));
     return explode('|',key($score));
 
   }

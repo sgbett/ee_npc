@@ -155,6 +155,7 @@ function buy_private_below_dpnw(&$c, $dpnw, $money = 0, $shuffle = false, $defOn
 
 function turns_of_food(&$c)
 {
+  // out('foodnet:'.$c->foodnet);
     if ($c->foodnet >= 0) {
         return 1000; //POSITIVE FOOD, CAN LAST FOREVER BASICALLY
     }
@@ -165,6 +166,7 @@ function turns_of_food(&$c)
 
 function turns_of_money(&$c)
 {
+    // out('income:'.$c->income);
     if ($c->income > 0) {
         return 1000; //POSITIVE INCOME
     }

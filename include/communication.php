@@ -25,7 +25,13 @@ only the real bot logic in the ee_npc file...
  * @param  string $api_function       which string to call
  * @param  array  $api_payload parameters to send
  * @return object                 a JSON object converted to class
+
+
+ http://www.earthempires.com/api?api_function=server&api_payload={"username":"qzjul","ai_key":"fake_api_key","server":"ai"}
+
  */
+
+
 function ee($api_function, $api_payload = [])
 {
     global $cnum, $APICalls;
