@@ -28,7 +28,7 @@ class Oiler extends Strategy {
     $rig = floor($this->c->bpt * 0.25);
     $farm = floor($this->c->bpt * 0.7);
     $indy = $this->c->bpt - $rig - $farm;
-    return ['rig' => rig, 'farm' => $farm, 'indy' => $indy];
+    return ['rig' => $rig, 'farm' => $farm, 'indy' => $indy];
   }
 
   // goals are specified as [what, goal%, wieght(0-100)]
