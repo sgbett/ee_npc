@@ -165,8 +165,8 @@ abstract class Strategy {
 
   private function setTargetLand() {
     if (Settings::getTargetLand($this->c->cnum)) { return; }
-    $target = Math::pureBell($this->minLand, $this->maxLand);
-    out('Settings target acreage for #'.$this->c->cnum.' to '.$target);
+    $target = floor(Math::pureBell($this->minLand, $this->maxLand) * Rules::maxTurns() / 2160);
+    out('Settings target acreage for #'.$this->c->cnum.' to '.$target.' based on maxturns of '.Rules::maxTurns());
     Settings::setTargetLand($this->c->cnum,$target);
     Settings::save();
   }
