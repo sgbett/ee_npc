@@ -6,11 +6,7 @@ class Techer extends Strategy {
 
   public $name = TECHER;
 
-  protected $govts = [
-    ['H',50],
-    ['D',30],
-    ['T',10]
-  ];
+  protected $govts = "HHHHHDDDT";
 
   protected $minLand = 6000;
   protected $maxLand = 12000;

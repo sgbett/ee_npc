@@ -40,7 +40,7 @@ abstract class Strategy {
 
   public $name;
   protected $c;
-  protected $govts;
+  protected $govts = "FTICHRD";
 
   //can't really get much higher than 19k in 2180 turns
   protected $minLand = 7000;
@@ -171,24 +171,12 @@ abstract class Strategy {
     Settings::save();
   }
 
-
   private function setGovernment() {
-
-    $govts = $this->govts();
-
     if ($this->c->govt != 'M') { return; }
-
-    $total_weight = array_sum($govts);
-    $rand = lcg_value() * $total_weight;
-
-    while (count($govts)) {
-      $govt = array_shift($govts);
-      $rand = $rand - $govt[1];
-      if ($rand < 0) { break; }
-    }
-
-    Government::change($this->c, $govt[0]);
-
+    $govts = str_split(preg_replace('/\s+/', '', $this->govts));
+    shuffle($govts);
+    $govt = array_shift($govts);
+    Government::change($this->c, $govt);
   }
 
   protected function setIndustrialProduction() {
@@ -556,18 +544,6 @@ abstract class Strategy {
     }
 
     return true;
-  }
-
-  function govts() {
-    return $this->govts ?? [
-      ['F',1],
-      ['T',1],
-      ['I',1],
-      ['C',1],
-      ['H',1],
-      ['R',1],
-      ['D',1]
-    ];
   }
 
   function goals()

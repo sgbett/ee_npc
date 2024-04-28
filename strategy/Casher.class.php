@@ -6,12 +6,7 @@ class Casher extends Strategy {
 
   public $name = CASHER;
 
-  protected $govts = [
-    ['R',50],
-    ['I',10],
-    ['H',10],
-    ['D',10]
-  ];
+  protected $govts = "RRRRRHID";
 
   protected $minLand = 12000;
   protected $maxLand = 18000;

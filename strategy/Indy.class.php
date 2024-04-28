@@ -6,12 +6,7 @@ class Indy extends Strategy {
 
   public $name = INDY;
 
-  protected $govts = [
-    ['C',80],
-    ['I',8],
-    ['D',8],
-    ['T',8]
-  ];
+  protected $govts = "CCCCCCCTID";
 
   protected $minLand = 12000;
   protected $maxLand = 18000;

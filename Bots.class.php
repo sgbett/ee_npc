@@ -21,11 +21,13 @@ class Bots {
     $strats = <<<END
       TTTTT
       IIIII
-      RRROO
       CCCCC
       FFFFF
+      RRROO
 END;
-    return str_split(preg_replace('/\s+/', '', $strats));
+    $strats = str_split(preg_replace('/\s+/', '', $strats));
+    shuffle($strats);
+    return $strats;
   }
 
   public static function evenlydistributedStrat() {

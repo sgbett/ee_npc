@@ -7,8 +7,7 @@ class Example {
 
   // specify preferred governments with weighting - default is equal weighting of all govts
   //
-  // protected $govts = [['R',90],
-  //                     ['D',10]];
+  // protected $govts = "RRRRHHFIDT"; // shuffles and picks first e.g 50% Rep, 20% Theo, 10% each demo/indy/Tyranny/Fascist
 
   // specify acreage range, actual land goal is normally distributed at random, default shown
   //
@@ -49,7 +48,7 @@ class Example {
   // protected function beforeGetNextTurn() {}
   // protected function afterGetNextTurn() {}
 
-  
+
   // defaultGoals are techGoals, militaryGoals, stockGoals
   //
   // You can override any of those things e.g ...

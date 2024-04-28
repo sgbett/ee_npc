@@ -6,12 +6,7 @@ class Farmer extends Strategy {
 
   public $name = FARMER;
 
-  protected $govts = [
-    ['F',50],
-    ['I',10],
-    ['D',10],
-    ['T',10]
-  ];
+  protected $govts = "FFFFFIIDDT";
 
   protected $minLand = 12000;
   protected $maxLand = 18000;

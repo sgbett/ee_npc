@@ -6,9 +6,7 @@ class Oiler extends Strategy {
 
   public $name = OILER;
 
-  protected $govts = [
-    ['F',100]
-  ];
+  protected $govts = "FFFFFFFFFD";
 
   protected $minLand = 12000;
   protected $maxLand = 18000;
@@ -45,7 +43,7 @@ class Oiler extends Strategy {
     ];
   }
 
-  function stockGoals()
+  function stockGoals() //oilers dont buy food or oil
   {
       return [
           'food'    => [ 0, 0],
