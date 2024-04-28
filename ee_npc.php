@@ -461,10 +461,10 @@ function tech(&$c, $turns = 10)
   $agri = max(pow(PublicMarket::price('agri') - $techfloor, 2), rand(10, 30000));
   $war  = max(pow(PublicMarket::price('war') - $techfloor, 2), rand(0, 1000));
   $ms   = max(pow(PublicMarket::price('ms') - $techfloor, 2), rand(0, 5000));
-  $weap = max(pow(PublicMarket::price('weap') - $techfloor, 2), rand(0, 5000));
-  $indy = max(pow(PublicMarket::price('indy') - $techfloor, 2), rand(5, 30000));
-  $spy  = max(pow(PublicMarket::price('spy') - $techfloor, 2), rand(0, 1000));
-  $sdi  = max(pow(PublicMarket::price('sdi') - $techfloor, 2), rand(2, 2000));
+  $weap = max(pow(PublicMarket::price('weap') - $techfloor, 2), rand(5, 5000));
+  $indy = max(pow(PublicMarket::price('indy') - $techfloor, 2), rand(10, 30000));
+  $spy  = max(pow(PublicMarket::price('spy') - $techfloor, 2), rand(5, 1000));
+  $sdi  = max(pow(PublicMarket::price('sdi') - $techfloor, 2), rand(5, 2000));
   $tot  = $mil + $med + $bus + $res + $agri + $war + $ms + $weap + $indy + $spy + $sdi;
 
   //prevent food/cash shortages
@@ -480,9 +480,9 @@ function tech(&$c, $turns = 10)
   $left -= $war = min($left, floor($c->tpt * $turns * ($war / $tot)));
   $left -= $ms = min($left, floor($c->tpt * $turns * ($ms / $tot)));
   $left -= $weap = min($left, floor($c->tpt * $turns * ($weap / $tot)));
-  $left -= $spy = min($left, floor($c->tpt * $turns * ($spy / $tot)));
-  $left -= $sdi = max($left, floor($c->tpt * $turns * ($sdi / $tot)));
-  $left -= $indy = min($left, min($left, floor($c->tpt * $turns * ($indy / $tot))));
+  $left -= $indy  = min($left, floor($c->tpt * $turns * ($indy / $tot)));
+  $left -= $spy   = min($left, floor($c->tpt * $turns * ($spy / $tot)));
+  $left -= $sdi   = max($left, floor($c->tpt * $turns * ($sdi / $tot)));
 
   if ($left != 0) {
     die("What the hell?");

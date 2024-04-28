@@ -58,19 +58,19 @@ class Techer extends Strategy {
   // }
 
   function techGoals() {
-    // de-prioritise tech for techers
+    // de-prioritise buying tech for techers
     return [
       't_mil'   => [94  ,1],
       't_med'   => [90  ,1],
       't_bus'   => [140 ,1],
       't_res'   => [140 ,1],
-      't_agri'  => [200 ,1],
-      't_war'   => [3   ,1],
+      't_agri'  => [180 ,1],
+      't_war'   => [2   ,1],
       't_ms'    => [110 ,1],
-      't_weap'  => [120 ,1],
-      't_indy'  => [120 ,1],
-      't_spy'   => [120 ,1],
-      't_sdi'   => [60  ,1],
+      't_weap'  => [125 ,1],
+      't_indy'  => [130 ,1],
+      't_spy'   => [125 ,1],
+      't_sdi'   => [45  ,1],
     ];
   }
 
