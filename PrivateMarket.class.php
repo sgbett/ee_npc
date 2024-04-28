@@ -228,5 +228,22 @@ class PrivateMarket
         return PrivateMarket::sell($c, $sell_units);
     }
 
+    public static function sellFoodAmount(&$c, $money)
+    {
+        $c->updateMain();
+
+        $price = PrivateMarket::sell_price('m_bu');
+
+        $sell_units = [
+            'm_bu'  => 1+($money / $price)
+        ];
+        if (array_sum($sell_units) == 0) {
+            out("No Food!");
+            return;
+        }
+        return PrivateMarket::sell($c, $sell_units);
+    }
+
+
 
 }

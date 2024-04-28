@@ -17,8 +17,8 @@ class Farmer extends Strategy {
   protected $maxLand = 18000;
 
   function beforeGetNextTurn() {
-    //sell food to private during protection
-    if ($this->c->protection == 1 && turns_of_food($this->c) > 10) { PrivateMarket::sellFood($this->c); }
+    $this->sellFoodOnPrivateIfProtection();
+    $this->sellFoodOnPrivateIfUnbuilt();
   }
 
   function getNextTurn() {

@@ -13,6 +13,11 @@ class Oiler extends Strategy {
   protected $minLand = 12000;
   protected $maxLand = 18000;
 
+  function beforeGetNextTurn() {
+    $this->sellFoodOnPrivateIfProtection();
+    $this->sellFoodOnPrivateIfUnbuilt();
+  }
+
   function getNextTurn() {
     if ($this->willSendStockToMarket()) { return PublicMarket::sellFood($this->c,true); }
     if ($this->willSellFood())          { return PublicMarket::sellFood($this->c,$this->stockpiling()); }

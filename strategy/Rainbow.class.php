@@ -13,6 +13,11 @@ class Rainbow extends Strategy {
     $this->c->setIndyFromMarket();
   }
 
+  function beforeGetNextTurn() {
+    $this->sellFoodOnPrivateIfProtection();
+    $this->sellFoodOnPrivateIfUnbuilt();
+  }
+
   function getNextTurn() {
     if ($this->willSendStockToMarket()) { return PublicMarket::sellFood($this->c,true); }
     if ($this->willSellMilitary())      { return PublicMarket::sell_max_military($this->c); }

@@ -522,14 +522,27 @@ abstract class Strategy {
     if ($this->c->canBuyGoals() && $this->shouldBuyGoals()) { out('willBuyGoals'); return true; };
   }
 
-  public function buildings() {
-    if ($this->c->foodnet < 0) {
+  protected function sellFoodOnPrivateIfProtection() { //sell food on pricate if in protection
+    if ($this->c->protection == 1 && turns_of_food($this->c) > 10) { PrivateMarket::sellFood($this->c); }
+  }
+
+  protected function sellFoodOnPrivateIfUnbuilt() { //if we need to build and have spare food then sell some
+    if ($this->shouldBuildFullBPT() && !$this->c->canBuildFullBPT()) {
+      PrivateMarket::getInfo($this->c);
+      $needed = 1+ floor($this->c->bpt + 4) * $this->c->build_cost + ($this->c->income > 0 ? 0 : $this->c->income * -5);
+      $qty = min($needed,$this->c->food);
+      PrivateMarket::sellFoodAmount($this->c,$qty);
+    }
+  }
+
+  public function buildings() { //default rainbow
+    if ($this->c->foodnet < 0) { //food positive
       return ['farm' => $this->c->bpt];
-    } elseif ($this->c->income < max(100000, 2 * $this->c->build_cost * $this->c->bpt / $this->c->explore_rate)) {
+    } elseif ($this->c->income < max(100000, 2 * $this->c->build_cost * $this->c->bpt / $this->c->explore_rate)) { //income positive
       $ent = round($this->c->bpt * 0.5);
       $res = $this->c->bpt - $ent;
       return ['ent' => $ent, 'res' => $res];
-    } else {
+    } else { //mostly labs, some indies and a few rigs
       $lab = floor($this->c->bpt * 0.6);
       $ind = floor($this->c->bpt * 0.3);
       $rig = $this->c->bpt - ($lab + $ind);
