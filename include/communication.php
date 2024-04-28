@@ -154,7 +154,7 @@ function handle_output($result, $api_function)
         }
 
         out("\n\nUnexpected Result for '$api_function': ".$message.':'.$response."\n\n");
-
+        debug_print_backtrace();
         return $response;
     } elseif (!expected_result($api_function)) {
         out("Function:");
