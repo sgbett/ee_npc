@@ -16,7 +16,7 @@
 
 version: '3'
 services:
-  ee_npc:
+  ee_npc0:
     build:
       context: ./
       dockerfile: Dockerfile
@@ -29,9 +29,152 @@ services:
     environment:
       - EENPC_AI_KEY
       - EENPC_USERNAME
+      - EENPC_CNUM_MODULO=0
     command: php ee_npc.php
-    # entrypoint:
-    #   - docker/entrypoint.sh
+
+  ee_npc1:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+       DOCKER_RAILS:
+    image: ee_npc
+    volumes:
+      - .:/ee_npc
+    working_dir: /ee_npc
+    environment:
+      - EENPC_AI_KEY
+      - EENPC_USERNAME
+      - EENPC_CNUM_MODULO=1
+    command: php ee_npc.php
+
+  ee_npc2:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+       DOCKER_RAILS:
+    image: ee_npc
+    volumes:
+      - .:/ee_npc
+    working_dir: /ee_npc
+    environment:
+      - EENPC_AI_KEY
+      - EENPC_USERNAME
+      - EENPC_CNUM_MODULO=2
+    command: php ee_npc.php
+
+  ee_npc3:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+       DOCKER_RAILS:
+    image: ee_npc
+    volumes:
+      - .:/ee_npc
+    working_dir: /ee_npc
+    environment:
+      - EENPC_AI_KEY
+      - EENPC_USERNAME
+      - EENPC_CNUM_MODULO=3
+    command: php ee_npc.php
+
+  ee_npc4:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+       DOCKER_RAILS:
+    image: ee_npc
+    volumes:
+      - .:/ee_npc
+    working_dir: /ee_npc
+    environment:
+      - EENPC_AI_KEY
+      - EENPC_USERNAME
+      - EENPC_CNUM_MODULO=4
+    command: php ee_npc.php
+
+  ee_npc5:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+       DOCKER_RAILS:
+    image: ee_npc
+    volumes:
+      - .:/ee_npc
+    working_dir: /ee_npc
+    environment:
+      - EENPC_AI_KEY
+      - EENPC_USERNAME
+      - EENPC_CNUM_MODULO=5
+    command: php ee_npc.php
+
+  ee_npc6:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+       DOCKER_RAILS:
+    image: ee_npc
+    volumes:
+      - .:/ee_npc
+    working_dir: /ee_npc
+    environment:
+      - EENPC_AI_KEY
+      - EENPC_USERNAME
+      - EENPC_CNUM_MODULO=6
+    command: php ee_npc.php
+
+  ee_npc7:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+       DOCKER_RAILS:
+    image: ee_npc
+    volumes:
+      - .:/ee_npc
+    working_dir: /ee_npc
+    environment:
+      - EENPC_AI_KEY
+      - EENPC_USERNAME
+      - EENPC_CNUM_MODULO=7
+    command: php ee_npc.php
+
+  ee_npc8:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+       DOCKER_RAILS:
+    image: ee_npc
+    volumes:
+      - .:/ee_npc
+    working_dir: /ee_npc
+    environment:
+      - EENPC_AI_KEY
+      - EENPC_USERNAME
+      - EENPC_CNUM_MODULO=8
+    command: php ee_npc.php
+
+  ee_npc9:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+       DOCKER_RAILS:
+    image: ee_npc
+    volumes:
+      - .:/ee_npc
+    working_dir: /ee_npc
+    environment:
+      - EENPC_AI_KEY
+      - EENPC_USERNAME
+      - EENPC_CNUM_MODULO=9
+    command: php ee_npc.php
 
 volumes:
   ee_npc:

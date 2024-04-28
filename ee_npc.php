@@ -32,6 +32,10 @@ spl_autoload_register(
   }
 );
 
+function is_modulo_cnum($cnum) {
+  return ($cnum % 10) == EENPC_CNUM_MODULO;
+}
+
 require_once 'Colors.class.php';
 require_once 'Country.class.php';
 require_once 'Logger.class.php';
@@ -73,7 +77,12 @@ while (1) {
 
   while (Server::maximumCountries() == false) {
     out("Less countries than allowed! (".Server::instance()->alive_count.'/'.Server::instance()->countries_allowed.')');
-    Server::createCountry();
+    if (EENPC_CNUM_MODULO == 0) {
+      Server::createCountry();
+    } else {
+      sleep(10);
+      Server::reload();
+    }
 
     if (Server::instance()->reset_start > time()) {
       $timeleft      = Server::instance()->reset_start - time();
@@ -91,6 +100,7 @@ while (1) {
   }
 
   foreach (Server::countries() as $cnum) {
+    if (($cnum % 10) != EENPC_CNUM_MODULO ) { continue; }
     if (isset($playnow) && $playnow !== true && $playnow != $cnum) { continue; }
 
     Debug::off(); //reset for new country
@@ -105,9 +115,11 @@ while (1) {
     }
   }
 
-  usleep(10); //TODO: fetch from config once its a class
   Bots::outNext(Server::countries(), true);
+  $next = min(Bots::getNextPlays(Server::countries()));
+
   if (isset($playnow)) { done(); }
+  sleep(2+max(0,$next-time())/2); //TODO: fetch from config once its a class
 }
 
 done(); //done() is defined below

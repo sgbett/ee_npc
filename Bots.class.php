@@ -49,6 +49,7 @@ END;
   public static function getNextPlayCNUM($countries, $time = 0)
   {
     foreach ($countries as $cnum) {
+    if (($cnum % 10) != EENPC_CNUM_MODULO ) { continue; }
       if (Settings::getNextPlay($cnum) == $time) {
         return $cnum;
       }
@@ -59,6 +60,7 @@ END;
   public static function getLastPlayCNUM($countries, $time = 0)
   {
     foreach ($countries as $cnum) {
+      if (($cnum % 10) != EENPC_CNUM_MODULO ) { continue; }
       if (Settings::getLastPlay($cnum) == $time) {
         return $cnum;
       }
@@ -72,6 +74,7 @@ END;
     $nextplays = [];
     $time = time();
     foreach ($countries as $cnum) {
+      if (($cnum % 10) != EENPC_CNUM_MODULO ) { continue; }
       $nextplay = Settings::getNextPlay($cnum) ?? Settings::setNextPlay($cnum);
       $nextplays[$cnum] = $nextplay;
 
@@ -136,7 +139,7 @@ END;
 
     $stddev = round(self::playtimesStdDev($countries));
     out("Standard Deviation of play is: $stddev; (".round($stddev / Server::instance()->turn_rate).' turns)');
-    
+
     // if ($stddev < Server::instance()->turn_rate * 72 / 4 || $stddev > Server::instance()->turn_rate * 72) {
     //     out('Recalculating Nextplays');
     //     foreach ($countries as $cnum) {
@@ -152,7 +155,7 @@ END;
 
     self::outOldest($countries);
     self::outFurthest($countries);
-    //self::outNext($countries);
+    self::outNext($countries);
   }
 
 
@@ -187,7 +190,7 @@ END;
     $xnum   = self::getNextPlayCNUM($countries, min($next));
     $xstrat = self::txtStrat($xnum);
     $next   = max(0, min($next) - time());
-    out("Next Play in ".$next.'s: #'.$xnum." $xstrat    \e[1A");
+    out("Next Play in ".$next.'s: #'.$xnum." $xstrat");
   }
 
 
@@ -220,6 +223,7 @@ END;
   {
     $lastplays = [];
     foreach ($countries as $cnum) {
+      if (($cnum % 10) != EENPC_CNUM_MODULO ) { continue; }
       $lastplay = Settings::getLastPlay($cnum);
       $lastplays[$cnum] = $lastplay ?? Settings::setLastPlay($cnum);
     }

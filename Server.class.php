@@ -60,8 +60,12 @@ class Server {
 
   public static function countries() {
     $countries = self::instance()->cnum_list->alive;
+    $countries = array_filter($countries,"EENPC\\is_modulo_cnum");
+    // out("countries: ".print_r($countries));
     shuffle($countries);
     return $countries;
   }
+
+
 
 }
