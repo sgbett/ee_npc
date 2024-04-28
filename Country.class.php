@@ -1036,12 +1036,6 @@ class Country
       return false;
     }
 
-    if (Server::turnsRemaining() < 228) {
-      //5hrs on market + 36mins to arrive = 168 turns <- this would be ideal...
-      //...but we add 60 to make sure stuff returns 10 or more turns before the qzjul bots destock
-      return false;
-    }
-
     return true;
   }
 

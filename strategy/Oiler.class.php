@@ -17,9 +17,9 @@ class Oiler extends Strategy {
   }
 
   function getNextTurn() {
-    if ($this->willSendStockToMarket()) { return PublicMarket::sellFood($this->c,true); }
-    if ($this->willSellFood())          { return PublicMarket::sellFood($this->c,$this->stockpiling()); }
-    if ($this->willSellOil())           { return PublicMarket::sell_oil($this->c,$this->stockpiling()); }
+    if ($this->willSendStockToMarket()) { return PublicMarket::sellStock($this->c); }
+    if ($this->willSellFood())          { return PublicMarket::sellFood($this->c); }
+    if ($this->willSellOil())           { return PublicMarket::sellOil($this->c); }
     if ($this->willBuildCS())           { return Build::cs(); }
     if ($this->willBuildFullBPT())      { return Build::buildings($this->buildings()); }
     if ($this->willExplore())           { return explore($this->c); }

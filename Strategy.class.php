@@ -67,6 +67,7 @@ abstract class Strategy {
   }
 
   public function jump() {
+    PublicMarket::recallGoods($this->c);
     PrivateMarket::sellFood($this->c);
     $this->destock();
   }
@@ -80,7 +81,9 @@ abstract class Strategy {
       $this->ensureFood();
 
       if (Server::turnsRemaining() < 10) {
-        $this->jump();
+        if ($this->c->turns > 3) {
+          $this->jump();
+        }
         break;
       };
 
@@ -88,7 +91,7 @@ abstract class Strategy {
 
       $turn = $this->getNextTurn(); //TODO: return the turn, not the result of playing it
 
-      //worakaround that for now
+      //workaround that for now
       if ($turn == null) { return; }
       $result = $turn;
 
@@ -323,6 +326,8 @@ abstract class Strategy {
       return false;
     }
 
+    //TODO we don't do anythign with quantity!? its just auto sells 0.9 of total at stockpile prices
+
     if ($qty === null) {
       $min   = 2000000;
       $max   = 16000000;
@@ -391,8 +396,11 @@ abstract class Strategy {
   }
 
   protected function shouldSellFood() {
+  // Current AI market: The minimum time for market goods to arrive on the market is 0.1 hours. The maximum time is 0.3 hours
+  // Unsold goods stay on the market for 3 hours. But we can recall now!
 
-    if (Server::turnsRemaining() < 218) { return false; }
+
+    if (Server::turnsRemaining() < 10) { return false; } // TODO: sell until it wont get to market (10 turns is rough estimate for now)
 
     if ($this->stockpiling() == false && $this->c->money < $this->c->fullBuildCost()) {
       return true;
@@ -438,7 +446,7 @@ abstract class Strategy {
 
   public function shouldBuyGoals() {
 
-    if (Server::turnsRemaining() < 218) { //TODO: should 218 be defined as something?
+    if (Server::turnsRemaining() < 100) { //TODO: this should be defined as something? maybe not a hard cutoff, maybe as turns remaining goal prioarity is reduced?
       out('should not buy goals - near end of reset');
       return false;
     }

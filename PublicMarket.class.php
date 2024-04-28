@@ -166,6 +166,34 @@ class PublicMarket {
     return $result;
   }
 
+  // market_recall => recall market goods or tech
+  //   Fields:
+  //       U/A/S/C,
+  //       type    => "GOODS" or "TECH"
+
+  public static function recallGoods(&$c) {
+    out('Recalling Goods');
+    $result = ee('market_recall', ['type' => 'GOODS']);
+    $c->updateMain();
+    if (isset($result->error) && $result->error) {
+      out('ERROR: '.$result->error);
+      usleep(10); //TODO: fetch from config once its a class
+      return;
+    }
+    return;
+  }
+
+  public static function recallTech(&$c) {
+    out('Recalling Tech');
+    $result = ee('market_recall', ['type' => 'TECH']);
+    $c->updateMain();
+    if (isset($result->error) && $result->error) {
+      out('ERROR: '.$result->error);
+      usleep(10); //TODO: fetch from config once its a class
+      return;
+    }
+    return;
+  }
 
   public static function sell(&$c, $quantity = [], $price = [], $tonm = [])
   {
@@ -375,20 +403,21 @@ class PublicMarket {
     return $result;
   }
 
-  public static function sellFood(&$c,$stockpile = false)
+  public static function sellFood(&$c)
   {
     $c->updateAdvisor();
 
-    $quantity = ['m_bu' => round(($stockpile ? 0.9 : 1) * $c->food)];
+    $quantity = ['m_bu' => $c->food ];
 
     $pm_info = PrivateMarket::getInfo();
 
-    $rmax    = 1.10;
+    $rmax    = 1.09; // slightly bias lower
     $rmin    = 0.90;
+
     $rstep   = 0.01;
     $rstddev = 0.10;
 
-    $price   = $stockpile ? 250 : PublicMarket::price('m_bu');
+    $price   = PublicMarket::price('m_bu');
     $price   = round($price * Math::pureBell($rmin, $rmax, $rstddev, $rstep));
 
     if ($price == 0) {
@@ -405,17 +434,17 @@ class PublicMarket {
     return PublicMarket::sell($c, $quantity, $price);
   }
 
-  public static function sell_oil(&$c,$stockpile = false) {
+  public static function sellOil(&$c) {
     $c->updateAdvisor();
 
-    $quantity = ['m_oil' => round(($stockpile ? 0.9 : 1) * $c->oil)];
+    $quantity = ['m_oil' => $c->oil ];
 
-    $rmax    = 1.10;
+    $rmax    = 1.09; // slightly bias lower
     $rmin    = 0.90;
     $rstep   = 0.01;
     $rstddev = 0.10;
 
-    $price   = $stockpile ? 2500 : PublicMarket::price('m_oil');
+    $price   = PublicMarket::price('m_oil');
     $price   = round($price * Math::pureBell($rmin, $rmax, $rstddev, $rstep));
 
     if ($price == 0) {
@@ -426,6 +455,36 @@ class PublicMarket {
 
     return PublicMarket::sell($c, $quantity, $price);
 
+  }
+
+  public static function sellStock(&$c, $fraction = 0.9) {
+
+    $rmax    = 1.1;
+    $rmin    = 0.9;
+    $rstep   = 0.01;
+    $rstddev = 0.10;
+
+    $price_bu  = round(280 * Math::pureBell($rmin, $rmax, $rstddev, $rstep));
+    $price_oil = round(2500 * Math::pureBell($rmin, $rmax, $rstddev, $rstep));
+
+    $quantity = [
+      'm_bu' => floor($c->food * $fraction) ,
+      'm_oil' => floor($c->oil * $fraction)
+    ];
+
+    $price = [
+      'm_bu' => $price_bu ,
+      'm_oil' => $price_oil
+    ];
+
+    $result = ee('sell', ['quantity' => $quantity, 'price' => $price]);
+    $c->updateOnMarket();
+
+    if (isset($result->error) && $result->error) {
+      out('ERROR: '.$result->error);
+      usleep(10); //TODO: fetch from config once its a class
+      return;
+    }
   }
 
 }

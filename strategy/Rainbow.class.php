@@ -19,11 +19,11 @@ class Rainbow extends Strategy {
   }
 
   function getNextTurn() {
-    if ($this->willSendStockToMarket()) { return PublicMarket::sellFood($this->c,true); }
+    if ($this->willSendStockToMarket()) { return PublicMarket::sellStock($this->c); }
     if ($this->willSellMilitary())      { return PublicMarket::sell_max_military($this->c); }
     if ($this->willSellTech())          { return PublicMarket::sell_max_tech($this->c); }
     if ($this->willSellFood())          { return PublicMarket::sellFood($this->c,$this->stockpiling()); }
-    if ($this->willSellOil())           { return PublicMarket::sell_oil($this->c,$this->stockpiling()); }
+    if ($this->willSellOil())           { return PublicMarket::sellOil($this->c,$this->stockpiling()); }
     if ($this->willBuildCS())           { return Build::cs(); }
     if ($this->willBuildFullBPT())      { return Build::buildings($this->buildings()); }
     if ($this->willExplore())           { return explore($this->c); }

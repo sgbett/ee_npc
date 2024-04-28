@@ -20,7 +20,7 @@ class Techer extends Strategy {
     //0.8 in protection to build a few farms, then build all CS up front
     $cs_turn_ratio = $this->c->protection ? 0.8 : 1;
 
-    if ($this->willSendStockToMarket()) { return PublicMarket::sellFood($this->c,true); }
+    if ($this->willSendStockToMarket()) { return PublicMarket::sellStock($this->c); }
     if ($this->willSellTech())          { return PublicMarket::sell_max_tech($this->c); }
     if ($this->willBuildCS($cs_turn_ratio))  { return Build::cs(); }
     if ($this->willBuildFullBPT())      { return Build::buildings($this->buildings()); }
