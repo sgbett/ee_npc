@@ -31,4 +31,23 @@ class Rainbow extends Strategy {
     if ($this->c->canExplore())         { return explore($this->c); }
   }
 
+  // goals are specified as [what, goal%, wieght(0-100)]
+
+  // function defaultTechGoals() {
+  //   return [
+  //     //what, goal, priority
+  //     't_mil'   => [94  ,10],
+  //     't_med'   => [90  ,5],
+  //     't_bus'   => [140 ,50],
+  //     't_res'   => [140 ,50],
+  //     't_agri'  => [180 ,50],
+  //     't_war'   => [2   ,10],
+  //     't_ms'    => [110 ,5],
+  //     't_weap'  => [125 ,10],
+  //     't_indy'  => [130 ,50],
+  //     't_spy'   => [125 ,5],
+  //     't_sdi'   => [45  ,10],
+  //   ];
+  // }
+
 }
