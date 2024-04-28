@@ -392,7 +392,7 @@ class PublicMarket {
     $price   = round($price * Math::pureBell($rmin, $rmax, $rstddev, $rstep));
 
     if ($price == 0) {
-      $price = Math::pureBell(30, 288, 100, 1);
+      $price = Math::pureBell(30, 288, 100, 1); //nothing on market, pick a number!
     }
 
     if ($price <= max(35, $pm_info->sell_price->m_bu / $c->tax()))

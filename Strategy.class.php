@@ -116,7 +116,7 @@ abstract class Strategy {
   }
 
   protected function destock() {
-    if ($this->c->turns_played < 1000) { return; }
+    if ($this->c->turns_played < 1000) { return; } //TODO: check with rules
     return $this->c->destock();
   }
 
@@ -257,7 +257,7 @@ abstract class Strategy {
   protected function shouldBuildFullBPT() {
 
     if ($this->c->empty < $this->c->bpt + ($this->c->bpt >= $this->c->desiredBpt() ? 0 : 4)) { //leave 4 for CS, if not at target BPT
-      out('should not build BPT - not enough land left for CS');
+      out('should not build - not enough empty land for full BPT');
       return false;
     }
 
@@ -453,7 +453,7 @@ abstract class Strategy {
     }
 
     if (turns_of_food($this->c) < 5) {
-      out('should not buy goals - not ehough food');
+      out('should not buy goals - not enough food');
       return false;
     }
 

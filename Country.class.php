@@ -568,17 +568,17 @@ class Country
       $point_att = "p$what";
       $priority = ($goal[1]/100);
 
-      if (($what == 't_sdi') || ($what == 't_war')) {
+      if (($what == 't_sdi') || ($what == 't_war')) { // >0 target
         $t = $this->techMultiplier() * ($goal[0]);
         $a = $this->$point_att;
         $target = $t;
         $actual = $a;
-      } elseif (($what == 't_mil') || ($what == 't_med')) {
+      } elseif (($what == 't_mil') || ($what == 't_med')) { // <100 target
         $t = $this->techMultiplier() * (100 - $goal[0]);
         $a = 100 - $this->$point_att;
         $target = 100 - $t;
         $actual = 100 - $a;
-      } elseif (substr($what,0,2) == 't_') {
+      } elseif (substr($what,0,2) == 't_') { // >100 target
         $t = $this->techMultiplier() * ($goal[0] - 100);
         $a = $this->$point_att - 100;
         $target = $t + 100;
@@ -701,7 +701,7 @@ class Country
     while ($this->destockHighestGoal($goals,$dpnw, $spend)) {
       PublicMarket::update();
     }
-
+    out('No More goods at $'.round($dpnw).'/nw or less');
   }
 
   /**
@@ -723,7 +723,7 @@ class Country
     $price = $goal_array[1];
     $market = 'EENPC\\'.$goal_array[2];
 
-    // out("Destock Goal: ".$what);
+    out("Destock Goal: ".$what);
 
     if (substr($what,0,2) == 't_') {
       $market_good = substr($what,2);
@@ -731,36 +731,37 @@ class Country
       $market_good = $what;
     }
 
-    // out('$market_good:'.$market_good);
-    // out('$price:'.$price);
+    out('$market_good:'.$market_good);
+    out('$price:'.$price);
 
     $market_avail = $market::available($market_good);
-    // out('$market_avail:'.$market_avail);
+    out('$market_avail:'.$market_avail);
 
     $total_cost = ceil($price * $market_avail * ($market == 'EENPC\\PublicMarket' ? $this->tax() : 1));
-    // out('$total_cost:'.$total_cost);
+    out('$total_cost:'.$total_cost);
 
     //if necessary try and sell bushels to buy it all
     if ($this->money < $total_cost && turns_of_food($this) > 5) {
       $pm_info = PrivateMarket::getInfo($this);   //get the PM info
       $p = $pm_info->sell_price->m_bu;
       $q = ceil(min($this->food + 5 * $this->foodnet,($total_cost - $this->availableFunds()) / $p));
-      // out('money:'.$this->money);
-      // out('total_cost:'.$total_cost);
-      // out('food:'.$this->food);
-      // out('$p:'.$p.' $q:'.$q);
+      out('money:'.$this->money);
+      out('total_cost:'.$total_cost);
+      out('food:'.$this->food);
+      out('$p:'.$p.' $q:'.$q);
       if ($q < 1) { return; }
-      PrivateMarket::sell($this, ['m_bu' => $q],['m_bu' => $p]);
+      PrivateMarket::sell($this, ['m_bu' => $q]);
     }
 
     if ($this->availableFunds() < 0) { return; }
 
     $max_qty = $price > 0 ? $this->availableFunds() / $price : 0;
     $max_qty = floor($max_qty / ($market == 'EENPC\\PublicMarket' ? $this->tax() : 1));
-    // out('$max_qty:'.$max_qty);
+    out('$max_qty:'.$max_qty);
 
     $quantity = min($max_qty,$market_avail);
-    // out('$quantity:'.$quantity);
+    out('$quantity:'.$quantity);
+    out('BUYING');
 
     if ($quantity > 0) { return $market::buy($this, [ $market_good => $quantity], [ $market_good => $price]); }
 

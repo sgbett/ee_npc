@@ -124,7 +124,7 @@ class Settings
   private static function defaultOff($cnum)          { return 1; }
   private static function defaultStrat($cnum)        {
     if (Country::name($cnum)) {
-      return substr(Country::name($cnum),0,1);
+      return substr(Country::name($cnum),0,1); //restore strat from name if its been lost
     } else {
       return Bots::pickStrat();
     }
