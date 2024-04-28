@@ -494,7 +494,7 @@ class Country
     // out('want_dpnw_goal:'.$dpnw);
     $score = [];
 
-    PrivateMarket::getInfo();
+    PrivateMarket::getInfo($this);
     PublicMarket::update();
 
     foreach ($goals as $what => $nw) {
