@@ -84,7 +84,7 @@ function buy_public_below_dpnw(&$c, $dpnw, &$money = null, $shuffle = false, $de
 function buy_private_below_dpnw(&$c, $dpnw, $money = 0, $shuffle = false, $defOnly = false)
 {
     //out("Stage 2");
-    $pm_info = PrivateMarket::getRecent($c);   //get the PM info
+    $pm_info = PrivateMarket::getInfo($c);   //get the PM info
 
     if (!$money || $money < 0) {
         $money   = $c->money;
@@ -176,7 +176,7 @@ function turns_of_money(&$c)
 
 
 function min_dpnw(&$c, $onlyDef = false) {
-    $pm_info = PrivateMarket::getRecent($c);   //get the PM info
+    $pm_info = PrivateMarket::getInfo($c);   //get the PM info
 
     PublicMarket::update();
     $pub_tr = PublicMarket::price('m_tr') * $c->tax() / 0.5;

@@ -52,14 +52,15 @@ class PrivateMarket
      *
      * @return result EE Private Market Result
      */
-    public static function getRecent($c = null)
-    {
-        if (time() - self::$updated > 20 && ($c === null || $c->cnum == self::$cnum) || self::$info == []) {
-            return self::getInfo($c);
-        }
 
-        return self::$info;
-    }
+//     public static function getRecent($c = null)
+//     {
+//         if (time() - self::$updated > 20 && ($c === null || $c->cnum == self::$cnum) || self::$info == []) {
+//             return self::getInfo($c);
+//         }
+//
+//         return self::$info;
+//     }
 
     public static function available($item)
     {

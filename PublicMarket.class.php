@@ -263,7 +263,7 @@ class PublicMarket {
     $c->updateAdvisor();
     //$market_info = get_market_info();   //get the Public Market info
 
-    $pm_info = PrivateMarket::getRecent($c);   //get the PM info
+    $pm_info = PrivateMarket::getInfo($c);
 
     $quantity = [];
     foreach (EENPC_LIST_MILITARY as $unit) {
@@ -381,7 +381,7 @@ class PublicMarket {
 
     $quantity = ['m_bu' => round(($stockpile ? 0.9 : 1) * $c->food)];
 
-    $pm_info = PrivateMarket::getRecent();
+    $pm_info = PrivateMarket::getInfo();
 
     $rmax    = 1.10;
     $rmin    = 0.90;
