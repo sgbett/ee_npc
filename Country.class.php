@@ -251,6 +251,11 @@ class Country
   {
     // out("Setting Indy production from market:");
 
+    $make_tr = 1.86;
+    $make_j  = 1.86;
+    $make_tu = 1.86;
+    $make_ta = 0.4;
+
     if ($this->m_spy < 10000) {
       $spy = 10;
     } elseif ($this->m_spy / $this->land < 25) {
@@ -267,16 +272,16 @@ class Country
 
     $therest = 100 - $spy;
 
-    $p_tr = PublicMarket::price('m_tr');
-    $p_j  = PublicMarket::price('m_j');
-    $p_tu = PublicMarket::price('m_tu');
-    $p_ta = PublicMarket::price('m_ta');
+    $price_tr = PublicMarket::price('m_tr');
+    $price_j  = PublicMarket::price('m_j');
+    $price_tu = PublicMarket::price('m_tu');
+    $price_ta = PublicMarket::price('m_ta');
 
     $score = [
-      'pro_tr'  => 1.86 * ($p_tr == 0 ? 999 : $p_tr),
-      'pro_j'   => 1.86 * ($p_j == 0 ? 999 : $p_j),
-      'pro_tu'  => 1.86 * ($p_tu == 0 ? 999 : $p_tu),
-      'pro_ta'  => 0.4 * ($p_ta == 0 ? 999 : $p_ta),
+      'pro_tr'  => $make_tr * ($price_tr == 0 ? 999 : $price_tr) * 0.5 ,
+      'pro_j'   => $make_j  * ($price_j  == 0 ? 999 : $price_j)  * 0.5 , //TODO: tweak demand for jets
+      'pro_tu'  => $make_tu * ($price_tu == 0 ? 999 : $price_tu) * 1.0 ,
+      'pro_ta'  => $make_ta * ($price_ta == 0 ? 999 : $price_ta) * 0.5 ,
     ];
 
     $protext = null;
