@@ -444,6 +444,11 @@ abstract class Strategy {
       return false;
     }
 
+    if ($this->c->turns > 100) {
+      cout($this->c,'should not destock - too many turns to play');
+      return false;
+    }
+
     return true;
   }
 
