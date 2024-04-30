@@ -22,80 +22,57 @@ only the real bot logic in the ee_npc file...
 
 /**
  * Main Communication
- * @param  string $function       which string to call
- * @param  array  $parameterArray parameters to send
+ * @param  string $api_function       which string to call
+ * @param  array  $api_payload parameters to send
  * @return object                 a JSON object converted to class
+
+
+ http://www.earthempires.com/api?api_function=server&api_payload={"username":"qzjul","ai_key":"fake_api_key","server":"ai"}
+
  */
-function ee($function, $parameterArray = [])
+
+
+function ee($api_function, $api_payload = [])
 {
-    global $baseURL, $username, $aiKey, $serv, $cnum, $APICalls;
+    global $cnum, $APICalls;
 
-    $init                       = $parameterArray;
-    $parameterArray['ai_key']   = $aiKey;
-    $parameterArray['username'] = $username;
-    $parameterArray['server']   = $serv;
-    if ($cnum) {
-        $parameterArray['cnum'] = $cnum;
-    }
+    $init                       = $api_payload;
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $baseURL);
+    $api_payload['ai_key']   = EENPC_AI_KEY;
+    $api_payload['username'] = EENPC_USERNAME;
+    $api_payload['server']   = EENPC_SERVER;
+    if ($cnum) { $api_payload['cnum'] = $api_payload['cnum'] ?? $cnum; }
+
+    $params['api_function'] = $api_function;
+    $params['api_payload']  = json_encode($api_payload);
+
+    // out_data($params);
+
+    $ch = curl_init(EENPC_URL);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
     curl_setopt($ch, CURLOPT_POST, 1);
-    $send = "api_function=".$function."&api_payload=".json_encode($parameterArray);
-    //out($send);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $send);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-
-    // receive server response ...
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-    $serverOutput = curl_exec($ch);
-
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt($ch, CURLOPT_ENCODING, 'gzip');
+    $result = curl_exec($ch);
     curl_close($ch);
 
-    $APICalls++;
-
-    $return = handle_output($serverOutput, $function);
+    $return = handle_output($result, $api_function);
     if ($return === false) {
         out_data($init);
     }
 
-    //out($function);
     return $return;
-}//end ee()
-
-/**
- * Get the server; handle EE being down
- *
- * @return object The server info
- */
-function getServer()
-{
-    $server_loaded = false;
-    $server        = null;
-    while (!$server_loaded) {
-        if ($server_loaded === false) {
-            $server = ee('server');
-            if (is_object($server)) {
-                $server_loaded = true;
-            }
-        }
-
-        if (!$server_loaded) {
-            out("Server didn't load, try again in 2...");
-            sleep(2); //try again in 2 seconds.
-        }
-    }
-
-    return $server;
-}//end getServer()
+}
 
 /**
  * Get the rules; handle EE being down
  *
  * @return object The rules
  */
-function getRules()
+function get_rules()
 {
     $rules_loaded = false;
     $rules        = null;
@@ -114,31 +91,31 @@ function getRules()
     }
 
     return $rules;
-}//end getRules()
+}
 
 
 /**
  * Handle the server output
- * @param  JSON   $serverOutput JSON return
- * @param  string $function     function to call
+ * @param  JSON   $result JSON return
+ * @param  string $api_function     function to call
  * @return object               json object -> class
  */
-function handle_output($serverOutput, $function)
+function handle_output($result, $api_function)
 {
-    $response = json_decode($serverOutput);
+    $response = json_decode($result);
     if (!$response) {
-        out('Not acceptable response: '. $function .' - '. $serverOutput);
+        out('Not acceptable response: '. $api_function .' - '. $result);
         return false;
     }
 
-    // if ($function == 'buy') {
-    //     out("DEBUGGING BUY");
-    //     out_data($response);
-    // }
+    if ($api_function == 'clan/create') {
+        out("DEBUGGING CLAN");
+        out_data($response);
+    }
 
     $message  = key($response);
     $response = $response->$message ?? null;
-    //$parts = explode(':', $serverOutput, 2);
+    //$parts = explode(':', $result, 2);
     //This will simply kill the script if EE returns with an error
     //This is to avoid foulups, and to simplify the code checking above
     if ($message == 'COUNTRY_IS_DEAD') {
@@ -147,13 +124,10 @@ function handle_output($serverOutput, $function)
         return null;
     } elseif ($message == 'OWNED') {
         out("Trying to sell more than owned!");
-
         return null;
     } elseif ($message == "ERROR" && $response == "MAXIMUM_COUNTRIES_REACHED") {
         out("Already have total allowed countries!");
-        out("Refresh Server");
-        global $server; //do all this with a class sometime soon
-        $server = ee('server');
+        Server::reload();
         return null;
     } elseif ($message == "ERROR" && $response == "MONEY") {
         out("Not enough Money!");
@@ -161,31 +135,39 @@ function handle_output($serverOutput, $function)
     } elseif ($message == "ERROR" && $response == "NOT_ENOUGH_TURNS") {
         out("Not enough Turns!");
         return null;
-    } elseif ($function == 'ally/offer' && $message == "ERROR" && $response == "disallowed_by_server") {
+    } elseif ($message == "ERROR" && $response == "INVALID_CNUM") {
+      out("Invalid CNUM!");
+      Server::reload();
+      return null;
+    } elseif ($api_function == 'ally/offer' && $message == "ERROR" && $response == "disallowed_by_server") {
         out("Allies are not allowed!");
         Allies::$allowed = false;
         return null;
-    } elseif (expected_result($function) && $message != expected_result($function)) {
+    } elseif (expected_result($api_function) && $message != expected_result($api_function)) {
         if (is_object($message) || is_object($response)) {
+            out("Message:");
             out_data($message);
+            out("Response:");
             out_data($response);
-            out("Server Output: \n".$serverOutput);
+            out("Server Output: \n".$result);
             return $response;
         }
 
-        out("\n\nUnexpected Result for '$function': ".$message.':'.$response."\n\n");
-
+        out("\n\nUnexpected Result for '$api_function': ".$message.':'.$response."\n\n");
+        debug_print_backtrace();
         return $response;
-    } elseif (!expected_result($function)) {
-        out($function);
+    } elseif (!expected_result($api_function)) {
+        out("Function:");
+        out($api_function);
+        out("Message:");
         out($message);
         out_data($response);
-        out("Server Output: \n".$serverOutput);
+        out("Server Output: \n".$result);
         return false;
     }
 
     return $response;
-}//end handle_output()
+}
 
 
 /**
@@ -231,12 +213,11 @@ function expected_result($input)
         'gdi/join' => 'GDIJOIN',
         'gdi/leave' => 'GDILEAVE',
         'events' => 'NEW_EVENTS',
-        'events' => 'EVENTSNEW',
         'ranks/{cnum}' => 'SEARCH',
     ];
 
     return $expected[$lastFunction] ?? null;
-}//end expected_result()
+}
 
 
 /**
@@ -254,4 +235,4 @@ function actual_count($data)
     }
 
     return $i;
-}//end actual_count()
+}

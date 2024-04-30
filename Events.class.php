@@ -39,7 +39,7 @@ class Events
         $copyarray = (array)$result->results;
 
         foreach ($copyarray as $mainkey => $subitems) {
-            $count_sub = count($subitems);
+            $count_sub = actual_count($subitems);
             out("Events: $count_sub x $mainkey");
 
             $subitems = (array)$subitems;
@@ -53,8 +53,6 @@ class Events
                 }
             }
         }
-
-        //sleep(1);
 
         if (isset(self::$results->events)) {
             self::$events = self::$results->events;
@@ -100,5 +98,5 @@ class Events
         // }
 
         return $result;
-    }//end new()
-}//end class
+    }
+}

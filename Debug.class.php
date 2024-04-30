@@ -31,7 +31,7 @@ class Debug
         }
 
         self::$debugging = true;
-    }//end on()
+    }
 
 
     /**
@@ -42,7 +42,7 @@ class Debug
     public static function off()
     {
         self::$debugging = false;
-    }//end off()
+    }
 
     /**
      * I need a debugging function
@@ -55,5 +55,5 @@ class Debug
         if (self::$debugging == true) {
             out($str, $newline);
         }
-    }//end msg()
-}//end class
+    }
+}

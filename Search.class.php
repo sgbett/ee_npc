@@ -34,5 +34,5 @@ class Search
         //out("Search: $result");
 
         return $result->results;
-    }//end country()
-}//end class
+    }
+}

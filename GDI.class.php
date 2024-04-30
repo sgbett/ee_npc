@@ -27,7 +27,7 @@ class GDI
         out("Join GDI");
         //out($result);
         return $result;
-    }//end join()
+    }
 
     /**
      * Leave GDI
@@ -40,5 +40,5 @@ class GDI
         out("Leave GDI");
         //out($result);
         return $result;
-    }//end leave()
-}//end class
+    }
+}

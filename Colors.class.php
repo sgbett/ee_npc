@@ -74,5 +74,5 @@ class Colors
         $colored_string .= $string."\033[0m";
 
         return $colored_string;
-    }//end getColoredString()
-}//end class
+    }
+}

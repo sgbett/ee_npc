@@ -37,9 +37,9 @@ class Attack
         // $result = ee('govt', ['govt' => $govt]);
         // if (isset($result->govt)) {
         //     out("Govt switched to {$result->govt}!");
-        //     $c = get_advisor(); //UPDATE EVERYTHING
+        //     $c->updateAdvisor();
         // }
 
         return $result;
-    }//end standardStrike()
-}//end class
+    }
+}

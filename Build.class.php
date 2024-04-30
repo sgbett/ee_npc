@@ -27,7 +27,7 @@ class Build
     {
         //default is an empty array
         return ee('build', ['build' => $buildings]);
-    }//end buildings()
+    }
 
 
     /**
@@ -37,66 +37,100 @@ class Build
      *
      * @return $result        Game Result
      */
-    public static function cs($turns = 1)
+    public static function cs($turns = 4)
     {
-                                //default is 1 CS if not provided
         return self::buildings(['cs' => $turns]);
-    }//end cs()
+    }
 
 
     /**
      * Build one BPT for techer
      *
-     * @param  object $c Country Object
+     * @param  object $bpt BPT
      *
      * @return $result   Game Result
      */
-    public static function techer(&$c)
+    public static function techer($bpt)
     {
-        return self::buildings(['lab' => $c->bpt]);
-    }//end techer()
+      $ind = floor($bpt / 20);
+      $lab = $bpt - $ind;
+      return self::buildings(['lab' => $lab, 'indy' => $ind]);
+    }
 
 
     /**
      * Build one BPT for farmer
      *
-     * @param  object $c Country Object
+     * @param  object $bpt BPT
      *
      * @return $result   Game Result
      */
-    public static function farmer(&$c)
+    public static function farmer($bpt)
     {
-        //build farms
-        return self::buildings(['farm' => $c->bpt]);
-    }//end farmer()
+      $ind = floor($bpt / 20);
+      $farm = $bpt - $ind;
+      return self::buildings(['farm' => $farm, 'indy' => $ind]);
+    }
 
+    /**
+     * Build one BPT for oiler
+     *
+     * @param  object $bpt BPT
+     *
+     * @return $result   Game Result
+     */
+    public static function oiler($bpt)
+    {
+      $rigfarm = floor($bpt * 0.475);
+      $ind = $bpt - 2 * $rigfarm;
+
+      return self::buildings(['rig' => $rigfarm, 'farm' => $rigfarm, 'indy' => $ind]);
+    }
 
 
     /**
      * Build one BPT for casher
      *
-     * @param  object $c Country Object
+     * @param  object $bpt BPT
      *
      * @return $result   Game Result
      */
-    public static function casher(&$c)
+    public static function casher($bpt)
     {
-        //build ent/res
-        $ent = ceil($c->bpt * 1.05 / 2);
-        return self::buildings(['ent' => $ent, 'res' => $c->bpt - $ent]);
-    }//end casher()
+        $entres = floor($bpt * 0.475);
+        $ind = $bpt - 2 * $entres;
+
+        return self::buildings(['ent' => $entres, 'res' => $entres, 'indy' => $ind]);
+    }
 
 
     /**
      * Build one BPT for indy
      *
-     * @param  object $c Country Object
+     * @param  object $bpt BPT
      *
      * @return $result   Game Result
      */
-    public static function indy(&$c)
+    public static function indy($bpt)
     {
         //build indies
-        return self::buildings(['indy' => $c->bpt]);
-    }//end indy()
-}//end class
+        return self::buildings(['indy' => $bpt]);
+    }
+
+    /**
+     * Build one BPT for rainbow
+     *
+     * @param  object $bpt BPT
+     *
+     * @return $result   Game Result
+     */
+    public static function rainbow($bpt)
+    {
+      $rig = floor($bpt * 0.1);
+      $lab = floor($bpt * 0.7);
+      $ind = $bpt - ($rig + $lab);
+
+      return self::buildings(['rig' => $rig, 'lab' => $lab, 'indy' => $ind]);
+    }
+
+}

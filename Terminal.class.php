@@ -37,10 +37,13 @@ print $t('Hello, World');
  *
  * @return void
  */
-function out()
-{
-    call_user_func_array(['\EENPC\Terminal', 'out'], func_get_args());
-}//end out()
+function out() {
+  call_user_func_array(['\EENPC\Terminal', 'out'], func_get_args());
+}
+
+function cout(&$c,$str) {
+  out('[#'.$c->cnum."] $str");
+}
 
 
 /**
@@ -51,9 +54,17 @@ function out()
 function out_data()
 {
     call_user_func_array(['\EENPC\Terminal', 'data'], func_get_args());
-}//end out_data()
+}
 
-
+function out_score($what, $priority = '', $price = '', $current = '', $target = '', $score = '' ) {
+  out(
+    str_pad("$what:",10," ")
+    .'  priority['.number_format($priority, 2).']'
+    .'  price['.str_pad('$'.$price,5," ",STR_PAD_LEFT).']'
+    .str_pad(implode(' ->',array_filter([$current,$target])),20," ",STR_PAD_LEFT)
+    .'  scores '.str_pad(round($score*10000),7," ",STR_PAD_LEFT)
+  );
+}
 class Terminal
 {
     private static $columns  = [];
@@ -79,8 +90,27 @@ class Terminal
             $str = Colors::getColoredString($str, $foreground_color, $background_color);
         }
 
-        echo ($newline ? "\n" : null)."[".date("H:i:s")."] $str";
-    }//end out()
+        $output = ($newline ? "\n" : null)."[".date("H:i:s")."] $str";
+        echo $output;
+
+        $log_file = Logger::getLocation();
+
+        if ( $log_file == null ) { return; }
+
+        $path = explode('/',$log_file);
+        if (count($path) > 1) { array_pop($path); }
+        $path = implode('/',$path);
+
+        if (!file_exists($path)) {
+            mkdir($path, 0777, true);
+        }
+
+        if (substr($str,0,13) != 'Next Play in ') {
+          file_put_contents($log_file, $output, FILE_APPEND);
+        }
+
+
+    }
 
 
 
@@ -99,7 +129,7 @@ class Terminal
         $file = $backtrace[3]['file'] ?? '--';
         out("DATA: ($file:$line)\n".json_encode($data));
         //str_replace(",\n", "\n", var_export($data, true)));
-    }//end data()
+    }
 
 
     /**
@@ -115,5 +145,5 @@ class Terminal
         for ($i = 0; $i < $num; $i++) {
             self::$columns[$i] = null;
         }
-    }//end initColumns()
-}//end class
+    }
+}
