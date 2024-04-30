@@ -72,8 +72,12 @@ out('Entering Infinite Loop');
 $rules  = get_rules();
 $server_avg_networth = $server_avg_land = 0;
 
-
 while (1) {
+
+  if (count(Server::countries()) == 0) {
+    out("WAITING FOR NEW RESET...");
+    sleep(120);
+  }
 
   while (Server::maximumCountries() == false) {
     out("Less countries than allowed! (".Server::instance()->alive_count.'/'.Server::instance()->countries_allowed.')');
