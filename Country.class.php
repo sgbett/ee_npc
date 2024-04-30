@@ -171,9 +171,9 @@ class Country
     $qty   = min($foodrequired,PublicMarket::available('m_bu'));
     $price = PublicMarket::price('m_bu');
 
-    //spend at most half cash if negative income
+    //spend at most 1/4 cash if negative income
     if ($this->income < 0) {
-      $max = floor($this->money / 2 * $price);
+      $max = floor(0.25 * $this->money / $price);
       $qty = min($qty,$max);
     }
 

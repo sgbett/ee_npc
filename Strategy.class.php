@@ -133,12 +133,15 @@ abstract class Strategy {
 
   protected function ensureFood($turns = 10) {
     if (turns_of_food($this->c) > $turns) { return; }
+    if (turns_of_money($this->c) <= $turns) { return; }
 
     PublicMarket::update();
 
     while ($this->c->buyTurnsOfFood($turns)) {
+      if (turns_of_money($this->c) <= $turns) { return; }
       PublicMarket::update();
     }
+
   }
 
   protected function ensureMoney($turns = 10) {
@@ -523,6 +526,7 @@ abstract class Strategy {
   }
 
   protected function sellFoodOnPrivateIfUnbuilt() { //if we need to build and have spare food then sell some
+    if (turns_of_food($this->c) < 10) { return; }
     if ($this->shouldBuildFullBPT() && !$this->c->canBuildFullBPT()) {
       PrivateMarket::getInfo($this->c);
       $needed = floor($this->c->bpt + 4) * $this->c->build_cost + ($this->c->income > 0 ? 0 : $this->c->income * -5);
