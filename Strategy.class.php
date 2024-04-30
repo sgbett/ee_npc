@@ -153,8 +153,8 @@ abstract class Strategy {
     if (turns_of_food($this->c) > $turns && turns_of_money($this->c) > $turns) { return; }
 
     if ($this->c->onMarketValue() == 0 && ($this->c->income < 0 || turns_of_food($this->c) < $turns)) {
-      if ($this->c->food > 0 && $this->c->foodnet > 0) {
       cout($this->c,'Need cash nothing on public market');
+      if (($this->c->food > 0 && $this->c->foodnet > 0) || turns_of_food($this->c) > 20) {
         PrivateMarket::sellFood($this->c,0.25);
       } else {
         PrivateMarket::sellMilitary($this->c,0.25);
