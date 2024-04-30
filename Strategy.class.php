@@ -525,7 +525,7 @@ abstract class Strategy {
   protected function sellFoodOnPrivateIfUnbuilt() { //if we need to build and have spare food then sell some
     if ($this->shouldBuildFullBPT() && !$this->c->canBuildFullBPT()) {
       PrivateMarket::getInfo($this->c);
-      $needed = 1+ floor($this->c->bpt + 4) * $this->c->build_cost + ($this->c->income > 0 ? 0 : $this->c->income * -5);
+      $needed = floor($this->c->bpt + 4) * $this->c->build_cost + ($this->c->income > 0 ? 0 : $this->c->income * -5);
       $qty = min($needed,$this->c->food);
       PrivateMarket::sellFoodAmount($this->c,$qty);
     }
