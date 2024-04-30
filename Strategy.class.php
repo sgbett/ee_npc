@@ -562,17 +562,17 @@ abstract class Strategy {
   function defaultTechGoals() {
     return [
       //what, goal, priority
-      't_mil'   => [94  ,10],
-      't_med'   => [90  ,5],
-      't_bus'   => [140 ,50],
-      't_res'   => [140 ,50],
-      't_agri'  => [180 ,50],
-      't_war'   => [2   ,10],
-      't_ms'    => [110 ,5],
-      't_weap'  => [125 ,10],
-      't_indy'  => [130 ,50],
-      't_spy'   => [125 ,5],
-      't_sdi'   => [45  ,10],
+      't_mil'   => [83  ,20],
+      't_med'   => [66  ,5],
+      't_bus'   => [180 ,50],
+      't_res'   => [180 ,50],
+      't_agri'  => [230 ,80],
+      't_war'   => [5   ,10],
+      't_ms'    => [140 ,5],
+      't_weap'  => [150 ,50],
+      't_indy'  => [160 ,80],
+      't_spy'   => [150 ,10],
+      't_sdi'   => [90  ,20],
     ];
   }
 

@@ -43,34 +43,34 @@ class Techer extends Strategy {
   // function defaultTechGoals() {
   //   return [
   //     //what, goal, priority
-  //     't_mil'   => [94  ,10],
-  //     't_med'   => [90  ,5],
-  //     't_bus'   => [140 ,50],
-  //     't_res'   => [140 ,50],
-  //     't_agri'  => [180 ,50],
-  //     't_war'   => [2   ,10],
-  //     't_ms'    => [110 ,5],
-  //     't_weap'  => [125 ,10],
-  //     't_indy'  => [130 ,50],
-  //     't_spy'   => [125 ,5],
-  //     't_sdi'   => [45  ,10],
+  //     't_mil'   => [83  ,20],
+  //     't_med'   => [66  ,5],
+  //     't_bus'   => [180 ,50],
+  //     't_res'   => [180 ,50],
+  //     't_agri'  => [230 ,80],
+  //     't_war'   => [5   ,10],
+  //     't_ms'    => [140 ,5],
+  //     't_weap'  => [150 ,50],
+  //     't_indy'  => [160 ,80],
+  //     't_spy'   => [150 ,10],
+  //     't_sdi'   => [90  ,20],
   //   ];
   // }
 
   function techGoals() {
     // de-prioritise buying tech for techers
     return [
-      't_mil'   => [94  ,1],
-      't_med'   => [90  ,1],
-      't_bus'   => [140 ,1],
-      't_res'   => [140 ,1],
-      't_agri'  => [180 ,1],
-      't_war'   => [2   ,1],
-      't_ms'    => [110 ,1],
-      't_weap'  => [125 ,1],
-      't_indy'  => [130 ,1],
-      't_spy'   => [125 ,1],
-      't_sdi'   => [45  ,1],
+      't_mil'   => [83  ,10],
+      't_med'   => [66  ,1],
+      't_bus'   => [180 ,10],
+      't_res'   => [180 ,10],
+      't_agri'  => [230 ,1],
+      't_war'   => [5   ,5],
+      't_ms'    => [140 ,1],
+      't_weap'  => [150 ,5],
+      't_indy'  => [160 ,1],
+      't_spy'   => [150 ,5],
+      't_sdi'   => [90  ,5],
     ];
   }
 

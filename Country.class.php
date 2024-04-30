@@ -594,10 +594,12 @@ class Country
 
         if ($t == 0) { continue; } // none of this tech wanted
 
-        $need   = ($t - $a) / $t;
+        // 3 * (need^2)/total^2) pump demand when low
+
+        $needfactor   = 3*(($t - $a)**2 / $t**2);
         $price  = PublicMarket::price(substr($what,2));
 
-        $s = $price > 0 ? $need * $priority * (exp((10000-$price)/1500)/100) : 0;
+        $s = $price > 0 ? $needfactor * $priority * (exp((10000-$price)/1500)/100) : 0;
 
       } elseif ($what == 'nlg') {
         $price        = 'n/a';
