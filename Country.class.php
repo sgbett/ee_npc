@@ -79,7 +79,7 @@ class Country
 
   public function updateOnMarket()
   {
-    // out("updateOnMarket()");
+    //cout($this,"updateOnMarket()");
 
     $market_info    = get_owned_on_market_info();  //find out what we have on the market
     // out_data($market_info);
@@ -135,7 +135,7 @@ class Country
 
 
   public function onMarket($good = null) {
-    // out("onMarket($good)");
+    //cout($this,"onMarket($good)");
     if ($good == null) { return $this->om_total; }
     if (property_exists($this->om,$good) == false) { return 0; }
     return $this->om->$good->quantity ?? 0;
@@ -143,7 +143,7 @@ class Country
   }
 
   function onMarketValue($good = null) {
-    // out("onMarketValue($good)");
+    //cout($this,"onMarketValue($good)");
     if ($good == null) { return $this->om_value; }
     if (property_exists($this->om,$good) == false) { return 0; }
     return $this->om->$good->value ?? 0;
@@ -180,7 +180,7 @@ class Country
     if ($qty < 1) { return; }
 
     if ($qty * $price * $this->tax() > $this->money) {
-      out("can't afford $turns turns of food, trying to buy less");
+     cout($this,"can't afford $turns turns of food, trying to buy less");
       return $this->buyTurnsOfFood($turns - 1);
     }
 
@@ -230,7 +230,7 @@ class Country
         $protext .= '100% '.substr($what, 4);
       }
 
-      out("--- Set indy production: ".$protext);
+     cout($this,"--- Set indy production: ".$protext);
       set_indy($this);
     } else {
       $protext = null;
@@ -242,14 +242,14 @@ class Country
         $protext .= '100% '.substr($what, 4);
       }
 
-      out("--- Indy production: ".$protext);
+     cout($this,"--- Indy production: ".$protext);
     }
   }
 
 
   public function setIndyFromMarket($checkDPA = false)
   {
-    // out("Setting Indy production from market:");
+    //cout($this,"Setting Indy production from market:");
 
     $make_tr = 1.86;
     $make_j  = 1.86;
@@ -288,7 +288,7 @@ class Country
     foreach ($score as $k => $s) {
       $protext .= $s.' '.$k.' ';
     }
-    // out("--- Indy Scoring: ".$protext);
+    //cout($this,"--- Indy Scoring: ".$protext);
 
     if ($checkDPA) {
       $target = $this->dpat ?? $this->defPerAcreTarget();
@@ -298,7 +298,7 @@ class Country
       }
     }
     $total = array_sum($score);
-    // out('$total:'.$total);
+    //cout($this,'$total:'.$total);
     $pro_array = [];
 
     foreach($score as $item => $weight) {
@@ -354,7 +354,7 @@ class Country
     if ($this->protection == 1) { return 0; }
     //out("Turns Played: {$this->turns_played}");
     $dpat = floor(75 + pow($this->turns_played, $powfactor) / 10) * $mult;
-    // out("DPAT: $dpat");
+    //cout($this,"DPAT: $dpat");
     return $dpat;
   }
 
@@ -465,8 +465,8 @@ class Country
   {
     $tax = (100 + $this->g_tax) / 100;
 
-    // out('g_tax:'.$this->g_tax);
-    // out('$tax:'.$tax);
+    //cout($this,'g_tax:'.$this->g_tax);
+    //cout($this,'$tax:'.$tax);
 
     return $tax;
   }
@@ -496,7 +496,7 @@ class Country
 
   public function cheapestDpnwGoal($goals = [],$dpnw = null)
   {
-    // out('want_dpnw_goal:'.$dpnw);
+    //cout($this,'want_dpnw_goal:'.$dpnw);
     $score = [];
 
     PrivateMarket::getInfo($this);
@@ -504,7 +504,7 @@ class Country
 
     foreach ($goals as $what => $nw) {
 
-      // out('$what:'.$what.' $nw:'.$nw);
+      //cout($this,'$what:'.$what.' $nw:'.$nw);
 
       if (substr($what,0,2) == 't_') {
         $market_good = substr($what,2);
@@ -540,7 +540,7 @@ class Country
 
       if ($dpnw == null || $price_with_tax / $nw < $dpnw) {
         $score[implode('|',[$what,$price,$market])] = round($price / $nw);
-        out('$what:'.$what.'$market:'.$market.' $price:'.$price.' $/nw:'.round($price_with_tax / $nw));
+       cout($this,'$what:'.$what.'$market:'.$market.' $price:'.$price.' $/nw:'.round($price_with_tax / $nw));
         // var_dump($score);
       }
     }
@@ -549,7 +549,7 @@ class Country
 
     asort($score); // we want *lowest*
 
-    out('returning cheapestDpnwGoal:'.key($score));
+   cout($this,'returning cheapestDpnwGoal:'.key($score));
     return explode('|',key($score));
 
   }
@@ -620,8 +620,8 @@ class Country
         $price        = round($price);
         $what      = $dpnwgoal[0];
 
-        // out('price:'.$price);
-        // out('goal:'.$what);
+        //cout($this,'price:'.$price);
+        //cout($this,'goal:'.$what);
 
         $target       = round($this->dpat ?? $this->defPerAcreTarget());
         $actual       = round($this->defPerAcre());
@@ -657,8 +657,8 @@ class Country
   }
 
   public function availableFunds() {
-    // out("money: $this->money");
-    // out("reserved: ".$this->reservedCash());
+    //cout($this,"money: $this->money");
+    //cout($this,"reserved: ".$this->reservedCash());
     return max(0,$this->money - $this->reservedCash());
   }
 
@@ -672,7 +672,7 @@ class Country
     $str_stockavail = str_pad(engnot($available), 8, ' ', STR_PAD_LEFT);
     $str_spend = str_pad(engnot($spend), 8, ' ', STR_PAD_LEFT);
 
-    out("total: $str_total      available: $str_avail    ".($this->availableFunds() == $available ? "" : "stock: $str_stockavail       ")."spending: $".$str_spend." at a time");
+   cout($this,"total: $str_total      available: $str_avail    ".($this->availableFunds() == $available ? "" : "stock: $str_stockavail       ")."spending: $".$str_spend." at a time");
     return $spend;
   }
 
@@ -697,7 +697,7 @@ class Country
     if ($dpnw === null && Server::turnsRemaining() > 1) {
       $dpnw = Strategy::dpnwFloor();
     }
-    out('Looking for goods at $'.round($dpnw).'/nw or less... (Tr: '.round($dpnw*0.5).', J/Tu: '.round($dpnw*0.6).'Ta: '.round($dpnw*2).')');
+   cout($this,'Looking for goods at $'.round($dpnw).'/nw or less... (Tr: '.round($dpnw*0.5).', J/Tu: '.round($dpnw*0.6).'Ta: '.round($dpnw*2).')');
     $goals = $this->destockGoals();
 
     //try to spend the cash we would get from selling food on hand
@@ -706,7 +706,7 @@ class Country
     while ($this->destockHighestGoal($goals,$dpnw, $spend)) {
       PublicMarket::update();
     }
-    out('No More goods at $'.round($dpnw).'/nw or less');
+   cout($this,'No More goods at $'.round($dpnw).'/nw or less');
   }
 
   /**
@@ -728,7 +728,7 @@ class Country
     $price = $goal_array[1];
     $market = 'EENPC\\'.$goal_array[2];
 
-    out("Destock Goal: ".$what);
+   cout($this,"Destock Goal: ".$what);
 
     if (substr($what,0,2) == 't_') {
       $market_good = substr($what,2);
@@ -736,24 +736,24 @@ class Country
       $market_good = $what;
     }
 
-    out('$market_good:'.$market_good);
-    out('$price:'.$price);
+   cout($this,'$market_good:'.$market_good);
+   cout($this,'$price:'.$price);
 
     $market_avail = $market::available($market_good);
-    out('$market_avail:'.$market_avail);
+   cout($this,'$market_avail:'.$market_avail);
 
     $total_cost = ceil($price * $market_avail * ($market == 'EENPC\\PublicMarket' ? $this->tax() : 1));
-    out('$total_cost:'.$total_cost);
+   cout($this,'$total_cost:'.$total_cost);
 
     //if necessary try and sell bushels to buy it all
     if ($this->money < $total_cost && turns_of_food($this) > 5) {
       $pm_info = PrivateMarket::getInfo($this);   //get the PM info
       $p = $pm_info->sell_price->m_bu;
       $q = ceil(min($this->food + 5 * min(0,$this->foodnet),($total_cost - $this->availableFunds()) / $p));
-      out('money:'.$this->money);
-      out('total_cost:'.$total_cost);
-      out('food:'.$this->food);
-      out('$p:'.$p.' $q:'.$q);
+     cout($this,'money:'.$this->money);
+     cout($this,'total_cost:'.$total_cost);
+     cout($this,'food:'.$this->food);
+     cout($this,'$p:'.$p.' $q:'.$q);
       if ($q < 1) { return; }
       PrivateMarket::sell($this, ['m_bu' => $q]);
     }
@@ -762,11 +762,11 @@ class Country
 
     $max_qty = $price > 0 ? $this->availableFunds() / $price : 0;
     $max_qty = floor($max_qty / ($market == 'EENPC\\PublicMarket' ? $this->tax() : 1));
-    out('$max_qty:'.$max_qty);
+   cout($this,'$max_qty:'.$max_qty);
 
     $quantity = min($max_qty,$market_avail);
-    out('$quantity:'.$quantity);
-    out('BUYING');
+   cout($this,'$quantity:'.$quantity);
+   cout($this,'BUYING');
 
     if ($quantity > 0) { return $market::buy($this, [ $market_good => $quantity], [ $market_good => $price]); }
 
@@ -788,7 +788,7 @@ class Country
 
     if ($what === null) { return; }
 
-    out("Highest Goal: ".$what.' Buy $'.$spend);
+   cout($this,"Highest Goal: ".$what.' Buy $'.$spend);
 
     if ($what == 'nlg') {
       return defend_self($this, floor($this->money - $spend)); //second param is *RESERVE* cash
@@ -912,17 +912,17 @@ class Country
 
   public function canPlayTurn() {
     if ($this->turns == 0) {
-      out('cannot play - no turns!');
+     cout($this,'cannot play - no turns!');
       return false;
     }
 
     if (turns_of_money($this) < 1) {
-      out('cannot play - would get cash shortage');
+     cout($this,'cannot play - would get cash shortage');
       return false;
     }
 
     if (turns_of_food($this) < 1) {
-      out('cannot play - would get food shortage');
+     cout($this,'cannot play - would get food shortage');
       return false;
     }
 
@@ -932,17 +932,17 @@ class Country
   public function canBuildCS() {
 
     if ($this->turns < 5) {
-      out('not enough turns for CS');
+     cout($this,'not enough turns for CS');
       return false;
     }
 
     if ($this->empty < 5) {
-      out('not enough land for CS');
+     cout($this,'not enough land for CS');
       return false;
     }
 
     if ($this->money < 5 * $this->build_cost) {
-      out('not enough money for CS');
+     cout($this,'not enough money for CS');
       return false;
     }
 
@@ -951,13 +951,13 @@ class Country
 
   public function canBuildFullBPT() {
     if ($this->turns < 2) {
-      out('cannot build BPT - not enough turns');
+     cout($this,'cannot build BPT - not enough turns');
       return false;
     }
 
     if ($this->money < ($this->bpt + 4) * $this->build_cost + ($this->income > 0 ? 0 : $this->income * -5)) {
       //do we have enough money? This accounts for 5 turns of burn if income < 0 and leaves enough for 4 more CS if needed
-      out('cannot build BPT - not enough money');
+     cout($this,'cannot build BPT - not enough money');
       return false;
     }
     return true;
@@ -970,22 +970,22 @@ class Country
   */
   public function canExplore() {
     if ($this->built() < 50) {
-      out('cannot explore - not built enough ('.$this->built().')');
+     cout($this,'cannot explore - not built enough ('.$this->built().')');
       return false;
     }
 
     if (turns_of_money($this) < 5) {
-      out('cannot explore - not enough cash');
+     cout($this,'cannot explore - not enough cash');
       return false;
     }
 
     if (turns_of_food($this) < 5) {
-      out('cannot explore - not enough food');
+     cout($this,'cannot explore - not enough food');
       return false;
     }
 
     if ($this->turns < 1) {
-      out('cannot explore - no turns');
+     cout($this,'cannot explore - no turns');
       return false;
     }
     return true;
@@ -998,13 +998,13 @@ class Country
   */
   public function canCash() {
 
-    if (turns_of_food($this) < 3) {
-      out('cannot cash - not enough food');
+    if (turns_of_food($this) < 10) {
+     cout($this,'cannot cash - not enough food');
       return false;
     }
 
-    if (turns_of_money($this) < 3) {
-      out('cannot cash - not enough money');
+    if (turns_of_money($this) < 10) {
+     cout($this,'cannot cash - not enough money');
       return false;
     }
 
@@ -1013,13 +1013,13 @@ class Country
 
   public function canTech() {
 
-    if (turns_of_food($this) < 3) {
-      out('cannot tech - not enough food');
+    if (turns_of_food($this) < 10) {
+     cout($this,'cannot tech - not enough food');
       return false;
     }
 
-    if (turns_of_money($this) < 3) {
-      out('cannot tech - not enough money');
+    if (turns_of_money($this) < 10) {
+     cout($this,'cannot tech - not enough money');
       return false;
     }
 
@@ -1029,10 +1029,12 @@ class Country
   public function canSendStockToMarket() {
 
     if(turns_of_food($this) < 20) {
+     cout($this,'cannot send stock - not enough food');
       return false;
     }
 
     if(turns_of_money($this) < 20) {
+     cout($this,'cannot send stock - not enough money');
       return false;
     }
 
@@ -1045,6 +1047,7 @@ class Country
     }
 
     if ($this->sellableMilitary() < 7500) {
+     cout($this,'cannot sell military - not enough units');
       return false;
     }
 
@@ -1053,10 +1056,12 @@ class Country
 
   public function canSellTech() {
     if ( $this->protection == 1 ) {
+     cout($this,'cannot sell tech - in protection');
       return false;
     }
 
-    if ($this->sellableTech() < 20) {
+    if ($this->sellableTech() < 20) { //TODO: multiple of tech per turn?
+     cout($this,'cannot sell tech - not enough tech to sell');
       return false;
     }
 
@@ -1065,14 +1070,17 @@ class Country
 
   public function canSellFood() {
     if ( $this->protection == 1 ) {
+     cout($this,'cannot sell food - in protection');
       return false;
     }
 
     if ($this->food < 5000) {
+     cout($this,'cannot sell food - not enough to sell');
       return false;
     }
 
     if ($this->foodnet < 0) {
+     cout($this,'cannot sell food - negative production');
       return false;
     }
 
@@ -1082,10 +1090,12 @@ class Country
 
   public function canSellOil() {
     if ( $this->protection == 1 ) {
+     cout($this,'cannot sell oil - in protection');
       return false;
     }
 
     if ($this->oil < 5000) {
+     cout($this,'cannot sell oil - not enough to sell');
       return false;
     }
 
@@ -1094,6 +1104,7 @@ class Country
 
   public function canDestock() {
     if ( $this->protection == 1 ) {
+     cout($this,'cannot destock - in protection');
       return false;
     }
 
@@ -1102,6 +1113,7 @@ class Country
 
   public function canBuyGoals() {
     if ( $this->protection == 1 ) {
+     cout($this,'cannot buy goals - in protection');
       return false;
     }
 
@@ -1183,7 +1195,7 @@ class Country
   }
 
   private function sellable($good) {
-    // out("sellable($good)");
+    //cout($this,"sellable($good)");
     $onmarket = $this->onMarket($good);
     $total    = $this->$good + $onmarket;
     $sellable = floor($total * 0.25 * ($this->govt == 'C' ? 1.35 : 1)) - $onmarket;
@@ -1279,11 +1291,11 @@ class Country
   //     global $cpref;
   //
   //     if (!$cpref->retal) {
-  //         out("Retals Due: None!");
+  //        cout($this,"Retals Due: None!");
   //         return;
   //     }
   //
-  //     out("Retals Due:");
+  //    cout($this,"Retals Due:");
   //
   //     $retals = (array)$cpref->retal;
   //
@@ -1307,7 +1319,5 @@ class Country
   //         );
   //     }
   // }
-
-
 
 }

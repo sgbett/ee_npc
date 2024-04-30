@@ -37,9 +37,12 @@ print $t('Hello, World');
  *
  * @return void
  */
-function out()
-{
-    call_user_func_array(['\EENPC\Terminal', 'out'], func_get_args());
+function out() {
+  call_user_func_array(['\EENPC\Terminal', 'out'], func_get_args());
+}
+
+function cout(&$c,$str) {
+  out('[#'.$c->cnum."] $str");
 }
 
 

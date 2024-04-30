@@ -12,7 +12,7 @@ abstract class Strategy {
     $s = Settings::getStrat($cnum);
     if ($s == null) {
       $s = Settings::setStrat($cnum);
-      out("Setting #$cnum to strat [$s]");
+      cout($this->c,"Setting #$cnum to strat [$s]");
     }
     if ($s == 'C') { return new Casher($cnum); }
     if ($s == 'F') { return new Farmer($cnum); }
@@ -21,7 +21,7 @@ abstract class Strategy {
     if ($s == 'O') { return new Oiler($cnum); }
     if ($s == 'R') { return new Rainbow($cnum); }
 
-    out("Strat [$s] Not Implemented");
+    cout($this->c,"Strat [$s] Not Implemented");
   }
 
   public static function play($cnum) {
@@ -52,10 +52,10 @@ abstract class Strategy {
   }
 
   private function beforePlayTurns() {
-    out("Playing ".$this->name." Turns for #".$this->c->cnum." ".site_url($this->c->cnum));
-    out("Bus: {$this->c->pt_bus}%; Res: {$this->c->pt_res}%");
+    cout($this->c,"Playing ".$this->name." Turns for #".$this->c->cnum." ".site_url($this->c->cnum));
+    cout($this->c,"Bus: {$this->c->pt_bus}%; Res: {$this->c->pt_res}%");
     out($this->c->turns.' turns left');
-    out('Explore Rate: '.$this->c->explore_rate.'; Min Rate: '.$this->c->explore_min);
+    cout($this->c,'Explore Rate: '.$this->c->explore_rate.'; Min Rate: '.$this->c->explore_min);
     $this->setTargetLand();
     $this->setGovernment();
     $this->setIndustrialProduction();
@@ -75,7 +75,7 @@ abstract class Strategy {
   public function playTurns() {
     $i = 1;
     while($i < 20) {
-      out("Taking action ".$i++);
+      cout($this->c,"Taking action ".$i++);
       $this->beforeGetNextTurn();
       $this->ensureMoney();
       $this->ensureFood();
@@ -144,20 +144,20 @@ abstract class Strategy {
   protected function ensureMoney($turns = 10) {
     if ($this->c->protection == 1) { PrivateMarket::sellMilitary($this->c,1); }
 
-    // out('money:'.turns_of_money($this->c));
-    // out('food:'.turns_of_food($this->c));
+    // cout($this->c,'money:'.turns_of_money($this->c));
+    // cout($this->c,'food:'.turns_of_food($this->c));
 
     if (turns_of_food($this->c) > $turns && turns_of_money($this->c) > $turns) { return; }
 
     if ($this->c->onMarketValue() == 0 && ($this->c->income < 0 || turns_of_food($this->c) < $turns)) {
-      out('Need cash nothing on public market');
       if ($this->c->food > 0 && $this->c->foodnet > 0) {
+      cout($this->c,'Need cash nothing on public market');
         PrivateMarket::sellFood($this->c,0.25);
       } else {
         PrivateMarket::sellMilitary($this->c,0.25);
       }
     } elseif ($this->c->turns > 119 && $this->c->turns_stored >59) {
-      out('Need to sell some military to get turns down');
+      cout($this->c,'Need to sell some military to get turns down');
       PrivateMarket::sellMilitary($this->c,0.1);
     }
   }
@@ -169,7 +169,7 @@ abstract class Strategy {
   private function setTargetLand() {
     if (Settings::getTargetLand($this->c->cnum)) { return; }
     $target = floor(Math::pureBell($this->minLand, $this->maxLand) * Rules::maxTurns() / 2160);
-    out('Settings target acreage for #'.$this->c->cnum.' to '.$target.' based on maxturns of '.Rules::maxTurns());
+    cout($this->c,'Settings target acreage for #'.$this->c->cnum.' to '.$target.' based on maxturns of '.Rules::maxTurns());
     Settings::setTargetLand($this->c->cnum,$target);
     Settings::save();
   }
@@ -194,21 +194,21 @@ abstract class Strategy {
   protected function shouldPlayTurn() {
 
     if ($this->stockpiling() == false) {
-      out('Should Play because not stockpiling');
+      cout($this->c,'Should Play because not stockpiling');
       return true;
     }
 
     if ($this->netIncome() > 0) {
-      out('Should Play because cashflow positive');
+      cout($this->c,'Should Play because cashflow positive');
       return true;
     }
 
-    out("Negative income! Not playing any more turns for now.");
+    cout($this->c,"Negative income! Not playing any more turns for now.");
     return false;
   }
 
   protected function willPlayTurn() {
-    if ($this->c->canPlayTurn() && $this->shouldPlayTurn()) { out('willPlayTurn'); return true; };
+    if ($this->c->canPlayTurn() && $this->shouldPlayTurn()) { cout($this->c,'willPlayTurn'); return true; };
   }
 
   /**
@@ -218,18 +218,18 @@ abstract class Strategy {
   */
   protected function shouldBuildCS($cs_turn_ratio = null) {
     if ($this->c->bpt >= $this->c->desiredBpt()) {
-      out('should not build CS - at target BPT ('.$this->c->desiredBpt().')');
+      cout($this->c,'should not build CS - at target BPT ('.$this->c->desiredBpt().')');
       return false;
     }
 
     if ($this->c->income < 0 && $this->c->money < 4 * $this->c->build_cost + 5 * $this->c->income) {
-      out('should not build CS - we will run out of money');
+      cout($this->c,'should not build CS - we will run out of money');
       return false;
     }
 
     //use 5 because growth of pop & military typically
     if ($this->c->foodnet < 0 && $this->c->food < $this->c->foodnet * -5) {
-      out('should not build CS - we will run out of food');
+      cout($this->c,'should not build CS - we will run out of food');
       return false;
     }
 
@@ -237,13 +237,13 @@ abstract class Strategy {
 
     //consider the fraction of turns to spend on CS...
     if ($this->c->b_cs < $this->c->turns_played * $cs_turn_ratio) {
-      out("should build CS - count (".$this->c->b_cs.") is less than turns played (".$this->c->turns_played.") * $cs_turn_ratio (".($this->c->turns_played * $cs_turn_ratio).')');
+      cout($this->c,"should build CS - count (".$this->c->b_cs.") is less than turns played (".$this->c->turns_played.") * $cs_turn_ratio (".($this->c->turns_played * $cs_turn_ratio).')');
       return true;
     }
 
     //...otherwise we prefer building/exploring, as we;ve spent more than $cs_turn_ratio of turns on CS...
     if ($this->c->canBuildFullBPT() || $this->c->canExplore()) {
-      out('should not build CS - we can build or explore instead');
+      cout($this->c,'should not build CS - we can build or explore instead');
       return false;
     }
 
@@ -260,7 +260,7 @@ abstract class Strategy {
   protected function shouldBuildFullBPT() {
 
     if ($this->c->empty < $this->c->bpt + ($this->c->bpt >= $this->c->desiredBpt() ? 0 : 4)) { //leave 4 for CS, if not at target BPT
-      out('should not build - not enough empty land for full BPT');
+      cout($this->c,'should not build - not enough empty land for full BPT');
       return false;
     }
 
@@ -274,17 +274,17 @@ abstract class Strategy {
   */
   protected function shouldExplore() {
     if ($this->c->land > $this->c->targetLand()) {
-      out('should not explore  - at target land');
+      cout($this->c,'should not explore  - at target land');
       return false;
     }
 
     if ($this->c->turns < 2) {
-      out('should not explore - save a turn for selling');
+      cout($this->c,'should not explore - save a turn for selling');
       return false;
     }
 
     if ($this->c->empty > 2 * $this->c->bpt ) {
-      out('should not explore - not fully built');
+      cout($this->c,'should not explore - not fully built');
       return false;
     }
     return true;
@@ -345,7 +345,7 @@ abstract class Strategy {
     }
 
     if (Server::turnsRemaining() > 218) { //TODO: should 218 be defined as something?
-      out('should not sell stock - not near end of reset');
+      cout($this->c,'should not sell stock - not near end of reset');
       return false;
     }
 
@@ -355,7 +355,7 @@ abstract class Strategy {
   protected function shouldSellMilitary() {
     // $target = $this->c->dpat ?? $this->c->defPerAcreTarget();
     // if ($this->c->defPerAcre() < $target) {
-    //   out("dpat low don't sell");
+    //   cout($this->c,"dpat low don't sell");
     //   return false;
     // }
 
@@ -427,17 +427,17 @@ abstract class Strategy {
 
     //dont destock if we are not in good shape to do so
     if ($this->c->land < $this->c->targetLand()) {
-      out('should not destock  - not at target land');
+      cout($this->c,'should not destock  - not at target land');
       return false;
     }
 
     if ($this->c->built() < 90) {
-      out('should not destock - not built');
+      cout($this->c,'should not destock - not built');
       return false;
     }
 
     if (turns_of_food($this->c) < $this->c->turns) {
-      out('should not destock - not enough food');
+      cout($this->c,'should not destock - not enough food');
       return false;
     }
 
@@ -447,26 +447,26 @@ abstract class Strategy {
   public function shouldBuyGoals() {
 
     if (Server::turnsRemaining() < 100) { //TODO: this should be defined as something? maybe not a hard cutoff, maybe as turns remaining goal prioarity is reduced?
-      out('should not buy goals - near end of reset');
+      cout($this->c,'should not buy goals - near end of reset');
       return false;
     }
     if ($this->c->built() < 90) {
-      out('should not buy goals - not built');
+      cout($this->c,'should not buy goals - not built');
       return false;
     }
 
     if (turns_of_money($this->c) < 5) {
-      out('should not buy goals - not enough money');
+      cout($this->c,'should not buy goals - not enough money');
       return false;
     }
 
     if (turns_of_food($this->c) < 5) {
-      out('should not buy goals - not enough food');
+      cout($this->c,'should not buy goals - not enough food');
       return false;
     }
 
     if ($this->c->availableFunds() < $this->c->land*1000) {
-      out('should not buy goals - available funds too low ');
+      cout($this->c,'should not buy goals - available funds too low ');
       return false;
     }
 
@@ -478,44 +478,44 @@ abstract class Strategy {
   }
 
   protected function willBuildFullBPT() {
-    if ($this->c->canBuildFullBPT() && $this->shouldBuildFullBPT()) { out('willBuildFullBPT'); return true; };
+    if ($this->c->canBuildFullBPT() && $this->shouldBuildFullBPT()) { cout($this->c,'willBuildFullBPT'); return true; };
   }
   protected function willExplore() {
-    if ($this->c->canExplore() && $this->shouldExplore()) { out('willExplore'); return true; };
+    if ($this->c->canExplore() && $this->shouldExplore()) { cout($this->c,'willExplore'); return true; };
   }
 
   protected function willCash() {
-    if ($this->c->canCash() && $this->shouldCash()) { out('willCash'); return true; };
+    if ($this->c->canCash() && $this->shouldCash()) { cout($this->c,'willCash'); return true; };
   }
   protected function willTech() {
-    if ($this->c->canTech() && $this->shouldTech()) { out('willTech'); return true; };
+    if ($this->c->canTech() && $this->shouldTech()) { cout($this->c,'willTech'); return true; };
   }
 
   protected function willSendStockToMarket() {
-    if ($this->c->canSendStockToMarket() && $this->shouldSendStockToMarket()) { out('willSendStockToMarket'); return true; };
+    if ($this->c->canSendStockToMarket() && $this->shouldSendStockToMarket()) { cout($this->c,'willSendStockToMarket'); return true; };
   }
 
   protected function willSellMilitary() {
-    if ($this->c->canSellMilitary() && $this->shouldSellMilitary()) { out('willSellMilitary'); return true; };
+    if ($this->c->canSellMilitary() && $this->shouldSellMilitary()) { cout($this->c,'willSellMilitary'); return true; };
   }
   protected function willSellTech() {
-    if ($this->c->canSellTech() && $this->shouldSellTech()) { out('willSellTech'); return true; };
+    if ($this->c->canSellTech() && $this->shouldSellTech()) { cout($this->c,'willSellTech'); return true; };
   }
 
   protected function willSellFood() {
-    if ($this->c->canSellFood() && $this->shouldSellFood()) { out('willSellFood'); return true; };
+    if ($this->c->canSellFood() && $this->shouldSellFood()) { cout($this->c,'willSellFood'); return true; };
   }
 
   protected function willSellOil() {
-    if ($this->c->canSellOil() && $this->shouldSellOil()) { out('willSellOil'); return true; };
+    if ($this->c->canSellOil() && $this->shouldSellOil()) { cout($this->c,'willSellOil'); return true; };
   }
 
   protected function willDestock() {
-    if ($this->c->canDestock() && $this->shouldDestock()) { out('willDestock'); return true; };
+    if ($this->c->canDestock() && $this->shouldDestock()) { cout($this->c,'willDestock'); return true; };
   }
 
   protected function willBuyGoals() {
-    if ($this->c->canBuyGoals() && $this->shouldBuyGoals()) { out('willBuyGoals'); return true; };
+    if ($this->c->canBuyGoals() && $this->shouldBuyGoals()) { cout($this->c,'willBuyGoals'); return true; };
   }
 
   protected function sellFoodOnPrivateIfProtection() { //sell food on pricate if in protection
