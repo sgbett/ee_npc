@@ -12,7 +12,7 @@ abstract class Strategy {
     $s = Settings::getStrat($cnum);
     if ($s == null) {
       $s = Settings::setStrat($cnum);
-      cout($this->c,"Setting #$cnum to strat [$s]");
+      out("Setting #$cnum to strat [$s]");
     }
     if ($s == 'C') { return new Casher($cnum); }
     if ($s == 'F') { return new Farmer($cnum); }
@@ -21,7 +21,7 @@ abstract class Strategy {
     if ($s == 'O') { return new Oiler($cnum); }
     if ($s == 'R') { return new Rainbow($cnum); }
 
-    cout($this->c,"Strat [$s] Not Implemented");
+    cout("[$cnum] Strat [$s] Not Implemented");
   }
 
   public static function play($cnum) {
