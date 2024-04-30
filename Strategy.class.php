@@ -81,6 +81,8 @@ abstract class Strategy {
       $this->ensureFood();
 
       if (Server::turnsRemaining() < 10) {
+        $this->ensureMoney(3);
+        $this->ensureFood(3);
         if ($this->c->turns > 3) {
           $this->jump();
         }
