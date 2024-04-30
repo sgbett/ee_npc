@@ -805,20 +805,30 @@ class Country
     } else {
       $market_good = $what;
     }
-
     //out('market_goods:'.$market_good);
-    $market_price = PublicMarket::price($market_good);
-    //out('market_price:'.$market_price);
-    $market_avail = PublicMarket::available($market_good);
-    //out('market_avail:'.$market_avail);
 
-    $max_qty = $market_price > 0 ? floor(($spend / ($market_price * $this->tax()))) : 0;
+    $private_market_price = substr($market_good,0,3) == 'm_t' ? PrivateMarket::buy_price($market_good) : 0;
+    $public_market_price = PublicMarket::price($market_good) * $this->tax();
+
+    if ($private_market_price >0 && $private_market_price < $public_market_price) {
+      $market = "EENPC\\PrivateMarket";
+      $market_price = $private_market_price;
+    } else {
+      $market = "EENPC\\PublicMarket";
+      $market_price = $public_market_price;
+    }
+
+    //out('market_price:'.$market_price);
+
+    $market_avail = $market::available($market_good);
+
+    $max_qty = $market_price > 0 ? floor($spend / $market_price) : 0;
     //out('$max_qty:'.$max_qty);
 
     $quantity = min($max_qty,$market_avail);
     //out('$quantity:'.$quantity);
 
-    if ($quantity > 0) { return PublicMarket::buy($this, [ $market_good => $quantity], [ $market_good => $market_price]); }
+    if ($quantity > 0) { return $market::buy($this, [ $market_good => $quantity], [ $market_good => $market_price]); }
 
   }
 
