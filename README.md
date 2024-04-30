@@ -1,4 +1,23 @@
-ee_npc
+# This Fork
+
+1. Install Docker
+
+2. Set your environment variables:
+
+      export EENPC_AI_KEY=
+      export EENPC_USERNAME=
+
+3. Run
+
+    docker compose up
+
+This will spawn ten containers with `EENPC_CNUM_MODULO` set from 0-9, each one runs the countries ending in that digit.
+
+This is because a single thread can't keep up with 50 countries and a turn rate every 1.6 mins!
+
+# Original README
+
+## ee_npc
 ======
 
 Earth Empires Non-Player-Country Project!
@@ -44,7 +63,7 @@ To Run on Windows:
 17) Your AI API key can be acquired from: http://www.earthempires.com/ai/api
 18) Find ee_npc.php in your explorer, right click on it, and go to Properties, to find the Location that it is at -- in my case it is at C:\Users\qzjul\Documents\ee_npc
 19) Open a Windows Terminal
-20) (optional) Right click on the top bar / window bar, and click Properties 
+20) (optional) Right click on the top bar / window bar, and click Properties
 21) (optional) Go to the Layout tab, change Screen Buffer width to 200, height to 500; change Window Size width to 200, height to 50.
 22) (optional) click OK
 23) Change directory in the terminal to the directory the script is saved in: cd C:\Users\(your username)\ee_npc
@@ -63,3 +82,4 @@ Fork the project, using the fork button.
 Then clone it locally, make changes, and push them to github.
 
 When you're happy with them, create a pull request, and I'll merge in your changes after reviewing them. It would be better to make smaller changes at a time, so I can digest them ;-)
+
