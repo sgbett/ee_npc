@@ -482,7 +482,7 @@ class Country
     $turn_cost = max(0,-$this->income);
 
     if ($this->land > $this->targetLand()) {
-      return max($this->land * 1000,$this->turns * $turn_cost);
+      return max($this->land * 1000,(max(10,$this->turns) * $turn_cost));
     }
 
     //min 5 turn buffer so we dont stop exploring/building
