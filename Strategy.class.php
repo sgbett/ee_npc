@@ -159,7 +159,7 @@ abstract class Strategy {
       } else {
         PrivateMarket::sellMilitary($this->c,0.25);
       }
-    } elseif ($this->c->turns > 119 && $this->c->turns_stored >59) {
+    } elseif (($this->c->turns > max(20,Server::turnsRemaining()/4)) || ($this->c->turns > 119 && $this->c->turns_stored >59)) { //TODO: refactor for max/stored turns in rules
       cout($this->c,'Need to sell some military to get turns down');
       PrivateMarket::sellMilitary($this->c,0.1);
     }
